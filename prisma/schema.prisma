@@ -6,18 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-  url      = env("DATABASE_URL")
-}
-
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
@@ -27,14 +18,16 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? // @db.Text
-  access_token      String? // @db.Text
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? // @db.Text
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 
   @@unique([provider, providerAccountId])
 }
@@ -45,6 +38,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -55,6 +50,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  trades        Trade[]
+  notes         Note[]
+  studies       Study[]
 }
 
 model VerificationToken {
@@ -63,4 +61,50 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Trade {
+  id        String   @id
+  platform  String   @default("TD Ameritrade")
+  trade_id  String
+  symbol    String
+  side      String
+  quantity  Int
+  price     Float
+  timestamp DateTime @default(now())
+  user_id   String   @default(cuid())
+  user      User     @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, trade_id])
+  @@index([user_id])
+}
+
+model Note {
+  id        String   @id
+  trade_id  String   @unique
+  text      String
+  timestamp DateTime @default(now())
+  user_id   String   @default(cuid())
+  user      User     @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+}
+
+model Study {
+  id          String   @id
+  name        String
+  start_date  DateTime
+  end_date    DateTime
+  description String
+  user_id     String   @default(cuid())
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+}
+
+model StudyTrade {
+  id          String   @id
+  study_id    String   @unique
+  trade_id    String   @unique
+  created_at  DateTime @default(now())
 }
