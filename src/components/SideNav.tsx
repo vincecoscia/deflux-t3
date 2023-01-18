@@ -2,11 +2,31 @@ import React from "react";
 import localFont from "@next/font/local";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const azonix = localFont({ src: "../styles/fonts/Azonix.woff2" });
 
 export default function SideNav() {
   const { data: sessionData } = useSession();
+
+  const router = useRouter();
+
+  const isActiveLink = (route: string) => {
+    if (route === router.pathname) {
+      return "text-primary dark:text-primary bg-primary/10 dark:bg-primary/10";
+    } else {
+      return "text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700";
+    }
+  };
+
+  const isActiveSVG = (route: string) => {
+    if (route === router.pathname) {
+      return "text-primary dark:text-primary";
+    } else {
+      return "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
+    }
+  };
+
 
   return (
     <aside className="fixed top-20 left-0 h-full w-64" aria-label="Sidenav">
@@ -15,11 +35,11 @@ export default function SideNav() {
           <li>
             <Link
               href="/dashboard/overview"
-              className="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              className={"group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " + isActiveLink("/dashboard/overview")}
             >
               <svg
                 aria-hidden="true"
-                className="h-6 w-6 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
+                className={"h-6 w-6 transition duration-75" + isActiveSVG("/dashboard/overview")}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -30,30 +50,30 @@ export default function SideNav() {
               <span className="ml-3">Overview</span>
             </Link>
           </li>
-
         </ul>
         <ul className="mt-5 space-y-2 border-t border-gray-200 pt-5 dark:border-gray-700">
           <li>
-            <a
-              href="#"
-              className="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+            <Link
+              href="/dashboard/import"
+              className={"group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " + isActiveLink("/dashboard/import")}
             >
               <svg
-                aria-hidden="true"
-                className="h-6 w-6 flex-shrink-0 text-gray-400 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className={"h-6 w-6 transition duration-75" + isActiveSVG("/dashboard/import")}
               >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
                 <path
-                  fill-rule="evenodd"
-                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                  clip-rule="evenodd"
-                ></path>
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m0-3l-3-3m0 0l-3 3m3-3v11.25m6-2.25h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75"
+                />
               </svg>
-              <span className="ml-3">Docs</span>
-            </a>
+
+              <span className="ml-3">Import Trades</span>
+            </Link>
           </li>
           <li>
             <a

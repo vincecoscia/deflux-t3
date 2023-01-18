@@ -75,7 +75,7 @@ export default function Navbar() {
         )}
         {!sessionData && (
           <button
-            onClick={() => signIn("google")}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard/overview" })}
             className="mr-10 justify-self-end rounded bg-primary px-4 py-2 text-white"
           >
             Sign In with Google

@@ -7,7 +7,7 @@ import { parse } from "papaparse";
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
 
-const Dashboard: NextPage = () => {
+const Import: NextPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileRows, setFileRows] = useState<any>([]); // TODO: Type this better
 
@@ -126,4 +126,4 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default Dashboard;
+export default Import;

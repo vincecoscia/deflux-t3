@@ -72,8 +72,7 @@ model Trade {
   price     Float
   commission Float
   amount    Float?
-  time      DateTime
-  date      DateTime
+  dateTime  DateTime
   timestamp DateTime @default(now())
   user_id   String   @default(cuid())
   user      User     @relation(fields: [user_id], references: [id])
