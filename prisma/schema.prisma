@@ -64,18 +64,21 @@ model VerificationToken {
 }
 
 model Trade {
-  id        String   @id
+  id        String   @id @default(cuid())
   platform  String   @default("TD Ameritrade")
-  trade_id  String
   symbol    String
   side      String
   quantity  Int
   price     Float
+  commission Float
+  amount    Float?
+  time      DateTime
+  date      DateTime
   timestamp DateTime @default(now())
   user_id   String   @default(cuid())
   user      User     @relation(fields: [user_id], references: [id])
 
-  @@unique([user_id, trade_id])
+  @@unique([user_id, id])
   @@index([user_id])
 }
 

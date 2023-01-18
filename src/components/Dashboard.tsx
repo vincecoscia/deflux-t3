@@ -35,6 +35,7 @@ export default function Dashboard() {
     <>
       {/* If not logged in, can't view page */}
       {!sessionData && (
+        // Redirect to login page
         <main className="dark:bg-gray-900 h-screen">
             <h1 className="text-white text-3xl pt-64 mx-auto w-full">Must be logged in to view this page</h1>
         </main>
