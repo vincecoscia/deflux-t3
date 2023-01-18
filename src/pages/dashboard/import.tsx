@@ -69,7 +69,7 @@ const Import: NextPage = () => {
                 price,
                 commission,
                 side,
-                amount: trade.AMOUNT,
+                return: trade.AMOUNT,
                 platform: 'ThinkOrSwim',
                 dateTime,
                 user_id: sessionData.user.id,
@@ -107,7 +107,7 @@ const Import: NextPage = () => {
       )}
       {/* If logged in, show page */}
       {sessionData && (
-      <main className="flex flex-col items-center justify-center bg-gray-900  h-[calc(100vh-84px)]">
+      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <select name="platform" id="platform">

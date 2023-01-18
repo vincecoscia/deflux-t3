@@ -51,8 +51,11 @@ model User {
   accounts      Account[]
   sessions      Session[]
   trades        Trade[]
+  trade_groups  TradeGroup[]
   notes         Note[]
   studies       Study[]
+  tags          Tags[]
+
 }
 
 model VerificationToken {
@@ -71,42 +74,69 @@ model Trade {
   quantity  Int
   price     Float
   commission Float
-  amount    Float?
+  return    Float?
   dateTime  DateTime
   timestamp DateTime @default(now())
   user_id   String   @default(cuid())
   user      User     @relation(fields: [user_id], references: [id])
+  tradeGroupId String
+  tradeGroup TradeGroup @relation(fields: [ tradeGroupId ], references: [id])
 
   @@unique([user_id, id])
   @@index([user_id])
+  @@index([tradeGroupId])
 }
 
 model Note {
   id        String   @id
-  trade_id  String   @unique
+  tradeId  String   @unique
   text      String
   timestamp DateTime @default(now())
-  user_id   String   @default(cuid())
-  user      User     @relation(fields: [user_id], references: [id])
+  userId   String   @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@index([user_id])
+  @@index([userId])
 }
 
 model Study {
   id          String   @id
   name        String
-  start_date  DateTime
-  end_date    DateTime
+  startDate  DateTime
+  endDate    DateTime
   description String
-  user_id     String   @default(cuid())
-  user        User     @relation(fields: [user_id], references: [id])
+  userId     String   @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
 
-  @@index([user_id])
+  @@index([userId])
 }
 
 model StudyTrade {
   id          String   @id
-  study_id    String   @unique
-  trade_id    String   @unique
-  created_at  DateTime @default(now())
+  studyId    String   @unique
+  tradeId    String   @unique
+  createdAt  DateTime @default(now())
+}
+
+model TradeGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  tags        Tags[]
+  trades      Trade[]
+  userId     String   @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Tags {
+  id          String   @id @default(cuid())
+  name        String
+  userId     String   @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  tradeGroupId  String
+  tradeGroup TradeGroup @relation(fields: [tradeGroupId], references: [id])
+
+  @@index([userId])
+  @@index([tradeGroupId])
 }
