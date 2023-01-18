@@ -6,9 +6,11 @@ import { parse } from "papaparse";
 
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
+import { any } from "zod";
 
 const Import: NextPage = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [platform, setPlatform] = useState<string>('TD Ameritrade'); // TODO: Type this better
   const [fileRows, setFileRows] = useState<any>([]); // TODO: Type this better
 
   const { data: sessionData } = useSession();
@@ -23,12 +25,17 @@ const Import: NextPage = () => {
       setFile(e.target.files?.[0] || null);
   }
 
+  const handlePlatformChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setPlatform(e.target.value);
+    console.log(e.target.value)
+}
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     // Parse file and send to server
     e.preventDefault();
     // console.log(e.target.platform.value)
     // CODE BELOW WORKS
-    if (file && e.target.platform.value === 'ThinkOrSwim') {
+    if (file && platform === 'ThinkOrSwim') {
         await parse(file, {
           beforeFirstChunk: (chunk: string | string[]) => {
             // Only parse after the row with 'Account Trade History' in it
@@ -72,7 +79,7 @@ const Import: NextPage = () => {
                 return: trade.AMOUNT,
                 platform: 'ThinkOrSwim',
                 dateTime,
-                user_id: sessionData.user.id,
+                userId: sessionData.user.id || 'test',
               };
             });
             setFileRows(cleanedTrades);
@@ -110,7 +117,7 @@ const Import: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-            <select name="platform" id="platform">
+            <select name="platform" id="platform" onChange={handlePlatformChange}>
                 <option value="TD Ameritrade">TD Ameritrade</option>
                 <option value="Robinhood">Robinhood</option>
                 <option value="ThinkOrSwim">ThinkOrSwim</option>
