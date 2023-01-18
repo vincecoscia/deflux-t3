@@ -65,8 +65,8 @@ model VerificationToken {
 }
 
 model Trade {
-  id           String     @id @default(cuid())
-  platform     String     @default("TD Ameritrade")
+  id           String      @id @default(cuid())
+  platform     String      @default("TD Ameritrade")
   symbol       String
   side         String
   quantity     Int
@@ -74,11 +74,11 @@ model Trade {
   commission   Float
   return       Float?
   dateTime     DateTime
-  timestamp    DateTime   @default(now())
-  userId       String     @default(cuid())
-  user         User       @relation(fields: [userId], references: [id])
-  tradeGroupId String
-  tradeGroup   TradeGroup @relation(fields: [tradeGroupId], references: [id])
+  timestamp    DateTime    @default(now())
+  userId       String      @default(cuid())
+  user         User        @relation(fields: [userId], references: [id])
+  tradeGroupId String?     @default("None")
+  tradeGroup   TradeGroup? @relation(fields: [tradeGroupId], references: [id])
 
   @@unique([userId, id])
   @@index([userId])
