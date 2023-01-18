@@ -65,20 +65,21 @@ model VerificationToken {
 }
 
 model Trade {
-  id           String      @id @default(cuid())
-  platform     String      @default("TD Ameritrade")
-  symbol       String
-  side         String
-  quantity     Int
-  price        Float
-  commission   Float
-  return       Float?
-  dateTime     DateTime
-  timestamp    DateTime    @default(now())
-  userId       String      @default(cuid())
-  user         User        @relation(fields: [userId], references: [id])
-  tradeGroupId String?     @default("None")
-  tradeGroup   TradeGroup? @relation(fields: [tradeGroupId], references: [id])
+  id            String      @id @default(cuid())
+  platform      String      @default("TD Ameritrade")
+  symbol        String
+  side          String
+  quantity      Int
+  price         Float
+  commission    Float
+  return        Float?
+  percentClosed Float?      @default(0)
+  dateTime      DateTime
+  timestamp     DateTime    @default(now())
+  userId        String      @default(cuid())
+  user          User        @relation(fields: [userId], references: [id])
+  tradeGroupId  String?     @default("None")
+  tradeGroup    TradeGroup? @relation(fields: [tradeGroupId], references: [id])
 
   @@unique([userId, id])
   @@index([userId])
@@ -116,13 +117,14 @@ model StudyTrade {
 }
 
 model TradeGroup {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String
   tags        Tags[]
   trades      Trade[]
-  userId      String  @default(cuid())
-  user        User    @relation(fields: [userId], references: [id])
+  userId      String   @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  dateCreated DateTime @default(now())
 
   @@index([userId])
 }

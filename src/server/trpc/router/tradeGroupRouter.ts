@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 
-export const tradeRouter = router({
-  uploadTrades: protectedProcedure
+export const tradeGroupRouter = router({
+  addTradeGroup: protectedProcedure
     .input(z.array(z.object({ symbol: z.string(), price: z.number(), commission: z.number(), quantity: z.number(), return: z.number().nullish(), dateTime: z.date(), side: z.string(), platform: z.string(), userId: z.string(), percentClosed: z.number() })))
     .mutation(async ({ctx, input}) => {
       const trades = await ctx.prisma.trade.createMany({
