@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -27,9 +27,8 @@ model Account {
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -43,9 +42,9 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -55,7 +54,6 @@ model User {
   notes         Note[]
   studies       Study[]
   tags          Tags[]
-
 }
 
 model VerificationToken {
@@ -67,32 +65,32 @@ model VerificationToken {
 }
 
 model Trade {
-  id        String   @id @default(cuid())
-  platform  String   @default("TD Ameritrade")
-  symbol    String
-  side      String
-  quantity  Int
-  price     Float
-  commission Float
-  return    Float?
-  dateTime  DateTime
-  timestamp DateTime @default(now())
-  user_id   String   @default(cuid())
-  user      User     @relation(fields: [user_id], references: [id])
+  id           String     @id @default(cuid())
+  platform     String     @default("TD Ameritrade")
+  symbol       String
+  side         String
+  quantity     Int
+  price        Float
+  commission   Float
+  return       Float?
+  dateTime     DateTime
+  timestamp    DateTime   @default(now())
+  userId       String     @default(cuid())
+  user         User       @relation(fields: [userId], references: [id])
   tradeGroupId String
-  tradeGroup TradeGroup @relation(fields: [ tradeGroupId ], references: [id])
+  tradeGroup   TradeGroup @relation(fields: [tradeGroupId], references: [id])
 
-  @@unique([user_id, id])
-  @@index([user_id])
+  @@unique([userId, id])
+  @@index([userId])
   @@index([tradeGroupId])
 }
 
 model Note {
   id        String   @id
-  tradeId  String   @unique
+  tradeId   String   @unique
   text      String
   timestamp DateTime @default(now())
-  userId   String   @default(cuid())
+  userId    String   @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
@@ -101,41 +99,41 @@ model Note {
 model Study {
   id          String   @id
   name        String
-  startDate  DateTime
-  endDate    DateTime
+  startDate   DateTime
+  endDate     DateTime
   description String
-  userId     String   @default(cuid())
+  userId      String   @default(cuid())
   user        User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model StudyTrade {
-  id          String   @id
-  studyId    String   @unique
-  tradeId    String   @unique
-  createdAt  DateTime @default(now())
+  id        String   @id
+  studyId   String   @unique
+  tradeId   String   @unique
+  createdAt DateTime @default(now())
 }
 
 model TradeGroup {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String
   tags        Tags[]
   trades      Trade[]
-  userId     String   @default(cuid())
-  user        User     @relation(fields: [userId], references: [id])
+  userId      String  @default(cuid())
+  user        User    @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model Tags {
-  id          String   @id @default(cuid())
-  name        String
-  userId     String   @default(cuid())
-  user        User     @relation(fields: [userId], references: [id])
-  tradeGroupId  String
-  tradeGroup TradeGroup @relation(fields: [tradeGroupId], references: [id])
+  id           String     @id @default(cuid())
+  name         String
+  userId       String     @default(cuid())
+  user         User       @relation(fields: [userId], references: [id])
+  tradeGroupId String
+  tradeGroup   TradeGroup @relation(fields: [tradeGroupId], references: [id])
 
   @@index([userId])
   @@index([tradeGroupId])
