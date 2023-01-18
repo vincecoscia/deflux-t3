@@ -72,7 +72,7 @@ const Dashboard: NextPage = () => {
                 amount: trade.AMOUNT,
                 platform: 'ThinkOrSwim',
                 dateTime,
-                user_id: sessionData.user.id,
+                userId: sessionData.user.id,
               };
             });
             setFileRows(cleanedTrades);
