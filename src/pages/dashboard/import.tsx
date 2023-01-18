@@ -6,12 +6,10 @@ import { parse } from "papaparse";
 
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
-import { any } from "zod";
 
 const Import: NextPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [platform, setPlatform] = useState<string>('TD Ameritrade'); // TODO: Type this better
-  const [fileRows, setFileRows] = useState<any>([]); // TODO: Type this better
 
   const { data: sessionData } = useSession();
 
@@ -22,12 +20,15 @@ const Import: NextPage = () => {
   })
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFile(e.target.files?.[0] || null);
+    if (e.target.files?.[0]) {
+      setFile(e.target.files?.[0]);
+    }
+     
+      console.log("HEY",file)
   }
 
   const handlePlatformChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPlatform(e.target.value);
-    console.log(e.target.value)
 }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,8 +36,13 @@ const Import: NextPage = () => {
     e.preventDefault();
     // console.log(e.target.platform.value)
     // CODE BELOW WORKS
+    if(file === null || file === undefined) {
+        console.log('No file uploaded')
+        return
+    }
     if (file && platform === 'ThinkOrSwim') {
-        await parse(file, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        parse(file, {
           beforeFirstChunk: (chunk: string | string[]) => {
             // Only parse after the row with 'Account Trade History' in it
             const start = chunk.indexOf('DATE');
@@ -48,7 +54,6 @@ const Import: NextPage = () => {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,
-          // skipEmptyLines: true,
           chunk: (results: { data: any[]; }) => {
             // Find all where TYPE === 'TRD'
             const trades = results.data.filter((row: any) => row.TYPE === 'TRD');
@@ -57,12 +62,11 @@ const Import: NextPage = () => {
               let commission = 0;
               // combine commissions and fees
               commission = (trade["Commissions & Fees"] + trade["Misc Fees"])
-              
               // deconstruct trade.DESCRIPTION and pull out symbol, side, price, and quantity
               const description = trade.DESCRIPTION.split(' ');
               const side = description[0] === 'BOT' ? 'BUY' : 'SELL';
-              // remove + or - from quantity
-              const quantity = Number(description[1].replace(/[-+]/g, ''));
+              // remove + from quantity
+              const quantity = Number(description[1].replace('+', ''));
               // remove everything after the :
               const symbol = description[2].split(':')[0];
               // remove everything before the @ and convert to number
@@ -79,10 +83,9 @@ const Import: NextPage = () => {
                 return: trade.AMOUNT,
                 platform: 'ThinkOrSwim',
                 dateTime,
-                userId: sessionData.user.id || 'test',
+                userId: sessionData?.user?.id || 'test',
               };
             });
-            setFileRows(cleanedTrades);
             uploadTrades(cleanedTrades);
           },
 
@@ -93,7 +96,7 @@ const Import: NextPage = () => {
     // CODE ABOVE WORKS
   }
 
-  console.log('file', fileRows);
+  console.log('FUCK', file);
   
 
   return (
