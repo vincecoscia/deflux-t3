@@ -6,11 +6,16 @@ import { ThinkOrSwim } from './mixins/ThinkOrSwim'
 export default function ImportTrades() {
   const [file, setFile] = useState(null); // TODO: Type this better
   const [platform, setPlatform] = useState('TD Ameritrade'); // TODO: Type this better
-  const [initalTrades, setInitialTrades] = useState([]);
 
   const { data: sessionData } = useSession();
 
   const {mutate: uploadTrades} = trpc.tradeRouter.uploadTrades.useMutation({
+    onSuccess: (data) => {
+      console.log(data)
+    }
+  })
+
+  const {mutate: addTradeGroup } = trpc.tradeGroupRouter.addTradeGroup.useMutation({
     onSuccess: (data) => {
       console.log(data)
     }
@@ -38,7 +43,7 @@ export default function ImportTrades() {
     }
     if (file && platform === 'ThinkOrSwim') {
       const userId = sessionData.user.id
-      ThinkOrSwim(file, userId, initalTrades, setInitialTrades, uploadTrades)
+      ThinkOrSwim(file, userId, uploadTrades, addTradeGroup)
     } else {
         console.log('File not uploaded or wrong platform selected')
     }

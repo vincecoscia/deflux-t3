@@ -118,8 +118,6 @@ model StudyTrade {
 
 model TradeGroup {
   id          String   @id @default(cuid())
-  name        String
-  description String
   tags        Tags[]
   trades      Trade[]
   userId      String   @default(cuid())

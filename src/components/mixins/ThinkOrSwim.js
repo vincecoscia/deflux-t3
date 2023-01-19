@@ -1,43 +1,86 @@
 import { parse } from "papaparse";
+import cuid from 'cuid';
 
-export const combineTradesThinkOrSwim = (trades) => {
+// export const combineTradesThinkOrSwim = (trades) => {
+//   const combinedTrades = [];
+//   let tempTrades = {};
+//   for (let i = 0; i < trades.length; i++) {
+//     const trade = trades[i];
+//     if (!tempTrades[trade.symbol]) {
+//       tempTrades[trade.symbol] = {
+//         symbol: trade.symbol,
+//         percentClosed: trade.percentClosed,
+//         quantity: trade.quantity,
+//         price: trade.price,
+//       };
+//     } else if (trade.percentClosed === 0) {
+//       tempTrades[trade.symbol].percentClosed = trade.percentClosed;
+//     } else {
+//       tempTrades[trade.symbol].percentClosed += trade.percentClosed;
+//     }
+//     if (tempTrades[trade.symbol].percentClosed === 100) {
+//       let temp = [];
+
+//       temp.push(trade);
+//       temp.push(tempTrades[trade.symbol]);
+//       combinedTrades.push(temp);
+//       tempTrades[trade.symbol] = null;
+//     }
+//   }
+//   return combinedTrades;
+// };
+
+
+const combineTradesThinkOrSwim = (trades) => {
   const combinedTrades = [];
   let tempTrades = {};
   for (let i = 0; i < trades.length; i++) {
     const trade = trades[i];
-    if (!tempTrades[trade.symbol]) {
-      tempTrades[trade.symbol] = {
+    if(!tempTrades[trade.symbol]){
+        tempTrades[trade.symbol] = {
+          id: trade.id,
+          commission: trade.commission,
+          dateTime: trade.dateTime,
+          platform: trade.platform,
+          return: trade.return,
+          side: trade.side,
+          userId: trade.userId,
         symbol: trade.symbol,
         percentClosed: trade.percentClosed,
         quantity: trade.quantity,
         price: trade.price,
-      };
-    } else if (trade.percentClosed === 0) {
-      tempTrades[trade.symbol].percentClosed = trade.percentClosed;
-    } else {
-      tempTrades[trade.symbol].percentClosed += trade.percentClosed;
+        }
     }
-    if (tempTrades[trade.symbol].percentClosed === 100) {
-      let temp = [];
-
-      temp.push(trade);
-      temp.push(tempTrades[trade.symbol]);
-      combinedTrades.push(temp);
-      tempTrades[trade.symbol] = null;
+    else if (trade.percentClosed === 0) {
+        tempTrades[trade.symbol].percentClosed = trade.percentClosed
+    }
+    else {
+        tempTrades[trade.symbol].percentClosed += trade.percentClosed
+    }
+    if(tempTrades[trade.symbol].percentClosed === 100){
+        let temp = []
+        temp.push(trade)
+        temp.push(tempTrades[trade.symbol])
+        let obj = {
+            id: cuid(),
+            userId: trade.userId,
+            trade: temp
+        }
+        combinedTrades.push(obj)
+        tempTrades[trade.symbol] = null
     }
   }
   return combinedTrades;
-};
+}
 
-export const ThinkOrSwim = (
+export const ThinkOrSwim = async (
   file,
   userId,
-  initalTrades,
-  setInitialTrades,
-  uploadTrades
+  uploadTrades,
+  addTradeGroup
 ) => {
-  console.log(file);
-  parse(file, {
+  let tempTrades = [];
+  await parse(file, {
     beforeFirstChunk: (chunk) => {
       // Only parse after the row with 'Account Trade History' in it
       const start = chunk.indexOf("DATE");
@@ -69,6 +112,7 @@ export const ThinkOrSwim = (
         const dateTime = new Date(trade.DATE + " " + trade.TIME);
 
         return {
+          id: cuid(),
           symbol,
           quantity,
           price,
@@ -80,11 +124,11 @@ export const ThinkOrSwim = (
           userId: userId || "test",
         };
       });
-      // uploadTrades(cleanedTrades);
-      setInitialTrades(cleanedTrades);
-      console.log("CLEANED", cleanedTrades);
+      // push cleaned trades to tempTrades
+      tempTrades.push(...cleanedTrades);
+      console.log("TEMP TRADES", tempTrades);
     },
-  });
+  })
   parse(file, {
     beforeFirstChunk: (chunk) => {
       // Only parse after the row with 'Time Placed' in it
@@ -98,11 +142,12 @@ export const ThinkOrSwim = (
     comments: true,
     header: true,
     chunk: (results) => {
-      // console.log('Results',results)
+      console.log('Results',results)
       // Filter out all rows where Pos Effect is "TO CLOSE" and Qty does start with a +
       const trades = results.data.filter(
         (row) => row[`Pos Effect`] === "TO CLOSE" && !row.Qty.startsWith("+")
       );
+      console.log("TRADES", trades);
       // clean trades
       const cleanedTrades = trades.map((trade) => {
         // change the date format to match the other platform
@@ -116,8 +161,9 @@ export const ThinkOrSwim = (
           dateTime,
         };
       });
-      // combine cleanedTrades with initalTrades based on symbol and dateTime
-      const combinedTrades = initalTrades.map((trade) => {
+      console.log("CLEANED SECOND", cleanedTrades);
+      // combine cleanedTrades with tempTrades based on symbol and dateTime
+      const combinedTrades = tempTrades.map((trade) => {
         const matchingTrade = cleanedTrades.find(
           (row) =>
             row.symbol === trade.symbol &&
@@ -139,18 +185,18 @@ export const ThinkOrSwim = (
       // Combine any trades including and before a trade that is 100% closed
       const combinedTrades2 = combineTradesThinkOrSwim(combinedTrades);
       console.log("COMBINED2", combinedTrades2);
-      // add each array of trades to a TradeGroup
-      const tradeGroups = combinedTrades2.map((trades) => {
+      // from combinedTrades2, create an array of objects with the id, userId, and trade array pulling out only the id
+      const tradesToUpload = combinedTrades2.map((trade) => {
         return {
-          trades,
-          userId: userId || "test",
+          id: trade.id,
+          userId: trade.userId,
+          trades: trade.trade.map((row) => row.id),
         };
-      });
-      console.log("TRADEGROUPS", tradeGroups);
-      // find trades from the database that match the symbol and dateTime of the trades in the tradeGroups
-      // if there is a match, update the tradeGroup with the id of the trade
-
-      
+      }
+      );
+      console.log("TRADES TO UPLOAD", tradesToUpload);
+      // upload the trade groups
+      addTradeGroup(tradesToUpload);
     },
-  });
+  })
 };
