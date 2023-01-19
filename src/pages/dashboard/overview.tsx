@@ -6,21 +6,29 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
 import { useState } from "react";
-import type { Trade } from "@prisma/client";
+import type { Trade, Execution } from "@prisma/client";
 import TradingViewWidget from "../../components/TradingViewWidget";
 
 const Dashboard: NextPage = () => {
-  const [trades, setTrades] = useState<Trade[]>([]);
+  const [trades, setTrades] = useState<Execution[]>([]);
   const { data: sessionData } = useSession();
 
   const { data: tradeData, isLoading } = trpc.tradeRouter.getTrades.useQuery(
     undefined,
     {
       onSuccess(tradeData) {
-        setTrades(tradeData);
+        // setTrades(tradeData);
+        console.log(tradeData)
       },
     }
   );
+
+  const {data: executonData } = trpc.executionRouter.getExecutions.useQuery(undefined, {
+    onSuccess(executionData) {
+      console.log(executionData)
+      setTrades(executionData)
+    }
+  })
 
   return (
     <>

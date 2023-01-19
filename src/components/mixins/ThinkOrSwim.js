@@ -1,36 +1,6 @@
 import { parse } from "papaparse";
 import cuid from 'cuid';
 
-// export const combineTradesThinkOrSwim = (trades) => {
-//   const combinedTrades = [];
-//   let tempTrades = {};
-//   for (let i = 0; i < trades.length; i++) {
-//     const trade = trades[i];
-//     if (!tempTrades[trade.symbol]) {
-//       tempTrades[trade.symbol] = {
-//         symbol: trade.symbol,
-//         percentClosed: trade.percentClosed,
-//         quantity: trade.quantity,
-//         price: trade.price,
-//       };
-//     } else if (trade.percentClosed === 0) {
-//       tempTrades[trade.symbol].percentClosed = trade.percentClosed;
-//     } else {
-//       tempTrades[trade.symbol].percentClosed += trade.percentClosed;
-//     }
-//     if (tempTrades[trade.symbol].percentClosed === 100) {
-//       let temp = [];
-
-//       temp.push(trade);
-//       temp.push(tempTrades[trade.symbol]);
-//       combinedTrades.push(temp);
-//       tempTrades[trade.symbol] = null;
-//     }
-//   }
-//   return combinedTrades;
-// };
-
-
 const combineTradesThinkOrSwim = (trades) => {
   const combinedTrades = [];
   let tempTrades = {};
@@ -45,10 +15,10 @@ const combineTradesThinkOrSwim = (trades) => {
           return: trade.return,
           side: trade.side,
           userId: trade.userId,
-        symbol: trade.symbol,
-        percentClosed: trade.percentClosed,
-        quantity: trade.quantity,
-        price: trade.price,
+          symbol: trade.symbol,
+          percentClosed: trade.percentClosed,
+          quantity: trade.quantity,
+          price: trade.price,
         }
     }
     else if (trade.percentClosed === 0) {
@@ -76,8 +46,8 @@ const combineTradesThinkOrSwim = (trades) => {
 export const ThinkOrSwim = async (
   file,
   userId,
-  uploadTrades,
-  addTradeGroup
+  addExecutions,
+  addTrades
 ) => {
   let tempTrades = [];
   await parse(file, {
@@ -181,22 +151,40 @@ export const ThinkOrSwim = async (
         };
       });
       console.log("COMBINED", combinedTrades);
-      uploadTrades(combinedTrades);
       // Combine any trades including and before a trade that is 100% closed
       const combinedTrades2 = combineTradesThinkOrSwim(combinedTrades);
       console.log("COMBINED2", combinedTrades2);
-      // from combinedTrades2, create an array of objects with the id, userId, and trade array pulling out only the id
-      const tradesToUpload = combinedTrades2.map((trade) => {
+      // from combinedTrades2, assign a trade group id to each trade
+      const addTradeGroupId = combinedTrades2.map((tradeGroup) => {
         return {
-          id: trade.id,
-          userId: trade.userId,
-          trades: trade.trade.map((row) => row.id),
+          ...tradeGroup,
+          trade: tradeGroup.trade.map((trade) => {
+            return {
+              ...trade,
+              tradeId: tradeGroup.id,
+            };
+          }),
         };
-      }
-      );
-      console.log("TRADES TO UPLOAD", tradesToUpload);
-      // upload the trade groups
-      addTradeGroup(tradesToUpload);
+      });
+
+      console.log("ADD TRADE GROUP ID", addTradeGroupId);
+      // Pull out trade array from each trade group
+      const tradesArray = addTradeGroupId.map((tradeGroup) => tradeGroup.trade);
+      // flatten tradesArray
+      const flattenedTrades = tradesArray.flat();
+      console.log("FLATTENED TRADES", flattenedTrades);
+      // Pull out id and userId from each trade group
+      const tradeGroupForSubmit = addTradeGroupId.map((tradeGroup) => {
+        return {
+          id: tradeGroup.id,
+          userId: tradeGroup.userId,
+        };
+      });
+      console.log("TRADE GROUP IDS", tradeGroupForSubmit);
+      // Submit trade groups to database
+      addTrades(tradeGroupForSubmit);
+      // Submit trades to database
+      addExecutions(flattenedTrades);
     },
   })
 };

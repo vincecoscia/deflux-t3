@@ -9,13 +9,13 @@ export default function ImportTrades() {
 
   const { data: sessionData } = useSession();
 
-  const {mutate: uploadTrades} = trpc.tradeRouter.uploadTrades.useMutation({
+  const {mutate: addExecutions} = trpc.executionRouter.addExecutions.useMutation({
     onSuccess: (data) => {
       console.log(data)
     }
   })
 
-  const {mutate: addTradeGroup } = trpc.tradeGroupRouter.addTradeGroup.useMutation({
+  const {mutate: addTrades } = trpc.tradeRouter.addTrades.useMutation({
     onSuccess: (data) => {
       console.log(data)
     }
@@ -43,7 +43,7 @@ export default function ImportTrades() {
     }
     if (file && platform === 'ThinkOrSwim') {
       const userId = sessionData.user.id
-      ThinkOrSwim(file, userId, uploadTrades, addTradeGroup)
+      ThinkOrSwim(file, userId, addExecutions, addTrades)
     } else {
         console.log('File not uploaded or wrong platform selected')
     }
