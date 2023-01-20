@@ -51,7 +51,7 @@ const Dashboard: NextPage = () => {
       </Head>
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="m-4 w-full">
+        <div className="m-4 w-full overflow-y-scroll">
           <div className="mb-4 grid grid-cols-3 gap-4">
             <div className="col-span-2 flex flex-col">
               <div className="mb-4 flex justify-between">
