@@ -7,28 +7,29 @@ import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
 import { useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
-import TradingViewWidget from "../../components/TradingViewWidget";
+import TradeTable from "../../components/TradeTable";
 
 const Dashboard: NextPage = () => {
-  const [trades, setTrades] = useState<Execution[]>([]);
+  const [trades, setTrades] = useState<Trade[]>([]);
   const { data: sessionData } = useSession();
 
   const { data: tradeData, isLoading } = trpc.tradeRouter.getTrades.useQuery(
     undefined,
     {
       onSuccess(tradeData) {
-        // setTrades(tradeData);
+        setTrades(tradeData);
         console.log(tradeData)
       },
     }
   );
 
-  const {data: executonData } = trpc.executionRouter.getExecutions.useQuery(undefined, {
-    onSuccess(executionData) {
-      console.log(executionData)
-      setTrades(executionData)
-    }
-  })
+  if (!tradeData || isLoading) {
+    return (
+      <>
+        <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -42,22 +43,9 @@ const Dashboard: NextPage = () => {
       </Head>
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="w-full">
-          <TradingViewWidget/>
-          <h1 className="text-3xl dark:text-white">Overview</h1>
+        <div className="m-4 w-full">
           {/* Map over trades */}
-          {trades.map((trade) => (
-            <div className="flex gap-3 dark:text-white" key={trade.id}>
-              <h1>{trade.symbol}</h1>
-              <h1>{trade.quantity}</h1>
-              <h1>{trade.price}</h1>
-              <h1>{trade.commission}</h1>
-              <h1>{trade.side}</h1>
-              <h1>{trade.return}</h1>
-              <h1>{trade.dateTime.toLocaleString()}</h1>
-              <h1>{trade.platform}</h1>
-            </div>
-          ))}
+          <TradeTable trades={trades} />
         </div>
       </main>
     </>

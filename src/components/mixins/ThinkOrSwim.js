@@ -166,18 +166,85 @@ export const ThinkOrSwim = async (
           }),
         };
       });
+      // Assign OPEN or CLOSE to each trade based on the if return is not null or 0
+      const addOpenClose = addTradeGroupId.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          trade: tradeGroup.trade.map((trade) => {
+            return {
+              ...trade,
+              posEffect: trade.return === null ? "OPEN" : "CLOSE",
+            };
+          }),
+        };
+      });
+      // Order trades by date and time (earliest should be first) in each trade group
+      const orderTradesByDateTime = addOpenClose.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          trade: tradeGroup.trade.sort((a, b) => {
+            return a.dateTime - b.dateTime;
+          }),
+        };
+      });
+      // Add symbol to each trade group object based on the first trade in the trade group
+      const addSymbol = orderTradesByDateTime.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          symbol: tradeGroup.trade[0].symbol,
+        };
+      });
+      console.log("ADD SYMBOL", addSymbol);
 
-      console.log("ADD TRADE GROUP ID", addTradeGroupId);
+      // Add up returns for each trade group using the trades in the trade group
+      const addNetProfit = addSymbol.map((tradeGroup) => {
+        const netProfit = tradeGroup.trade.reduce((acc, trade) => {
+          return acc + trade.return;
+        }, 0);
+        return {
+          ...tradeGroup,
+          netProfit,
+        };
+      });
+      console.log("ADD NetProfit", addNetProfit);
+      // If returns are positive, set trade group to win, if negative, set to loss
+      const addWinLoss = addNetProfit.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          winLoss: tradeGroup.netProfit > 0 ? "WIN" : "LOSS",
+        };
+      });
+      console.log("ADD WIN LOSS", addWinLoss);
+      // Add openPrice and closePrice to each trade group based on the first and last trade in the trade group
+      const addOpenClosePrice = addWinLoss.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          openPrice: tradeGroup.trade[0].price,
+          closePrice: tradeGroup.trade[tradeGroup.trade.length - 1].price,
+          dateOpened: tradeGroup.trade[0].dateTime,
+          dateClosed: tradeGroup.trade[tradeGroup.trade.length - 1].dateTime,
+        };
+      });
+      console.log("ADD OPEN CLOSE PRICE", addOpenClosePrice);
+
       // Pull out trade array from each trade group
-      const tradesArray = addTradeGroupId.map((tradeGroup) => tradeGroup.trade);
+      const tradesArray = addOpenClosePrice.map((tradeGroup) => tradeGroup.trade);
       // flatten tradesArray
       const flattenedTrades = tradesArray.flat();
       console.log("FLATTENED TRADES", flattenedTrades);
       // Pull out id and userId from each trade group
-      const tradeGroupForSubmit = addTradeGroupId.map((tradeGroup) => {
+      const tradeGroupForSubmit = addOpenClosePrice.map((tradeGroup) => {
         return {
           id: tradeGroup.id,
+          netProfit: tradeGroup.netProfit,
+          winLoss: tradeGroup.winLoss,
+          symbol: tradeGroup.symbol,
+          openPrice: tradeGroup.openPrice,
+          closePrice: tradeGroup.closePrice,
+          dateOpened: tradeGroup.dateOpened,
+          dateClosed: tradeGroup.dateClosed,
           userId: tradeGroup.userId,
+          platform: 'ThinkOrSwim',
         };
       });
       console.log("TRADE GROUP IDS", tradeGroupForSubmit);

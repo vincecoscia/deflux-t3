@@ -118,6 +118,14 @@ model StudyTrade {
 
 model Trade {
   id          String      @id @default(cuid())
+  platform    String      @default("TD Ameritrade")
+  symbol      String
+  netProfit   Float
+  winLoss     String
+  openPrice   Float
+  closePrice  Float
+  dateOpened  DateTime
+  dateClosed  DateTime
   tags        Tags[]
   executions  Execution[]
   userId      String      @default(cuid())
