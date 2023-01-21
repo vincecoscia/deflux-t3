@@ -32,7 +32,11 @@ export default function Chart() {
     },
     title: {
       text: 'Stock Price Movement',
-      align: 'left'
+      align: 'left',
+      style: {
+        fontSize: '16px',
+        color: '#FFF'
+      }
     },
     fill: {
       type: 'gradient',
@@ -51,6 +55,21 @@ export default function Chart() {
       y: {
         formatter: function (val) {
           return (val / 1000000).toFixed(0)
+        }
+      }
+    },
+    xaxis: {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      labels: {
+        style: {
+          colors: '#FFF',
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: '#FFF',
         }
       }
     },
