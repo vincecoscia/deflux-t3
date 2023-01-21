@@ -1,20 +1,20 @@
-import ReactApexChart from "react-apexcharts";
-import type { ApexOptions } from "apexcharts";
-import { type } from "os";
+"use client";
+import dynamic from 'next/dynamic';
+const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function Chart() {
   const series = [
     {
-      name: "All Tasks",
+      name: "Profit",
       data: [31, 40, 28, 51, 42, 109, 100],
     },
   ];
 
-  const options: ApexOptions = {
+  const options = {
     chart: {
       type: 'area',
       stacked: false,
-      height: 350,
+      height: 300,
       zoom: {
         type: 'x',
         enabled: true,
@@ -62,12 +62,12 @@ export default function Chart() {
 
   return (
     <div className="w-full">
-      <ReactApexChart
+      <ApexCharts
         options={options}
         series={series}
         type="area"
-        height={350}
-        className="w-full"
+        height={300}
+        width={'100%'}
       />
     </div>
   );
