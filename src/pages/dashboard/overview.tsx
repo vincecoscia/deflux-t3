@@ -8,6 +8,7 @@ import SideNav from "../../components/SideNav";
 import { useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../components/TradeTable";
+import Chart from "../../components/overview/Chart";
 
 const Dashboard: NextPage = () => {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -51,10 +52,10 @@ const Dashboard: NextPage = () => {
       </Head>
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="m-4 w-full overflow-y-scroll">
-          <div className="mb-4 grid grid-cols-3 gap-4">
+        <div className="m-3 w-full overflow-y-scroll">
+          <div className="mb-3 grid grid-cols-3 gap-3">
             <div className="col-span-2 flex flex-col">
-              <div className="mb-4 flex justify-between">
+              <div className="mb-3 flex justify-between">
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
                   Total: {trades.length} (Trades) | Return: <span className={accountReturns > 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
                 </p>
@@ -62,8 +63,8 @@ const Dashboard: NextPage = () => {
                   All
                 </button>
               </div>
-              <div className="col-span-2 flex h-64 rounded-lg bg-gray-800 p-2 text-white">
-                Chart
+              <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
+                <Chart/>
               </div>
             </div>
 
