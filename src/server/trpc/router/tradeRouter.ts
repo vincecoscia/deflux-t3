@@ -11,8 +11,9 @@ export const tradeRouter = router({
         skipDuplicates: true,
       });
       // Add relevant trades to a Trade
-
-      return trades;
+      // Return the trades and a success message
+      return { trades, message: `${input.length} trades added successfully!` };
+      
     }
   ),
   getTrades: protectedProcedure

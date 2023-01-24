@@ -1,8 +1,10 @@
 "use client";
+import { memo } from "react";
+import type { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-export default function Chart() {
+const Chart = memo(function Chart() {
   const series = [
     {
       name: "Profit",
@@ -10,7 +12,7 @@ export default function Chart() {
     },
   ];
 
-  const options = {
+  const options: ApexOptions = {
     chart: {
       type: 'area',
       stacked: false,
@@ -21,7 +23,10 @@ export default function Chart() {
         autoScaleYaxis: true
       },
       toolbar: {
-        autoSelected: 'zoom'
+        autoSelected: 'zoom',
+        tools: {
+          download: false,
+        }
       }
     },
     dataLabels: {
@@ -31,7 +36,7 @@ export default function Chart() {
       size: 0,
     },
     title: {
-      text: 'Stock Price Movement',
+      text: 'Account Returns',
       align: 'left',
       style: {
         fontSize: '16px',
@@ -55,8 +60,12 @@ export default function Chart() {
       y: {
         formatter: function (val) {
           return (val / 1000000).toFixed(0)
-        }
-      }
+        },
+      },
+      marker: {
+        show: false,
+      },
+      theme: 'dark',
     },
     xaxis: {
       categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
@@ -90,4 +99,6 @@ export default function Chart() {
       />
     </div>
   );
-}
+});
+
+export default Chart;

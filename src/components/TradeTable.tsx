@@ -1,8 +1,13 @@
 import React from "react";
+import { memo } from "react";
 
-const TradeTable = ({ trades }) => {
+interface TradeTableProps {
+  trades: any[];
+}
+
+const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades}) {
   console.log("props", trades);
-  let temp = [
+  const temp = [
     "Symbol",
     "Entry Date",
     "Exit Date",
@@ -51,6 +56,6 @@ const TradeTable = ({ trades }) => {
       </div>
     </>
   );
-};
+});
 
 export default TradeTable;

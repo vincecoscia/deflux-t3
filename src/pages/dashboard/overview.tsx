@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
@@ -9,9 +9,10 @@ import { useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../components/TradeTable";
 import Chart from "../../components/overview/Chart";
+import useMemoizedState from "../../components/hooks/useMemoizedState";
 
-const Dashboard: NextPage = () => {
-  const [trades, setTrades] = useState<Trade[]>([]);
+const Overview: NextPage = () => {
+  const [trades, setTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const { data: sessionData } = useSession();
@@ -20,8 +21,10 @@ const Dashboard: NextPage = () => {
     undefined,
     {
       onSuccess(tradeData) {
-        setTrades(tradeData);
-        console.log(tradeData);
+        // setTrades only if previous trades are not equal to new trades
+          console.log("Updating trades");
+          setTrades(tradeData);
+          console.log("Updated trades");
       },
     }
   );
@@ -57,7 +60,7 @@ const Dashboard: NextPage = () => {
             <div className="col-span-2 flex flex-col">
               <div className="mb-3 flex justify-between">
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
-                  Total: {trades.length} (Trades) | Return: <span className={accountReturns > 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
+                  Total: {trades.length} (Trades) | Return: <span className={accountReturns >= 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
                 </p>
                 <button className="w-20 rounded-lg bg-gray-800 p-2 text-white">
                   All
@@ -79,4 +82,4 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default Dashboard;
+export default Overview;

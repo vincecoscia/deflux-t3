@@ -1,5 +1,6 @@
 import { parse } from "papaparse";
 import cuid from 'cuid';
+import { toast } from "react-toastify";
 
 const combineTradesThinkOrSwim = (trades) => {
   const combinedTrades = [];
@@ -252,6 +253,10 @@ export const ThinkOrSwim = async (
       addTrades(tradeGroupForSubmit);
       // Submit trades to database
       addExecutions(flattenedTrades);
+      // if error, return toast.error
+      if(tradeGroupForSubmit.length === 0) {
+        toast.error('No trades found')
+      }
     },
-  })
+  });
 };
