@@ -4,43 +4,31 @@ import { toast } from "react-toastify";
 
 const combineTradesThinkOrSwim = (trades) => {
   const combinedTrades = [];
-  let tempTrades = {};
+  let groups = [];
+  let currentGroup = [];
   for (let i = 0; i < trades.length; i++) {
-    const trade = trades[i];
-    if(!tempTrades[trade.symbol]){
-        tempTrades[trade.symbol] = {
-          id: trade.id,
-          commission: trade.commission,
-          dateTime: trade.dateTime,
-          platform: trade.platform,
-          return: trade.return,
-          side: trade.side,
-          userId: trade.userId,
-          symbol: trade.symbol,
-          percentClosed: trade.percentClosed,
-          quantity: trade.quantity,
-          price: trade.price,
-        }
-    }
-    else if (trade.percentClosed === 0) {
-        tempTrades[trade.symbol].percentClosed = trade.percentClosed
-    }
-    else {
-        tempTrades[trade.symbol].percentClosed += trade.percentClosed
-    }
-    if(tempTrades[trade.symbol].percentClosed === 100){
-        let temp = []
-        temp.push(trade)
-        temp.push(tempTrades[trade.symbol])
-        let obj = {
-            id: cuid(),
-            userId: trade.userId,
-            trade: temp
-        }
-        combinedTrades.push(obj)
-        tempTrades[trade.symbol] = null
+    currentGroup.push(trades[i]);
+
+    if (trades[i].percentClosed === 100 || i === trades.length - 1) {
+      groups.push(currentGroup);
+      currentGroup = [];
     }
   }
+  console.log("THE ACTUAL GROUPS",groups);
+  // For each group, create a new trade object and push to combinedTrades
+  groups.forEach((group) => {
+    let temp = [];
+    group.forEach((trade) => {
+      temp.push(trade);
+    });
+    let obj = {
+      id: cuid(),
+      userId: group[0].userId,
+      trade: temp,
+    };
+    combinedTrades.push(obj);
+  });
+
   return combinedTrades;
 }
 
@@ -114,17 +102,19 @@ export const ThinkOrSwim = async (
     header: true,
     chunk: (results) => {
       console.log('Results',results)
-      // Filter out all rows where Pos Effect is "TO CLOSE" and Qty does start with a +
-      const trades = results.data.filter(
-        (row) => row[`Pos Effect`] === "TO CLOSE" && !row.Qty.startsWith("+")
+      // Turn the row Qty into a string, if null, set to 0
+
+      // Find all rows where Qty === "100% or "-100%"
+      const closedTrades = results.data.filter(
+        (row) => row.Qty === "100%" || row.Qty === "-100%"
       );
-      console.log("TRADES", trades);
+      console.log("Filtered!!!", closedTrades)
       // clean trades
-      const cleanedTrades = trades.map((trade) => {
+      const cleanedTrades = closedTrades.map((trade) => {
         // change the date format to match the other platform
         const dateTime = new Date(trade[`Time Placed`]);
-        // remove the percent sign from the Qty and convert to number
-        trade.Qty = Number(trade.Qty.replace("%", ""));
+        // remove the percent sign from the Qty and convert to number of absolute value
+        trade.Qty = Math.abs(Number(trade.Qty.replace("%", "")));
 
         return {
           symbol: trade.Symbol,
@@ -138,7 +128,9 @@ export const ThinkOrSwim = async (
         const matchingTrade = cleanedTrades.find(
           (row) =>
             row.symbol === trade.symbol &&
-            row.dateTime.getTime() === trade.dateTime.getTime()
+            // match the date and time to the +/- 1 second
+            row.dateTime.getTime() - 1000 <= trade.dateTime.getTime() &&
+            row.dateTime.getTime() + 1000 >= trade.dateTime.getTime()
         );
         if (matchingTrade) {
           return {
