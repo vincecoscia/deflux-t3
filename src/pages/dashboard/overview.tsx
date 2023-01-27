@@ -38,7 +38,7 @@ const Overview: NextPage = () => {
 
     // TODO: Add a loading state
 
-  // Get account returns by summing all trade.netProfit
+  // Get account returns by summing all trade.netProfit and subtracting all trade.commision
   const accountReturns = trades.reduce((acc, trade) => {
     return acc + trade.netProfit;
   }, 0);

@@ -42,9 +42,9 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?      @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -117,20 +117,22 @@ model StudyTrade {
 }
 
 model Trade {
-  id          String      @id @default(cuid())
-  platform    String      @default("TD Ameritrade")
-  symbol      String
-  netProfit   Float
-  winLoss     String
-  openPrice   Float
-  closePrice  Float
-  dateOpened  DateTime
-  dateClosed  DateTime
-  tags        Tags[]
-  executions  Execution[]
-  userId      String      @default(cuid())
-  user        User        @relation(fields: [userId], references: [id])
-  dateCreated DateTime    @default(now())
+  id              String      @id @default(cuid())
+  platform        String      @default("TD Ameritrade")
+  symbol          String
+  grossProfit     Float
+  netProfit       Float
+  totalCommission Float
+  winLoss         String
+  openPrice       Float
+  closePrice      Float
+  dateOpened      DateTime
+  dateClosed      DateTime
+  tags            Tags[]
+  executions      Execution[]
+  userId          String      @default(cuid())
+  user            User        @relation(fields: [userId], references: [id])
+  dateCreated     DateTime    @default(now())
 
   @@index([userId])
 }

@@ -13,20 +13,21 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades})
     "Exit Date",
     "Entry Price",
     "Exit Price",
-    "Profit/Loss",
+    "Net Profit",
     "Status",
   ];
 
   return (
     <>
-      <div className="flex w-full flex-row items-center rounded-t-lg bg-gray-700 px-2 py-4 dark:text-white">
+
+      <div className="flex w-full flex-row items-center rounded-t-lg bg-gray-700 px-2 py-4 dark:text-white text-sm">
         {temp.map((item, index) => (
           <div key={index} className="flex-1">
             {item}
           </div>
         ))}
       </div>
-      <div className="rounded-b-lg bg-gray-800">
+      <div className="rounded-b-lg bg-gray-800 text-sm">
         {trades.map((trade) => (
           <div
             key={trade.id}
@@ -41,13 +42,13 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades})
               className={
                 trade.netProfit > 0
                   ? "flex-1 text-green-500"
-                  : "flex-1 text-red-500"
+                  : "flex-1 text-red-600"
               }
             >
               {trade.netProfit}
             </div>
             <div className="flex-1">
-              <div className={`rounded-full py-1 dark:text-gray-700 w-16 text-center ${trade.winLoss === 'WIN' ? 'bg-green-500' : 'bg-red-500'}`}>
+              <div className={`rounded-full py-1 dark:text-gray-700 w-16 text-center ${trade.winLoss === 'WIN' ? 'bg-green-500' : 'bg-red-600'}`}>
                 {trade.winLoss}
               </div>
             </div>

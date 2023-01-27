@@ -190,16 +190,35 @@ export const ThinkOrSwim = async (
       console.log("ADD SYMBOL", addSymbol);
 
       // Add up returns for each trade group using the trades in the trade group
-      const addNetProfit = addSymbol.map((tradeGroup) => {
-        const netProfit = tradeGroup.trade.reduce((acc, trade) => {
+      const addGrossProfit = addSymbol.map((tradeGroup) => {
+        const grossProfit = tradeGroup.trade.reduce((acc, trade) => {
           return acc + trade.return;
         }, 0);
         return {
           ...tradeGroup,
-          netProfit,
+          grossProfit,
         };
       });
-      console.log("ADD NetProfit", addNetProfit);
+      console.log("ADD grossProfit", addGrossProfit);
+      // Add up commissions for each trade group using the trades in the trade group
+      const addTotalCommission = addGrossProfit.map((tradeGroup) => {
+        const totalCommission = tradeGroup.trade.reduce((acc, trade) => {
+          return acc + trade.commission;
+        }, 0);
+        return {
+          ...tradeGroup,
+          totalCommission,
+        };
+      });
+      console.log("ADD totalCommission", addTotalCommission);
+      // Calculate net profit for each trade group using gross profit and total commission
+      const addNetProfit = addTotalCommission.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          netProfit: tradeGroup.grossProfit + tradeGroup.totalCommission,
+        };
+      });
+      console.log("ADD netProfit", addNetProfit);
       // If returns are positive, set trade group to win, if negative, set to loss
       const addWinLoss = addNetProfit.map((tradeGroup) => {
         return {
@@ -229,7 +248,9 @@ export const ThinkOrSwim = async (
       const tradeGroupForSubmit = addOpenClosePrice.map((tradeGroup) => {
         return {
           id: tradeGroup.id,
+          grossProfit: tradeGroup.grossProfit,
           netProfit: tradeGroup.netProfit,
+          totalCommission: tradeGroup.totalCommission,
           winLoss: tradeGroup.winLoss,
           symbol: tradeGroup.symbol,
           openPrice: tradeGroup.openPrice,

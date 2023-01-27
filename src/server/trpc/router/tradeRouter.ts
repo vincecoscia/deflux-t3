@@ -4,7 +4,7 @@ import { router, publicProcedure, protectedProcedure } from '../trpc';
 
 export const tradeRouter = router({
   addTrades: protectedProcedure
-    .input(z.array(z.object({ id: z.string(), userId: z.string(), platform: z.string(), netProfit: z.number(), winLoss: z.string(), symbol: z.string(),openPrice: z.number(), closePrice: z.number(), dateOpened: z.date(), dateClosed: z.date() })))
+    .input(z.array(z.object({ id: z.string(), userId: z.string(), platform: z.string(), grossProfit: z.number(), netProfit: z.number(), totalCommission: z.number(), winLoss: z.string(), symbol: z.string(),openPrice: z.number(), closePrice: z.number(), dateOpened: z.date(), dateClosed: z.date() })))
     .mutation(async ({ctx, input}) => {
       const trades = await ctx.prisma.trade.createMany({
         data: input ?? [],
