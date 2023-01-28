@@ -6,7 +6,9 @@ interface TradeTableProps {
 }
 
 const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades}) {
-  const [sortedTrades, setSortedTrades] = React.useState<any[]>([]);
+  const [sortedTrades, setSortedTrades] = React.useState<any[]>(trades);
+
+  console.log("sortedTrades", sortedTrades);
 
   console.log("props", trades);
   const temp = [
@@ -84,7 +86,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades})
         ))}
       </div>
       <div className="rounded-b-lg bg-gray-800">
-        {sortedTrades.map((trade) => (
+        {trades.map((trade) => (
           <div
             key={trade.id}
             className="flex w-full flex-row items-center border-b border-gray-700  bg-gray-800 px-2 py-3 last:rounded-b-lg last:border-0 hover:bg-primary hover:bg-opacity-10 dark:text-white"
