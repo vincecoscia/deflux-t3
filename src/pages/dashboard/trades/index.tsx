@@ -3,15 +3,15 @@ import Head from "next/head";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-import { trpc } from "../../utils/trpc";
-import SideNav from "../../components/SideNav";
+import { trpc } from "../../../utils/trpc";
+import SideNav from "../../../components/SideNav";
 import { useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
-import TradeTable from "../../components/TradeTable";
-import Chart from "../../components/overview/Chart";
-import useMemoizedState from "../../components/hooks/useMemoizedState";
+import TradeTable from "../../../components/TradeTable";
+import Chart from "../../../components/overview/Chart";
+import useMemoizedState from "../../../components/hooks/useMemoizedState";
 
-const Overview: NextPage = () => {
+const Trades: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
@@ -66,8 +66,8 @@ const Overview: NextPage = () => {
                   All
                 </button>
               </div>
-              <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
-                <Chart/>
+              <div className="text-xs">
+                <TradeTable trades={trades} />
               </div>
             </div>
 
@@ -75,13 +75,11 @@ const Overview: NextPage = () => {
               Test
             </div>
           </div>
-          <div className="text-sm">
-          <TradeTable trades={trades} />
-          </div>
+          
         </div>
       </main>
     </>
   );
 };
 
-export default Overview;
+export default Trades;
