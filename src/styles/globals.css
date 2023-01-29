@@ -93,3 +93,27 @@ html {
     transform: rotate(360deg);
   }
 }
+
+/* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    /* margin-top: 48px; */
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    /* margin-top: 37px; */
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #809FB8; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: darkgray;
+  }

@@ -1,118 +1,279 @@
-import React from "react";
+/* eslint-disable react/jsx-key */
+import React, { useEffect, useState, useMemo } from "react";
 import { memo } from "react";
+import { ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from '@heroicons/react/24/solid'
+import { Button, PageButton } from './shared/Button'
+import {
+  useTable,
+  useSortBy,
+  useGlobalFilter,
+  useAsyncDebounce,
+  usePagination,
+} from "react-table";
 
 interface TradeTableProps {
-  trades: any[];
+  data: any[];
 }
 
-const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({trades}) {
-  const [sortedTrades, setSortedTrades] = React.useState<any[]>(trades);
+function GlobalFilter({
+  preGlobalFilteredRows,
+  globalFilter,
+  setGlobalFilter,
+}) {
+  const count = preGlobalFilteredRows.length;
 
-  console.log("sortedTrades", sortedTrades);
+  const [value, setValue] = useState(globalFilter);
+  const onChange = useAsyncDebounce((value) => {
+    setGlobalFilter(value || undefined);
+  }, 200);
 
-  console.log("props", trades);
-  const temp = [
-    "Symbol",
-    "Entry Date",
-    "Exit Date",
-    "Entry Price",
-    "Exit Price",
-    "Net Profit",
-    "Status",
-  ];
+  return (
+    <label className="flex gap-x-2 items-baseline">
+      <input
+        type="text"
+        className="block rounded-md py-1 px-4 shadow-sm bg-gray-600 placeholder-gray-300 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        value={value || ""}
+        onChange={e => {
+          setValue(e.target.value);
+          onChange(e.target.value);
+        }}
+        placeholder={`Search ${count} records...`}
+      />
+    </label>
+  )
+}
 
-  const dateOptions = {
-    dateStyle: "short",
-    timeStyle: "short",
-  };
+const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
+  data,
+}) {
+  console.log(data);
 
-  // This needs fixing
-  const sortTrades = (column: string) => {
-    // Create a copy of the trades array
-    const sortedTrades = [...trades];
-    // Sort the trades by the column that was clicked
-    sortedTrades.sort((a, b) => {
-      if (column === "Symbol") {
-        // Sort by alphabetical order if clicked once, sort by reverse alphabetical order if clicked twice
-        if (sortedTrades[0].symbol === a.symbol) {
-          return a.symbol.localeCompare(b.symbol);
-        } else {
-          return b.symbol.localeCompare(a.symbol);
-        }
-      }
-      if (column === "Entry Date") {
-        // Sort by date if clicked initally, sort by reverse date if clicked again and so on
-        if (sortedTrades[0].dateOpened === a.dateOpened) {
-          return a.dateOpened.getTime() - b.dateOpened.getTime();
-        }
-        return b.dateOpened.getTime() - a.dateOpened.getTime();
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Symbol",
+        accessor: "symbol",
+      },
+      {
+        Header: "Platform",
+        accessor: "platform",
+      },
+      {
+        Header: "Date Opened",
+        accessor: "dateOpened",
+      },
+      {
+        Header: "Date Closed",
+        accessor: "dateClosed",
+      },
+      {
+        Header: "Open Price",
+        accessor: "openPrice",
+      },
+      {
+        Header: "Close Price",
+        accessor: "closePrice",
+      },
+      {
+        Header: "Net Profit",
+        accessor: "netProfit",
+      },
+      {
+        Header: "Gross Profit",
+        accessor: "grossProfit",
+      },
+      {
+        Header: "Commission",
+        accessor: "totalCommission",
+      },
+      {
+        Header: "Status",
+        accessor: "winLoss",
+      },
+    ],
+    []
+  );
 
-      }
-      if (column === "Exit Date") {
-        // Sort by date
-        return a.dateClosed.getTime() - b.dateClosed.getTime();
-      }
-      if (column === "Entry Price") {
-        // Sort by number
-        return a.openPrice - b.openPrice;
-      }
-      if (column === "Exit Price") {
-        // Sort by number
-        return a.closePrice - b.closePrice;
-      }
-      if (column === "Net Profit") {
-        // Sort by number
-        return a.netProfit - b.netProfit;
-      }
-      if (column === "Status") {
-        // Sort by alphabetical order
-        return a.winLoss.localeCompare(b.winLoss);
-      }
-    });
-    // Set the sorted trades to the state
-    setSortedTrades(sortedTrades);
-  };
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    preGlobalFilteredRows,
+    setGlobalFilter,
+    state,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+  } = useTable({ columns, data }, useGlobalFilter, useSortBy, usePagination);
 
   return (
     <>
+      <GlobalFilter
+        preGlobalFilteredRows={preGlobalFilteredRows}
+        globalFilter={state.globalFilter}
+        setGlobalFilter={setGlobalFilter}
+      />
+      <div className="mt-1 flex flex-col">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full py-2 align-middle">
+            <div className="overflow-hidden shadow sm:rounded-lg">
+              <table {...getTableProps()} className="w-full">
+                <thead className="rounded-t-lg bg-gray-700 px-2 py-4 dark:text-white">
+                  {headerGroups.map((headerGroup) => (
+                    <tr {...headerGroup.getHeaderGroupProps()}>
+                      {headerGroup.headers.map((column) => (
+                        <th
+                          {...column.getHeaderProps(
+                            column.getSortByToggleProps()
+                          )}
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400"
+                        >
+                          {column.render("Header")}
+                          <span>
+                            {column.isSorted
+                              ? column.isSortedDesc
+                                ? " 🔽"
+                                : " 🔼"
+                              : ""}
+                          </span>
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody
+                  {...getTableBodyProps()}
+                  className="rounded-b-lg bg-gray-800"
+                >
+                  {page.map((row) => {
+                    prepareRow(row);
+                    return (
+                      <tr
+                        {...row.getRowProps()}
+                        className="border-b border-gray-700  bg-gray-800 px-2 py-3 last:rounded-b-lg last:border-0 hover:bg-primary hover:bg-opacity-10 dark:text-white"
+                      >
+                        {row.cells.map((cell) => {
+                          return (
+                            <td
+                              {...cell.getCellProps()}
+                              className="whitespace-nowrap px-6 py-4"
+                            >
+                              {cell.column.id === "dateOpened" ||
+                              cell.column.id === "dateClosed"
+                                ? new Date(cell.value).toLocaleString("en-US", {
+                                    dateStyle: "short",
+                                    timeStyle: "short",
+                                  })
+                                : cell.column.id === "netProfit" ? (
+                                  <span
+                                    className={`${
+                                      cell.value > 0 ? "text-green-400" : "text-red-400"
+                                    }`}
+                                  >
+                                    {cell.value}
+                                  </span>
+                                ) :  cell.column.id === "grossProfit" ? (
+                                  <span
+                                    className={`${
+                                      cell.value > 0 ? "text-green-400" : "text-red-400"
+                                    }`}
+                                  >
+                                    {cell.value}
+                                  </span>
+                                ) : cell.column.id === "winLoss" ? (
+                                  <span
+                                    className={`${
+                                      cell.value === "WIN" ? "text-green-400" : "text-red-400"
+                                    }`}
+                                  >
+                                    {cell.value}
+                                  </span>
+                                ) : cell.column.id === "symbol" ? (
+                                  <span className="text-primary">
+                                    {cell.value}
+                                  </span>
+                                ) : (
+                                  cell.render("Cell")
+                                )
 
-      <div className="flex w-full flex-row items-center rounded-t-lg bg-gray-700 px-2 py-4 dark:text-white">
-        {temp.map((item, index) => (
-          <div key={index} className="flex-1">
-            <button onClick={() => sortTrades(item)}>
-            {item}
-            </button>
+                                    }
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
-      <div className="rounded-b-lg bg-gray-800">
-        {trades.map((trade) => (
-          <div
-            key={trade.id}
-            className="flex w-full flex-row items-center border-b border-gray-700  bg-gray-800 px-2 py-3 last:rounded-b-lg last:border-0 hover:bg-primary hover:bg-opacity-10 dark:text-white"
-          >
-            <div className="flex-1 text-primary">{trade.symbol}</div>
-            {/* format date to the minute */}
-            <div className="flex-1 font-light">{trade.dateOpened.toLocaleString("en-US", dateOptions)}</div>
-            <div className="flex-1 font-light">{trade.dateClosed.toLocaleString("en-US", dateOptions)}</div>
-            <div className="flex-1 font-light">{trade.openPrice}</div>
-            <div className="flex-1 font-light">{trade.closePrice}</div>
-            <div
-              className={
-                trade.netProfit > 0
-                  ? "flex-1 text-green-500"
-                  : "flex-1 text-red-600"
-              }
+      <div className="py-3 flex items-center justify-between">
+        <div className="flex-1 flex justify-between sm:hidden">
+          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
+          <Button onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
+        </div>
+        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div className="flex gap-x-2">
+            <span className="text-sm text-gray-700">
+              Page <span className="font-medium">{state.pageIndex + 1}</span> of <span className="font-medium">{pageOptions.length}</span>
+            </span>
+            <select
+              value={state.pageSize}
+              onChange={e => {
+                setPageSize(Number(e.target.value))
+              }}
             >
-              {trade.netProfit}
-            </div>
-            <div className="flex-1">
-              <div className={`rounded-full py-1 dark:text-gray-700 w-16 text-center font-semibold ${trade.winLoss === 'WIN' ? 'bg-green-500' : 'bg-red-600'}`}>
-                {trade.winLoss}
-              </div>
-            </div>
+              {[5, 10, 20].map(pageSize => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
+          <div>
+            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <PageButton
+                className="rounded-l-md"
+                onClick={() => gotoPage(0)}
+                disabled={!canPreviousPage}
+              >
+                <span className="sr-only">First</span>
+                <ChevronDoubleLeftIcon className="h-5 w-5" aria-hidden="true" />
+              </PageButton>
+              <PageButton
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
+              >
+                <span className="sr-only">Previous</span>
+                <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+              </PageButton>
+              <PageButton
+                onClick={() => nextPage()}
+                disabled={!canNextPage
+                }>
+                <span className="sr-only">Next</span>
+                <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+              </PageButton>
+              <PageButton
+                className="rounded-r-md"
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+              >
+                <span className="sr-only">Last</span>
+                <ChevronDoubleRightIcon className="h-5 w-5" aria-hidden="true" />
+              </PageButton>
+            </nav>
+          </div>
+        </div>
       </div>
     </>
   );

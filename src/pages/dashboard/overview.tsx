@@ -76,7 +76,7 @@ const Overview: NextPage = () => {
             </div>
           </div>
           <div className="text-sm">
-          <TradeTable trades={trades} />
+          <TradeTable data={trades} />
           </div>
         </div>
       </main>

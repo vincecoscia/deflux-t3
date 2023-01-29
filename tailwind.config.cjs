@@ -8,6 +8,8 @@ module.exports = {
         secondary: "#232639",
       },
     },
-    plugins: [],
+    plugins: [
+      require("@tailwindcss/forms"),
+    ],
   },
 };
