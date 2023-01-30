@@ -76,7 +76,7 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
       shared: false,
       y: {
         formatter: function (val: any) {
-          return '$'+ val.toLocaleString();
+          return '$'+ val.toFixed(2).toLocaleString();
         }
       },
       x: {

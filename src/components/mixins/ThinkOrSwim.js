@@ -36,7 +36,9 @@ export const ThinkOrSwim = async (
   file,
   userId,
   addExecutions,
-  addTrades
+  addTrades,
+  previousTrades,
+  previousExecutions
 ) => {
   let tempTrades = [];
   await parse(file, {
@@ -274,10 +276,30 @@ export const ThinkOrSwim = async (
         };
       });
       console.log("TRADE GROUP IDS", tradeGroupForSubmit);
-      // Submit trade groups to database
-      addTrades(tradeGroupForSubmit);
+      console.log("PREVIOUS TRADES", previousTrades);
+      console.log("PREVIOUS EXECUTIONS", previousExecutions);
+      // Filter out trades that have already been submitted by comparing dateOpened and dateClosed to previousTrades
+      const filteredTrades = tradeGroupForSubmit.filter((trade) => {
+        return (
+          !previousTrades.some(
+            (prevTrade) =>
+              prevTrade.dateOpened.toLocaleString() === trade.dateOpened.toLocaleString() &&
+              prevTrade.dateClosed.toLocaleString() === trade.dateClosed.toLocaleString()
+          )
+        );
+      });
+      console.log("FILTERED TRADES", filteredTrades);
+      // Filter out executions that have already been submitted by comparing dateTime to previousExecutions
+      const filteredExecutions = flattenedTrades.filter((trade) => {
+        return !previousExecutions.some(
+          (prevExec) => prevExec.dateTime.toLocaleString() === trade.dateTime.toLocaleString()
+        );
+      });
+      console.log("FILTERED EXECUTIONS", filteredExecutions);
+      // 
+      addTrades(filteredTrades);
       // Submit trades to database
-      addExecutions(flattenedTrades);
+      addExecutions(filteredExecutions);
       // if error, return toast.error
       if(tradeGroupForSubmit.length === 0) {
         toast.error('No trades found')

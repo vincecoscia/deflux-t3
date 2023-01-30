@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 export default function ImportTrades() {
   const [file, setFile] = useState(null); // TODO: Type this better
   const [platform, setPlatform] = useState("TD Ameritrade"); // TODO: Type this better
+  const [previousTrades, setPreviousTrades] = useState([]);
+  const [previousExecutions, setPreviousExecutions] = useState([]);
 
   const { data: sessionData } = useSession();
 
@@ -52,6 +54,22 @@ export default function ImportTrades() {
     }
   });
 
+  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
+    undefined,
+    {
+      onSuccess(tradeData) {
+        setPreviousTrades(tradeData);
+      },
+    }
+  );
+
+  const { data: executionData } =
+  trpc.executionRouter.getExecutions.useQuery(undefined, {
+    onSuccess(executionData) {
+      setPreviousExecutions(executionData);
+    },
+  });
+
   const handleFileChange = (e) => {
     if (e.target.files?.[0]) {
       setFile(e.target.files?.[0]);
@@ -73,7 +91,7 @@ export default function ImportTrades() {
     }
     if (file && platform === "ThinkOrSwim") {
       const userId = sessionData.user.id;
-      ThinkOrSwim(file, userId, addExecutions, addTrades);
+      ThinkOrSwim(file, userId, addExecutions, addTrades, previousTrades, previousExecutions);
       // get return value from ThinkOrSwim and console.log it
       console.log("File uploaded and parsed");
     } else {

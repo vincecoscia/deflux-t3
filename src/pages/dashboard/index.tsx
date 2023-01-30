@@ -53,6 +53,9 @@ const Dashboard: NextPage = () => {
     return acc + trade.netProfit;
   }, 0);
 
+  const accountReturnsPercentage = (accountReturns / (balance - accountReturns)) * 100 || 0;
+
+  console.log(balance - accountReturns)
   return (
     <>
       <Head>
@@ -74,7 +77,7 @@ const Dashboard: NextPage = () => {
                   Account Balance: <span className='text-primary font-semibold'>${balance.toLocaleString()}</span>
                 </p>
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
-                  Total Returns: <span className={accountReturns >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>${accountReturns.toFixed(2)}</span>
+                  Total Returns: <span className={accountReturns >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>${accountReturns.toFixed(2)} ({accountReturnsPercentage.toFixed(2)}%)</span>
                 </p>
               </div>
                 <button className="w-20 rounded-lg bg-gray-800 p-2 text-white">
