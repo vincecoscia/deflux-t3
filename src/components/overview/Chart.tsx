@@ -16,6 +16,7 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
   // Pull out the dateClosed from each trade
   const dates = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
     dateStyle: "medium",
+    timeStyle: "short",
   }));
   const dateAndTime = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
     dateStyle: "short",
@@ -79,17 +80,13 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
           return '$'+ val.toFixed(2).toLocaleString();
         }
       },
-      x: {
-        formatter: function (val: any) {
-          return dateAndTime[val];
-        }
-      },
       marker: {
         show: false,
       },
       theme: 'dark',
     },
     xaxis: {
+      type: 'datetime',
       categories: dates,
       labels: {
         style: {
