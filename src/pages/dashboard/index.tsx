@@ -53,7 +53,7 @@ const Dashboard: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
+      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900 over">
         <SideNav />
         <div className="m-3 w-full overflow-y-scroll">
           <div className="mb-3 grid grid-cols-3 gap-3">
