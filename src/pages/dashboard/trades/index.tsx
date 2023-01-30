@@ -8,7 +8,6 @@ import SideNav from "../../../components/SideNav";
 import { useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../../components/TradeTable";
-import Chart from "../../../components/overview/Chart";
 import useMemoizedState from "../../../components/hooks/useMemoizedState";
 
 const Trades: NextPage = () => {
@@ -67,7 +66,7 @@ const Trades: NextPage = () => {
                 </button>
               </div>
               <div className="text-xs">
-                <TradeTable trades={trades} />
+                <TradeTable data={trades} />
               </div>
             </div>
 

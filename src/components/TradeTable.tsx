@@ -1,8 +1,14 @@
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState, useMemo } from "react";
 import { memo } from "react";
-import { ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleRightIcon } from '@heroicons/react/24/solid'
-import { Button, PageButton } from './shared/Button'
+import {
+  ChevronDoubleLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDoubleRightIcon,
+} from "@heroicons/react/24/solid";
+import { SortDownIcon, SortUpIcon, SortIcon } from "./shared/Icons";
+import { Button, PageButton } from "./shared/Button";
 import {
   useTable,
   useSortBy,
@@ -28,25 +34,25 @@ function GlobalFilter({
   }, 200);
 
   return (
-    <label className="flex gap-x-2 items-baseline">
+    <label className="flex items-baseline gap-x-2">
       <input
         type="text"
-        className="block rounded-md py-1 px-4 shadow-sm bg-gray-600 placeholder-gray-300 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        className="block rounded-md bg-gray-600 py-1 px-4 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         value={value || ""}
-        onChange={e => {
+        onChange={(e) => {
           setValue(e.target.value);
           onChange(e.target.value);
         }}
         placeholder={`Search ${count} records...`}
       />
     </label>
-  )
+  );
 }
 
 const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
   data,
 }) {
-  console.log(data);
+  const [showColumnFilter, setShowColumnFilter] = useState(false);
 
   const columns = useMemo(
     () => [
@@ -111,15 +117,78 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
     nextPage,
     previousPage,
     setPageSize,
+    allColumns,
+    getToggleHideAllColumnsProps,
   } = useTable({ columns, data }, useGlobalFilter, useSortBy, usePagination);
 
   return (
     <>
-      <GlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredRows}
-        globalFilter={state.globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <div className="flex items-center justify-between">
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <div>
+          <div className="relative inline-block text-left">
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowColumnFilter(!showColumnFilter)}
+                className="inline-flex w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+              >
+                Selected Columns
+                <svg
+                  className="-mr-1 ml-2 h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+            {showColumnFilter && (
+            <div
+              className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-600 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabIndex={-1}
+            >
+              <div className="py-1 px-2" role="none">
+                {/* <label className="flex items-baseline gap-x-2">
+                  <input
+                    type="checkbox"
+                    {...getToggleHideAllColumnsProps()}
+                    className="form-checkbox rounded-md text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                  <span className="text-white">Toggle All</span>
+                </label> */}
+                {allColumns.map((column) => (
+                  <label className="flex items-baseline gap-x-2 mt-1">
+                    <input
+                      type="checkbox"
+                      {...column.getToggleHiddenProps()}
+                      className="form-checkbox rounded-md text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                    <span className="text-white"><>{column.Header}</></span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            )}
+          </div>
+        </div>
+      </div>
       <div className="mt-1 flex flex-col">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full py-2 align-middle">
@@ -133,16 +202,22 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                           {...column.getHeaderProps(
                             column.getSortByToggleProps()
                           )}
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400"
+                          className="group px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400"
                         >
-                          {column.render("Header")}
-                          <span>
-                            {column.isSorted
-                              ? column.isSortedDesc
-                                ? " 🔽"
-                                : " 🔼"
-                              : ""}
-                          </span>
+                          <div className="flex items-center">
+                            {column.render("Header")}
+                            <span>
+                              {column.isSorted ? (
+                                column.isSortedDesc ? (
+                                  <SortDownIcon className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                  <SortUpIcon className="h-4 w-4 text-gray-400" />
+                                )
+                              ) : (
+                                <SortIcon className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100" />
+                              )}
+                            </span>
+                          </div>
                         </th>
                       ))}
                     </tr>
@@ -166,44 +241,48 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                               className="whitespace-nowrap px-6 py-4"
                             >
                               {cell.column.id === "dateOpened" ||
-                              cell.column.id === "dateClosed"
-                                ? new Date(cell.value).toLocaleString("en-US", {
-                                    dateStyle: "short",
-                                    timeStyle: "short",
-                                  })
-                                : cell.column.id === "netProfit" ? (
-                                  <span
-                                    className={`${
-                                      cell.value > 0 ? "text-green-400" : "text-red-400"
-                                    }`}
-                                  >
-                                    {cell.value}
-                                  </span>
-                                ) :  cell.column.id === "grossProfit" ? (
-                                  <span
-                                    className={`${
-                                      cell.value > 0 ? "text-green-400" : "text-red-400"
-                                    }`}
-                                  >
-                                    {cell.value}
-                                  </span>
-                                ) : cell.column.id === "winLoss" ? (
-                                  <span
-                                    className={`${
-                                      cell.value === "WIN" ? "text-green-400" : "text-red-400"
-                                    }`}
-                                  >
-                                    {cell.value}
-                                  </span>
-                                ) : cell.column.id === "symbol" ? (
-                                  <span className="text-primary">
-                                    {cell.value}
-                                  </span>
-                                ) : (
-                                  cell.render("Cell")
-                                )
-
-                                    }
+                              cell.column.id === "dateClosed" ? (
+                                new Date(cell.value).toLocaleString("en-US", {
+                                  dateStyle: "short",
+                                  timeStyle: "short",
+                                })
+                              ) : cell.column.id === "netProfit" ? (
+                                <span
+                                  className={`${
+                                    cell.value > 0
+                                      ? "text-green-400"
+                                      : "text-red-400"
+                                  }`}
+                                >
+                                  {cell.value}
+                                </span>
+                              ) : cell.column.id === "grossProfit" ? (
+                                <span
+                                  className={`${
+                                    cell.value > 0
+                                      ? "text-green-400"
+                                      : "text-red-400"
+                                  }`}
+                                >
+                                  {cell.value}
+                                </span>
+                              ) : cell.column.id === "winLoss" ? (
+                                <span
+                                  className={`${
+                                    cell.value === "WIN"
+                                      ? "text-green-400"
+                                      : "text-red-400"
+                                  }`}
+                                >
+                                  {cell.value}
+                                </span>
+                              ) : cell.column.id === "symbol" ? (
+                                <span className="text-primary">
+                                  {cell.value}
+                                </span>
+                              ) : (
+                                cell.render("Cell")
+                              )}
                             </td>
                           );
                         })}
@@ -216,31 +295,43 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
           </div>
         </div>
       </div>
-      <div className="py-3 flex items-center justify-between">
-        <div className="flex-1 flex justify-between sm:hidden">
-          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
-          <Button onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
+      <div className="flex items-center justify-between py-1">
+        <div className="flex flex-1 justify-between sm:hidden">
+          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            Previous
+          </Button>
+          <Button onClick={() => nextPage()} disabled={!canNextPage}>
+            Next
+          </Button>
         </div>
-        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-          <div className="flex gap-x-2">
-            <span className="text-sm text-gray-700">
-              Page <span className="font-medium">{state.pageIndex + 1}</span> of <span className="font-medium">{pageOptions.length}</span>
+        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          <div className="flex items-center gap-x-2">
+            <span className="text-sm text-white">
+              Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
+              <span className="font-medium">{pageOptions.length}</span>
             </span>
-            <select
-              value={state.pageSize}
-              onChange={e => {
-                setPageSize(Number(e.target.value))
-              }}
-            >
-              {[5, 10, 20].map(pageSize => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </select>
+            <label>
+              <span className="sr-only">Items Per Page</span>
+              <select
+                className="block w-full rounded-md border-gray-300 bg-gray-600 py-1 px-2 text-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                value={state.pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                }}
+              >
+                {[5, 10, 25].map((pageSize) => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
           <div>
-            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <nav
+              className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm"
+              aria-label="Pagination"
+            >
               <PageButton
                 className="rounded-l-md"
                 onClick={() => gotoPage(0)}
@@ -256,10 +347,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                 <span className="sr-only">Previous</span>
                 <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
               </PageButton>
-              <PageButton
-                onClick={() => nextPage()}
-                disabled={!canNextPage
-                }>
+              <PageButton onClick={() => nextPage()} disabled={!canNextPage}>
                 <span className="sr-only">Next</span>
                 <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
               </PageButton>
@@ -269,7 +357,10 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                 disabled={!canNextPage}
               >
                 <span className="sr-only">Last</span>
-                <ChevronDoubleRightIcon className="h-5 w-5" aria-hidden="true" />
+                <ChevronDoubleRightIcon
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                />
               </PageButton>
             </nav>
           </div>

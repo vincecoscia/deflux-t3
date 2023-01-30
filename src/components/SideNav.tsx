@@ -28,23 +28,23 @@ export default function SideNav() {
   };
 
   return (
-    <aside className="h-full w-64" aria-label="Sidenav">
+    <aside className="h-full w-64 flex-none" aria-label="Sidenav">
       <div className="h-full overflow-y-auto bg-white py-5 px-3 dark:border-gray-700 dark:bg-gray-800 flex flex-col justify-between">
         <div>
         <ul className="space-y-2">
           <li>
             <Link
-              href="/dashboard/overview"
+              href="/dashboard"
               className={
                 "group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " +
-                isActiveLink("/dashboard/overview")
+                isActiveLink("/dashboard")
               }
             >
               <svg
                 aria-hidden="true"
                 className={
                   "h-6 w-6 transition duration-75" +
-                  isActiveSVG("/dashboard/overview")
+                  isActiveSVG("/dashboard")
                 }
                 fill="currentColor"
                 viewBox="0 0 20 20"
