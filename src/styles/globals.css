@@ -126,3 +126,10 @@ html,body {
   ::-webkit-scrollbar-thumb:hover {
     background: darkgray;
   }
+
+  .open {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    transition: transform 0.2s ease-in-out, opacity 0.15s ease-in-out !important;
+    overflow: scroll !important;
+  }
