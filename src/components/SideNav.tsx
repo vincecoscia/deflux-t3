@@ -28,7 +28,7 @@ export default function SideNav() {
   };
 
   return (
-    <aside className="h-full w-64 flex-none" aria-label="Sidenav">
+    <aside className="h-full w-64 flex-none hidden lg:block" aria-label="Sidenav">
       <div className="h-full overflow-y-auto bg-white py-5 px-3 dark:border-gray-700 dark:bg-gray-800 flex flex-col justify-between">
         <div>
         <ul className="space-y-2">
