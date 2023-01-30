@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 
 import ImportWizard from "../../components/ImportWizard";
 import SideNav from "../../components/SideNav";
+import { ToastContainer } from "react-toastify";
 
 const Import: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -17,6 +18,7 @@ const Import: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       {/* If not logged in, can't view page */}
       {!sessionData && (
         <main className="dark:bg-gray-900 h-[calc(100vh-84px)] flex justify-center items-center">
@@ -30,6 +32,18 @@ const Import: NextPage = () => {
         <ImportWizard />
       </main>
       )}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   );
 };

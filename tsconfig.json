@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext", "esnext.asynciterable", "esnext.intl", "esnext.symbol", "esnext.array"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -14,8 +14,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "noImplicitAny": false,
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "src/pages/dashboard/OLDimport"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "src/pages/dashboard/OLDimport", "src/components/overview/Chart.tsx"],
   "exclude": ["node_modules", "/src/components/ImportWizard.js"]
 }
