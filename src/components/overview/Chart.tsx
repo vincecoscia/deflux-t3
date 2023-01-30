@@ -15,7 +15,11 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
   const trades = data.map((trade) => trade.balance);
   // Pull out the dateClosed from each trade
   const dates = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
+    dateStyle: "medium",
+  }));
+  const dateAndTime = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
     dateStyle: "short",
+    timeStyle: "short",
   }));
 
   const series = [
@@ -73,6 +77,11 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
       y: {
         formatter: function (val: any) {
           return '$'+ val.toLocaleString();
+        }
+      },
+      x: {
+        formatter: function (val: any) {
+          return dateAndTime[val];
         }
       },
       marker: {

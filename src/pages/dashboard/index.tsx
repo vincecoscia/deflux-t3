@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../components/TradeTable";
 import Chart from "../../components/overview/Chart";
@@ -24,10 +24,12 @@ const Dashboard: NextPage = () => {
         // setTrades only if previous trades are not equal to new trades
           console.log("Updating trades");
           setTrades(tradeData);
-          getBalance();
       },
     }
   );
+  useEffect(() => {
+    getBalance();
+  }, [trades]);
 
   const getBalance = () => {
     // Get account balance by grabbing the last trades balance
