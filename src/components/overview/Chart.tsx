@@ -1,14 +1,27 @@
 "use client";
+import { FC } from "react";
 import { memo } from "react";
 import type { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-const Chart = memo(function Chart() {
+interface ChartProps {
+  data: any[];
+}
+
+const Chart: FC<ChartProps> = memo(function Chart({data}) {
+  console.log('CHART DATA', data)
+  // Pull out the balances from each trade
+  const trades = data.map((trade) => trade.balance);
+  // Pull out the dateClosed from each trade
+  const dates = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
+    dateStyle: "short",
+  }));
+
   const series = [
     {
-      name: "Profit",
-      data: [31, 40, 28, 51, 42, 109, 100],
+      name: 'Balance',
+      data: trades,
     },
   ];
 
@@ -36,7 +49,7 @@ const Chart = memo(function Chart() {
       size: 0,
     },
     title: {
-      text: 'Account Returns',
+      text: 'Account Balance',
       align: 'left',
       style: {
         fontSize: '16px',
@@ -58,9 +71,9 @@ const Chart = memo(function Chart() {
     tooltip: {
       shared: false,
       y: {
-        formatter: function (val) {
-          return (val / 1000000).toFixed(0)
-        },
+        formatter: function (val: any) {
+          return '$'+ val.toLocaleString();
+        }
       },
       marker: {
         show: false,
@@ -68,7 +81,7 @@ const Chart = memo(function Chart() {
       theme: 'dark',
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      categories: dates,
       labels: {
         style: {
           colors: '#FFF',

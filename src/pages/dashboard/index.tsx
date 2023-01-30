@@ -24,10 +24,18 @@ const Dashboard: NextPage = () => {
         // setTrades only if previous trades are not equal to new trades
           console.log("Updating trades");
           setTrades(tradeData);
-          console.log("Updated trades");
+          getBalance();
       },
     }
   );
+
+  const getBalance = () => {
+    // Get account balance by grabbing the last trades balance
+    const lastTrade = trades[trades.length - 1];
+    if (lastTrade) {
+      setBalance(lastTrade.balance);
+    }
+  };
 
   const { data: executionData, isLoading: executionLoading } =
     trpc.executionRouter.getExecutions.useQuery(undefined, {
@@ -59,15 +67,20 @@ const Dashboard: NextPage = () => {
           <div className="mb-3 grid grid-cols-3 gap-3">
             <div className="col-span-2 flex flex-col">
               <div className="mb-3 flex justify-between">
+                <div className="flex gap-x-3">
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
-                  Total: {trades.length} (Trades) | Return: <span className={accountReturns >= 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
+                  Account Balance: <span className='text-primary font-semibold'>${balance.toLocaleString()}</span>
                 </p>
+                <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
+                  Total Returns: <span className={accountReturns >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>${accountReturns.toFixed(2)}</span>
+                </p>
+              </div>
                 <button className="w-20 rounded-lg bg-gray-800 p-2 text-white">
                   All
                 </button>
               </div>
               <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
-                <Chart/>
+                <Chart data={trades}/>
               </div>
             </div>
 

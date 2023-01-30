@@ -120,6 +120,7 @@ model Trade {
   id              String      @id @default(cuid())
   platform        String      @default("TD Ameritrade")
   symbol          String
+  balance         Float
   grossProfit     Float
   netProfit       Float
   totalCommission Float

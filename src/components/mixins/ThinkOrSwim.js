@@ -53,6 +53,7 @@ export const ThinkOrSwim = async (
     chunk: (results) => {
       // Find all where TYPE === 'TRD'
       const trades = results.data.filter((row) => row.TYPE === "TRD");
+      console.log('Initial Filter',trades)
       // clean trades
       const cleanedTrades = trades.map((trade) => {
         let commission = 0;
@@ -70,6 +71,8 @@ export const ThinkOrSwim = async (
 
         const dateTime = new Date(trade.DATE + " " + trade.TIME);
 
+        const balance = +trade.BALANCE.replace(/,/g, "");
+
         return {
           id: cuid(),
           symbol,
@@ -79,6 +82,7 @@ export const ThinkOrSwim = async (
           side,
           return: trade.AMOUNT,
           platform: "ThinkOrSwim",
+          balance,
           dateTime,
           userId: userId || "test",
         };
@@ -238,16 +242,24 @@ export const ThinkOrSwim = async (
         };
       });
       console.log("ADD OPEN CLOSE PRICE", addOpenClosePrice);
+      // Add balance to each trade group based on the final trade in the trade group
+      const addBalance = addOpenClosePrice.map((tradeGroup) => {
+        return {
+          ...tradeGroup,
+          balance: tradeGroup.trade[tradeGroup.trade.length - 1].balance,
+        };
+      });
 
       // Pull out trade array from each trade group
-      const tradesArray = addOpenClosePrice.map((tradeGroup) => tradeGroup.trade);
+      const tradesArray = addBalance.map((tradeGroup) => tradeGroup.trade);
       // flatten tradesArray
       const flattenedTrades = tradesArray.flat();
       console.log("FLATTENED TRADES", flattenedTrades);
       // Pull out id and userId from each trade group
-      const tradeGroupForSubmit = addOpenClosePrice.map((tradeGroup) => {
+      const tradeGroupForSubmit = addBalance.map((tradeGroup) => {
         return {
           id: tradeGroup.id,
+          balance: tradeGroup.balance,
           grossProfit: tradeGroup.grossProfit,
           netProfit: tradeGroup.netProfit,
           totalCommission: tradeGroup.totalCommission,
