@@ -37,7 +37,7 @@ function GlobalFilter({
     <label className="flex items-baseline gap-x-2">
       <input
         type="text"
-        className="block rounded-md bg-gray-600 py-1 px-4 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        className="block rounded-md bg-gray-600 py-2 px-4 w-64 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);

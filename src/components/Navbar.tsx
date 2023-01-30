@@ -35,14 +35,14 @@ export default function Navbar() {
           Deflu<span className="text-primary">x</span>
         </h1>
         </Link>
-        <div className="text-gray-500">
+        <div className="text-gray-500 hidden lg:flex">
           <Link href="/" className={`mr-10 + ${isActive("/")}`}>
             Home
           </Link>
           <Link href="/dashboard" className={isActive("/dashboard")}>Dashboard</Link>
         </div>
         {sessionData && (
-          <div className="relative mr-10 justify-self-end">
+          <div className="relative mr-10 justify-self-end hidden lg:block">
             <div className="flex text-white">
               <button className="" onClick={() => showOptions()}>
                 <Image

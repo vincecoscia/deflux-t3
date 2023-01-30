@@ -69,14 +69,14 @@ const Dashboard: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900 over">
         <SideNav />
         <div className="m-3 w-full overflow-y-scroll">
-          <div className="mb-3 grid grid-cols-3 gap-3">
-            <div className="col-span-2 flex flex-col">
+          <div className="mb-3 grid lg:grid-cols-12 gap-3">
+            <div className="lg:col-span-8 flex flex-col">
               <div className="mb-3 flex justify-between">
                 <div className="flex gap-x-3">
-                <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
+                <p className="rounded-lg lg:p-2 p-1 text-xs lg:text-base font-light dark:bg-gray-800 dark:text-white">
                   Account Balance: <span className='text-primary font-semibold'>${balance.toLocaleString()}</span>
                 </p>
-                <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
+                <p className="rounded-lg lg:p-2 p-1 text-xs lg:text-base font-light dark:bg-gray-800 dark:text-white">
                   Total Returns: <span className={accountReturns >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>${accountReturns.toFixed(2)} ({accountReturnsPercentage.toFixed(2)}%)</span>
                 </p>
               </div>
@@ -89,7 +89,7 @@ const Dashboard: NextPage = () => {
               </div>
             </div>
 
-            <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white">
+            <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
               Test
             </div>
           </div>
