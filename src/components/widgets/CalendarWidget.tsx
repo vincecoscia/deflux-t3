@@ -134,10 +134,12 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
               >
                 <time
                   dateTime={day.toString()}
-                  className={
-                    isToday(day.date)
-                      ? "flex h-6 w-6 items-center justify-center rounded-full bg-primary font-semibold text-white"
-                      : undefined
+                  className={classNames(
+                    isToday(day.date) && "bg-primary font-semibold text-white",
+                    isEqual(day.date, selectedDay.date) && isToday(day.date) && "bg-primary",
+                    isEqual(day.date, selectedDay.date) && !isToday(day.date) && "bg-sky-600",
+                    "flex h-6 w-6 items-center justify-center text-white rounded-full"
+                  )
                   }
                 >
                   {format(day.date, "d")}
