@@ -68,7 +68,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
   console.log("Selected Date", selectedDay)
 
   return (
-    <div className="lg:flex lg:h-full lg:flex-col">
+    <div className="lg:flex lg:h-full lg:flex-col lg:pb-10 pb-4">
       <header className="flex items-center justify-between py-4 px-6 lg:flex-none">
         <h1 className="text-lg font-semibold text-white">
           <time dateTime="2022-01">{format(firstDayCurrentMonth, "MMMM yyyy")}</time>

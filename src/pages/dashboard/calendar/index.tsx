@@ -42,9 +42,9 @@ const Calendar: NextPage = () => {
       </Head>
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="m-3 w-full overflow-y-scroll">
-          <div className="mb-3 grid grid-cols-12 gap-3">
-            <div className="col-span-10 flex flex-col  h-[calc(100vh-100px)]">
+        <div className="m-3 w-full overflow-y-scroll h-full">
+          <div className="mb-3 grid grid-cols-12 gap-3 h-full">
+            <div className="col-span-10 flex flex-col h-full">
               <div className="mb-3 flex justify-between">
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
                   Total: {trades.length} (Trades) | Return: <span className={accountReturns >= 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
