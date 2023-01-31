@@ -150,12 +150,12 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
                     {day.trades.reduce((acc, trade) => acc + trade.netProfit, 0).toFixed(2) > 0 ? (
                       <li className="flex items-center justify-center rounded-full bg-green-500 text-white text-xs font-semibold">
                         <span className="sr-only">Profit</span>
-                        <span>{day.trades.reduce((acc, trade) => acc + trade.netProfit, 0).toFixed(2)}</span>
+                        <span>${day.trades.reduce((acc, trade) => acc + trade.netProfit, 0).toFixed(2)}</span>
                       </li>
                     ) : (
                       <li className="flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-semibold">
                         <span className="sr-only">Loss</span>
-                        <span>{day.trades.reduce((acc, trade) => acc + trade.netProfit, 0).toFixed(2)}</span>
+                        <span>${day.trades.reduce((acc, trade) => acc + trade.netProfit, 0).toFixed(2)}</span>
                       </li>
                     )}
                     <li>
