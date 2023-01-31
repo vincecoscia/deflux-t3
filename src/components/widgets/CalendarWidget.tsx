@@ -158,7 +158,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
                     )}
                     <li>
                       <span className="sr-only">Trades</span>
-                      <span># of Trades:{day.trades.length}</span>
+                      <span>Trades: {day.trades.length}</span>
                     </li>
                   </ol>
                 )}
