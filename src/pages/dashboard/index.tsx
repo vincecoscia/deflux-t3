@@ -8,16 +8,19 @@ import SideNav from "../../components/SideNav";
 import { useEffect, useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../components/TradeTable";
-import Chart from "../../components/overview/Chart";
+import Chart from "../../components/widgets/Chart";
 import useMemoizedState from "../../components/hooks/useMemoizedState";
+import { getBalance } from "../../utils/globalFunctions";
 
 const Dashboard: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const { data: sessionData } = useSession();
 
-  const { data: tradeData, isLoading } = trpc.tradeRouter.getTrades.useQuery(
+  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
     undefined,
     {
       onSuccess(tradeData) {
@@ -28,16 +31,8 @@ const Dashboard: NextPage = () => {
     }
   );
   useEffect(() => {
-    getBalance();
+    getBalance(trades, setBalance);
   }, [trades]);
-
-  const getBalance = () => {
-    // Get account balance by grabbing the last trades balance
-    const lastTrade = trades[trades.length - 1];
-    if (lastTrade) {
-      setBalance(lastTrade.balance);
-    }
-  };
 
   const { data: executionData, isLoading: executionLoading } =
     trpc.executionRouter.getExecutions.useQuery(undefined, {
@@ -45,8 +40,6 @@ const Dashboard: NextPage = () => {
         setExecutions(executionData);
       },
     });
-
-    // TODO: Add a loading state
 
   // Get account returns by summing all trade.netProfit and subtracting all trade.commision
   const accountReturns = trades.reduce((acc, trade) => {

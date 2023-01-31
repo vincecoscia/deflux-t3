@@ -105,6 +105,7 @@ model Study {
   description String
   userId      String   @default(cuid())
   user        User     @relation(fields: [userId], references: [id])
+  trades      StudyTrade[]
 
   @@index([userId])
 }
@@ -113,6 +114,8 @@ model StudyTrade {
   id        String   @id
   studyId   String   @unique
   tradeId   String   @unique
+  study     Study    @relation(fields: [studyId], references: [id])
+  trade     Trade    @relation(fields: [tradeId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -129,8 +132,9 @@ model Trade {
   closePrice      Float
   dateOpened      DateTime
   dateClosed      DateTime
-  tags            Tags[]
+  tags            TradeTag[]
   executions      Execution[]
+  studies         StudyTrade[]
   userId          String      @default(cuid())
   user            User        @relation(fields: [userId], references: [id])
   dateCreated     DateTime    @default(now())
@@ -143,9 +147,18 @@ model Tags {
   name    String
   userId  String @default(cuid())
   user    User   @relation(fields: [userId], references: [id])
-  tradeId String
-  trade   Trade  @relation(fields: [tradeId], references: [id])
+  trades  TradeTag[]
 
   @@index([userId])
+}
+
+model TradeTag {
+  id      String @id @default(cuid())
+  tradeId String
+  trade   Trade  @relation(fields: [tradeId], references: [id])
+  tagId   String
+  tag     Tags   @relation(fields: [tagId], references: [id])
+
   @@index([tradeId])
+  @@index([tagId])
 }

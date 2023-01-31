@@ -5,17 +5,13 @@ import { useSession } from "next-auth/react";
 
 import { trpc } from "../../../utils/trpc";
 import SideNav from "../../../components/SideNav";
-import { useState } from "react";
-import type { Trade, Execution } from "@prisma/client";
-import TradeTable from "../../../components/TradeTable";
+import type { Trade } from "@prisma/client";
 import useMemoizedState from "../../../components/hooks/useMemoizedState";
 import Statistics from "../../../components/widgets/Statistics";
+import CalendarWidget from "../../../components/widgets/CalendarWidget";
 
-const Trades: NextPage = () => {
+const Calendar: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
-  const [executions, setExecutions] = useState<Execution[]>([]);
-  const [balance, setBalance] = useState<number>(0);
-  const { data: sessionData } = useSession();
 
   const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
     undefined,
@@ -28,15 +24,6 @@ const Trades: NextPage = () => {
       },
     }
   );
-
-  const { data: executionData } =
-    trpc.executionRouter.getExecutions.useQuery(undefined, {
-      onSuccess(executionData) {
-        setExecutions(executionData);
-      },
-    });
-
-    // TODO: Add a loading state
 
   // Get account returns by summing all trade.netProfit and subtracting all trade.commision
   const accountReturns = trades.reduce((acc, trade) => {
@@ -56,8 +43,8 @@ const Trades: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="m-3 w-full overflow-y-scroll">
-          <div className="mb-3 grid grid-cols-3 gap-3">
-            <div className="col-span-2 flex flex-col">
+          <div className="mb-3 grid grid-cols-12 gap-3">
+            <div className="col-span-10 flex flex-col  h-[calc(100vh-100px)]">
               <div className="mb-3 flex justify-between">
                 <p className="rounded-lg p-2 font-light dark:bg-gray-800 dark:text-white">
                   Total: {trades.length} (Trades) | Return: <span className={accountReturns >= 0 ? 'text-green-500' : 'text-red-500'}>${accountReturns.toFixed(2)}</span>
@@ -66,12 +53,12 @@ const Trades: NextPage = () => {
                   All
                 </button>
               </div>
-              <div className="text-xs">
-                <TradeTable data={trades} />
+              <div className="text-xs h-full">
+                <CalendarWidget trades={trades}/>
               </div>
             </div>
 
-            <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white">
+            <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white col-span-2">
               <Statistics data={trades} />
             </div>
           </div>
@@ -82,4 +69,4 @@ const Trades: NextPage = () => {
   );
 };
 
-export default Trades;
+export default Calendar;

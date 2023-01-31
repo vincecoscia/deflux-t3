@@ -17,6 +17,6 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitAny": false,
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "src/pages/dashboard/OLDimport", "src/components/overview/Chart.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "src/pages/dashboard/OLDimport", "src/components/widgets/Chart.tsx"],
   "exclude": ["node_modules", "/src/components/ImportWizard.js"]
 }

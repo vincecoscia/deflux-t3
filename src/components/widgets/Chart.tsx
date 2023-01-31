@@ -18,10 +18,6 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
     dateStyle: "medium",
     timeStyle: "short",
   }));
-  const dateAndTime = data.map((trade) => trade.dateClosed.toLocaleString("en-US", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }));
 
   const series = [
     {
@@ -77,7 +73,7 @@ const Chart: FC<ChartProps> = memo(function Chart({data}) {
       shared: false,
       y: {
         formatter: function (val: any) {
-          return '$'+ val.toFixed(2).toLocaleString();
+          return '$'+ val.toLocaleString(undefined, {maximumFractionDigits: 2, minimumFractionDigits: 2});
         }
       },
       marker: {
