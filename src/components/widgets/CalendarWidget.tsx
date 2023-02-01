@@ -263,7 +263,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
         </div>
       </div>
       {selectedDay?.trades.length > 0 && (
-        <div className="lg:mt-4">
+        <div className="mt-3">
           <ol className="divide-y divide-gray-900 overflow-hidden rounded-lg bg-gray-700 text-sm shadow ring-1 ring-black ring-opacity-5">
             {selectedDay.trades.map((trade) => (
               <li
