@@ -43,7 +43,7 @@ const Calendar: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
-          <div className="mb-3 mr-3 grid grid-cols-12 gap-3">
+          <div className="mb-24 lg:mb-3 mr-3 grid grid-cols-12 gap-3">
             <div className="lg:col-span-10 col-span-12 flex flex-col">
               <CalendarWidget trades={trades}/>
             </div>

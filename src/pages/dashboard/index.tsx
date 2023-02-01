@@ -61,7 +61,7 @@ const Dashboard: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
-          <div className="mr-3 ">
+          <div className="mr-3 mb-24 lg:mb-0">
             <div className="mb-3 grid gap-3 lg:grid-cols-12">
               <div className="flex flex-col lg:col-span-8">
                 <div className="mb-3 flex justify-between">
