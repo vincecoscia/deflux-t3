@@ -94,14 +94,17 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
       {
         Header: "Net Profit",
         accessor: "netProfit",
+        sortType: "basic",
       },
       {
         Header: "Gross Profit",
         accessor: "grossProfit",
+        sortType: "basic",
       },
       {
         Header: "Commission",
         accessor: "totalCommission",
+        sortType: "basic",
       },
       {
         Header: "Status",
