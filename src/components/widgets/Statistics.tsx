@@ -28,7 +28,7 @@ const Statistics: FC<StatisticsProps> = memo(function Statistics({data}) {
   return (
     <div className="flex flex-col w-full h-full p-2">
       <h1 className="text-lg font-bold text-white mb-4">Statistics</h1>
-      <div className="grid grid-cols-3 lg:grid-cols-4 justify-items-start ">
+      <div className="grid grid-cols-3 lg:grid-cols-1 justify-items-start ">
         <div className="mb-4">
         <p className="text-sm font-light text-white">Win Rate</p>
         <p className={`text-lg font-semibold`}>{winRate.toFixed(2)}%</p>
