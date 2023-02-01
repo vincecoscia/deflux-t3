@@ -218,7 +218,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
                     !isSameMonth(day.date, firstDayCurrentMonth) &&
                     !isToday(day.date) &&
                     "text-gray-500",
-                  "flex h-14 flex-col py-2 px-3 hover:bg-gray-100 focus:z-10"
+                  "flex h-14 flex-col py-2 px-3 hover:bg-sky-600 focus:z-10"
                 )}
               >
                 <time
@@ -239,20 +239,22 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
                 </time>
                 <span className="sr-only">{day.trades.length} trades</span>
                 {day.trades.length > 0 && (
-                  <span className="-mx-0.5 mt-auto flex flex-wrap-reverse">
-                    {day.trades.map((trade) =>
-                      trade.netProfit >= 0 ? (
-                        <span
-                          key={trade.id}
-                          className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-green-500"
-                        />
-                      ) : (
-                        <span
-                          key={trade.id}
-                          className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-red-500"
-                        />
-                      )
-                    )}
+                  <span className="-mx-0.5 mt-auto flex flex-row flex-wrap-reverse">
+                    {day.trades
+                      .slice(0, 5)
+                      .map((trade) =>
+                        trade.netProfit >= 0 ? (
+                          <span
+                            key={trade.id}
+                            className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-green-500"
+                          />
+                        ) : (
+                          <span
+                            key={trade.id}
+                            className="mx-0.5 mb-1 h-1.5 w-1.5 rounded-full bg-red-500"
+                          />
+                        )
+                      )}
                   </span>
                 )}
               </button>

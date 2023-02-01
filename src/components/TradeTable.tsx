@@ -37,7 +37,7 @@ function GlobalFilter({
     <label className="flex items-baseline gap-x-2">
       <input
         type="text"
-        className="block rounded-md bg-gray-600 py-2 px-4 w-64 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        className="block rounded-md bg-gray-600 py-2 px-4 lg:w-64 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);
@@ -154,12 +154,36 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
               <button
                 type="button"
                 onClick={() => setShowColumnFilter(!showColumnFilter)}
-                className="inline-flex w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="hidden lg:inline-flex w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
                 id="menu-button"
                 aria-expanded="true"
                 aria-haspopup="true"
               >
                 Selected Columns
+                <svg
+                  className="-mr-1 ml-2 h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              {/* Mobile button */}
+              <button
+                type="button"
+                onClick={() => setShowColumnFilter(!showColumnFilter)}
+                className="inline-flex lg:hidden w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+              >
+                Columns
                 <svg
                   className="-mr-1 ml-2 h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
@@ -316,12 +340,12 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
       </div>
       <div className="flex items-center justify-between py-1">
         <div className="flex flex-1 justify-between sm:hidden">
-          <Button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          <button onClick={() => previousPage()} disabled={!canPreviousPage} className="py-2 w-20 bg-primary text-white rounded-lg">
             Previous
-          </Button>
-          <Button onClick={() => nextPage()} disabled={!canNextPage}>
+          </button>
+          <button onClick={() => nextPage()} disabled={!canNextPage} className="w-20 py-2 bg-primary text-white rounded-lg">
             Next
-          </Button>
+          </button>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div className="flex items-center gap-x-2">

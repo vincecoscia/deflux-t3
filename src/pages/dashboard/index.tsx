@@ -11,6 +11,7 @@ import TradeTable from "../../components/TradeTable";
 import Chart from "../../components/widgets/Chart";
 import useMemoizedState from "../../components/hooks/useMemoizedState";
 import { getBalance } from "../../utils/globalFunctions";
+import Statistics from "../../components/widgets/Statistics";
 
 const Dashboard: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
@@ -20,16 +21,13 @@ const Dashboard: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
-    undefined,
-    {
-      onSuccess(tradeData) {
-        // setTrades only if previous trades are not equal to new trades
-          console.log("Updating trades");
-          setTrades(tradeData);
-      },
-    }
-  );
+  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(undefined, {
+    onSuccess(tradeData) {
+      // setTrades only if previous trades are not equal to new trades
+      console.log("Updating trades");
+      setTrades(tradeData);
+    },
+  });
   useEffect(() => {
     getBalance(trades, setBalance);
   }, [trades]);
@@ -46,9 +44,10 @@ const Dashboard: NextPage = () => {
     return acc + trade.netProfit;
   }, 0);
 
-  const accountReturnsPercentage = (accountReturns / (balance - accountReturns)) * 100 || 0;
+  const accountReturnsPercentage =
+    (accountReturns / (balance - accountReturns)) * 100 || 0;
 
-  console.log(balance - accountReturns)
+  console.log(balance - accountReturns);
   return (
     <>
       <Head>
@@ -59,35 +58,50 @@ const Dashboard: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900 over">
+      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="m-3 w-full overflow-y-scroll">
-          <div className="mb-3 grid lg:grid-cols-12 gap-3">
-            <div className="lg:col-span-8 flex flex-col">
-              <div className="mb-3 flex justify-between">
-                <div className="flex gap-x-3">
-                <p className="rounded-lg lg:p-2 p-1 text-xs lg:text-base font-light dark:bg-gray-800 dark:text-white">
-                  Account Balance: <span className='text-primary font-semibold'>${balance.toLocaleString()}</span>
-                </p>
-                <p className="rounded-lg lg:p-2 p-1 text-xs lg:text-base font-light dark:bg-gray-800 dark:text-white">
-                  Total Returns: <span className={accountReturns >= 0 ? 'text-green-500 font-semibold' : 'text-red-500 font-semibold'}>${accountReturns.toFixed(2)} ({accountReturnsPercentage.toFixed(2)}%)</span>
-                </p>
+        <div className="my-3 ml-3 w-full overflow-y-scroll">
+          <div className="mr-3 ">
+            <div className="mb-3 grid gap-3 lg:grid-cols-12">
+              <div className="flex flex-col lg:col-span-8">
+                <div className="mb-3 flex justify-between">
+                  <div className="flex w-full gap-x-3">
+                    <p className="w-full rounded-lg py-2 px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
+                      Account Balance:{" "}
+                      <span className="font-semibold text-primary">
+                        ${balance.toLocaleString()}
+                      </span>
+                    </p>
+                    <p className="w-full rounded-lg py-2  px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
+                      Total Returns:{" "}
+                      <span
+                        className={
+                          accountReturns >= 0
+                            ? "whitespace-pre font-semibold text-green-500 sm:whitespace-normal"
+                            : "whitespace-pre font-semibold text-red-500 sm:whitespace-normal"
+                        }
+                      >
+                        ${accountReturns.toFixed(2)} (
+                        {accountReturnsPercentage.toFixed(2)}%)
+                      </span>
+                    </p>
+                  </div>
+                  <button className="hidden w-20 rounded-lg bg-gray-800 p-2 text-white sm:flex">
+                    All
+                  </button>
+                </div>
+                <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
+                  <Chart data={trades} />
+                </div>
               </div>
-                <button className="w-20 rounded-lg bg-gray-800 p-2 text-white">
-                  All
-                </button>
-              </div>
-              <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
-                <Chart data={trades}/>
-              </div>
-            </div>
 
-            <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-              Test
+              <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
+                <Statistics data={trades} />
+              </div>
             </div>
-          </div>
-          <div className="text-sm">
-          <TradeTable data={trades} />
+            <div className="text-sm">
+              <TradeTable data={trades} />
+            </div>
           </div>
         </div>
       </main>
