@@ -64,7 +64,7 @@ const Trades: NextPage = () => {
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
           <div className="mr-3 ">
-            <div className="mb-16 lg:mb-3 grid gap-3 lg:grid-cols-12">
+            <div className="mb-20 lg:mb-3 grid gap-3 lg:grid-cols-12">
               <div className="flex flex-col lg:col-span-8 w-[95vw] lg:w-full">
                 <div className="mb-3 flex justify-between">
                 <div className="flex w-full gap-x-3">
