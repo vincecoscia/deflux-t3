@@ -9,26 +9,11 @@ import type { Trade } from "@prisma/client";
 import useMemoizedState from "../../../components/hooks/useMemoizedState";
 import Statistics from "../../../components/widgets/Statistics";
 import CalendarWidget from "../../../components/widgets/CalendarWidget";
+import { useContext } from "react";
+import { TradeContext } from "../../../context/TradeContext";
 
 const Calendar: NextPage = () => {
-  const [trades, setTrades] = useMemoizedState<Trade[]>([]);
-
-  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
-    undefined,
-    {
-      onSuccess(tradeData) {
-        // setTrades only if previous trades are not equal to new trades
-          console.log("Updating trades");
-          setTrades(tradeData);
-          console.log("Updated trades");
-      },
-    }
-  );
-
-  // Get account returns by summing all trade.netProfit and subtracting all trade.commision
-  const accountReturns = trades.reduce((acc, trade) => {
-    return acc + trade.netProfit;
-  }, 0);
+  const { trades } = useContext(TradeContext);
 
   return (
     <>

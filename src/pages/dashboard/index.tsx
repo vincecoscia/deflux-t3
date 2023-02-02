@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 
 import { trpc } from "../../utils/trpc";
 import SideNav from "../../components/SideNav";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../components/TradeTable";
 import Chart from "../../components/widgets/Chart";
@@ -13,9 +13,11 @@ import useMemoizedState from "../../components/hooks/useMemoizedState";
 import { getBalance } from "../../utils/globalFunctions";
 import Statistics from "../../components/widgets/Statistics";
 import Dropdown from "../../components/shared/Dropdown";
+import { TradeContext } from "../../context/TradeContext";
 
 const Dashboard: NextPage = () => {
-  const [trades, setTrades] = useMemoizedState<Trade[]>([]);
+  const { trades } = useContext(TradeContext);
+  const [filteredTrades, setFilteredTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [platforms, setPlatforms] = useState<string[]>([]);
@@ -25,21 +27,18 @@ const Dashboard: NextPage = () => {
 
   console.log('selectedPlatform', selectedPlatform)
 
-  const { data: tradeData, isLoading } = trpc.tradeRouter.getTrades.useQuery(undefined, {
-    onSuccess(tradeData) {
-      setTrades(tradeData);
-    },
-  });
-
-  // const { data: tradeData, isLoading } = trpc.tradeRouter.getTradesByPlatform.useQuery({platform: selectedPlatform}, {
-  //   onSuccess(tradeData) {
-  //     if(tradeData.length > 0) {
-  //       setTrades(tradeData);
-  //     }
-  //   },
-  // });
+  // Write a function for filtering trades by platform
+  const filterTradesByPlatform = (trades, platform) => {
+    if (platform === "All") {
+      setFilteredTrades(trades);
+    } else {
+      const filteredTrades = trades.filter((trade) => trade.platform === platform);
+      setFilteredTrades(filteredTrades);
+    }
+  };
 
   useEffect(() => {
+    filterTradesByPlatform(trades, selectedPlatform);
     getBalance(trades, setBalance);
     getPlatforms(trades, setPlatforms);
   }, [trades]);
@@ -67,9 +66,14 @@ const Dashboard: NextPage = () => {
   const accountReturnsPercentage =
     (accountReturns / (balance - accountReturns)) * 100 || 0;
 
-  if (isLoading || !tradeData || executionLoading || !executionData) {
-    return <div>Loading...</div>;
+  if (!sessionData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+        <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+      </div>
+    );
   }
+
   return (
     <>
       <Head>
@@ -111,16 +115,16 @@ const Dashboard: NextPage = () => {
                   <Dropdown options={platforms} selected={selectedPlatform} setSelected={setSelectedPlatform}/>
                 </div>
                 <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
-                  <Chart data={trades} />
+                  <Chart data={filteredTrades} />
                 </div>
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={trades} />
+                <Statistics data={filteredTrades} />
               </div>
             </div>
             <div className="text-sm">
-              <TradeTable data={trades} />
+              <TradeTable data={filteredTrades} />
             </div>
           </div>
         </div>

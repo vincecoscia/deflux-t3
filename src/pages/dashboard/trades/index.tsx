@@ -5,16 +5,17 @@ import { useSession } from "next-auth/react";
 
 import { trpc } from "../../../utils/trpc";
 import SideNav from "../../../components/SideNav";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import type { Trade, Execution } from "@prisma/client";
 import TradeTable from "../../../components/TradeTable";
 import useMemoizedState from "../../../components/hooks/useMemoizedState";
 import Statistics from "../../../components/widgets/Statistics";
 import { getBalance } from "../../../utils/globalFunctions";
+import { TradeContext } from "../../../context/TradeContext";
 
 const Trades: NextPage = () => {
-  const [trades, setTrades] = useMemoizedState<Trade[]>([]);
-  const [executions, setExecutions] = useState<Execution[]>([]);
+  const {trades} = useContext(TradeContext);
+  // const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [platform, setPlatform] = useState<string>("All");
   useEffect(() => {
@@ -23,23 +24,14 @@ const Trades: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(undefined, {
-    onSuccess(tradeData) {
-      // setTrades only if previous trades are not equal to new trades
-      console.log("Updating trades");
-      setTrades(tradeData);
-      console.log("Updated trades");
-    },
-  });
-
-  const { data: executionData } = trpc.executionRouter.getExecutions.useQuery(
-    undefined,
-    {
-      onSuccess(executionData) {
-        setExecutions(executionData);
-      },
-    }
-  );
+  // const { data: executionData } = trpc.executionRouter.getExecutions.useQuery(
+  //   undefined,
+  //   {
+  //     onSuccess(executionData) {
+  //       setExecutions(executionData);
+  //     },
+  //   }
+  // );
 
   // TODO: Add a loading state
 
