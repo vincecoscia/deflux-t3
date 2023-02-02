@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import Trades from '../../../pages/dashboard/trades';
 
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 
@@ -22,7 +23,16 @@ export const tradeRouter = router({
       // get only the users trades
       const userTrades = trades.filter(trade => trade.userId === ctx.session.user.id);
       return userTrades;
-
+    }
+  ),
+  getUserPlatforms: protectedProcedure
+    .query(async ({ctx}) => {
+      const trades = await ctx.prisma.trade.findMany();
+      // get only the users trades
+      const userTrades = trades.filter(trade => trade.userId === ctx.session.user.id);
+      // get all unique platforms
+      const platforms = [...new Set(userTrades.map(trade => trade.platform))];
+      return platforms;
     }
   ),
 })

@@ -16,6 +16,7 @@ const Trades: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const [platform, setPlatform] = useState<string>("All");
   useEffect(() => {
     getBalance(trades, setBalance);
   }, [trades]);

@@ -12,24 +12,36 @@ import Chart from "../../components/widgets/Chart";
 import useMemoizedState from "../../components/hooks/useMemoizedState";
 import { getBalance } from "../../utils/globalFunctions";
 import Statistics from "../../components/widgets/Statistics";
+import Dropdown from "../../components/shared/Dropdown";
 
 const Dashboard: NextPage = () => {
   const [trades, setTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [platforms, setPlatforms] = useState<string[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
 
   const { data: sessionData } = useSession();
 
-  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(undefined, {
+  console.log('selectedPlatform', selectedPlatform)
+
+  const { data: tradeData, isLoading } = trpc.tradeRouter.getTrades.useQuery(undefined, {
     onSuccess(tradeData) {
-      // setTrades only if previous trades are not equal to new trades
-      console.log("Updating trades");
       setTrades(tradeData);
     },
   });
+
+  // const { data: tradeData, isLoading } = trpc.tradeRouter.getTradesByPlatform.useQuery({platform: selectedPlatform}, {
+  //   onSuccess(tradeData) {
+  //     if(tradeData.length > 0) {
+  //       setTrades(tradeData);
+  //     }
+  //   },
+  // });
+
   useEffect(() => {
     getBalance(trades, setBalance);
+    getPlatforms(trades, setPlatforms);
   }, [trades]);
 
   const { data: executionData, isLoading: executionLoading } =
@@ -44,10 +56,20 @@ const Dashboard: NextPage = () => {
     return acc + trade.netProfit;
   }, 0);
 
+  const getPlatforms = (trades, setPlatforms) => {
+    const platforms = trades.map((trade) => trade.platform);
+    // Add "All" to platforms array
+    platforms.unshift("All");
+    const uniquePlatforms = [...new Set(platforms)];
+    setPlatforms(uniquePlatforms);
+  };
+
   const accountReturnsPercentage =
     (accountReturns / (balance - accountReturns)) * 100 || 0;
 
-  console.log(balance - accountReturns);
+  if (isLoading || !tradeData || executionLoading || !executionData) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <Head>
@@ -86,9 +108,7 @@ const Dashboard: NextPage = () => {
                       </span>
                     </p>
                   </div>
-                  <button className="hidden w-20 rounded-lg bg-gray-800 p-2 text-white sm:flex">
-                    All
-                  </button>
+                  <Dropdown options={platforms} selected={selectedPlatform} setSelected={setSelectedPlatform}/>
                 </div>
                 <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
                   <Chart data={trades} />
