@@ -24,5 +24,20 @@ export const executionRouter = router({
 
     }
   ),
+  getExecutionsByTradeId: protectedProcedure
+    .input(z.object({ tradeId: z.string() }))
+    .query(async ({ctx, input}) => {
+      const executions = await ctx.prisma.execution.findMany({
+        where: {
+          tradeId: input.tradeId,
+        },
+      });
+      // make sure the trade belongs to the user
+      if (executions[0]?.userId !== ctx.session.user.id) {
+        throw new Error('Trade does not belong to user');
+      }
 
+      return executions;
+    }
+  ),
 })

@@ -16,6 +16,7 @@ import {
   useAsyncDebounce,
   usePagination,
 } from "react-table";
+import Link from "next/link";
 
 interface TradeTableProps {
   data: any[];
@@ -68,6 +69,13 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
   const columns = useMemo(
     () => [
       {
+        Header: "View",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <Link className="px-4 py-2 bg-primary rounded-full text-xs" href={{ pathname: `/dashboard/trades/${row.original.id}` }}>View</Link>
+          )
+      },
+      {
         Header: "Symbol",
         accessor: "symbol",
       },
@@ -82,6 +90,10 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
       {
         Header: "Date Closed",
         accessor: "dateClosed",
+      },
+      {
+        Header: "Side",
+        accessor: "side",
       },
       {
         Header: "Open Price",
@@ -281,6 +293,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                         className="border-b border-gray-700  bg-gray-800 px-2 py-3 last:rounded-b-lg last:border-0 hover:bg-primary hover:bg-opacity-10 dark:text-white"
                       >
                         {row.cells.map((cell) => {
+                          console.log(cell)
                           return (
                             <td
                               {...cell.getCellProps()}
@@ -326,7 +339,18 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                                 <span className="text-primary">
                                   {cell.value}
                                 </span>
-                              ) : (
+                              ) : cell.column.id === "side" ? (
+                                  <span
+                                    className={`${
+                                      cell.value === "LONG"
+                                        ? "text-green-400"
+                                        : "text-red-400"
+                                    }`}
+                                  >
+                                    {cell.value}
+                                  </span>
+                                ) :
+                                (
                                 cell.render("Cell")
                               )}
                             </td>

@@ -251,14 +251,23 @@ export const ThinkOrSwim = async (
           balance: tradeGroup.trade[tradeGroup.trade.length - 1].balance,
         };
       });
+      // Add side to each trade group based on the first trade in the trade group
+      const addSide = addBalance.map((tradeGroup) => {
+        // if the first trade in the trade group is BUY, set side to LONG, if SELL, set side to SHORT
+        return {
+          ...tradeGroup,
+          side: tradeGroup.trade[0].side === "BUY" ? "LONG" : "SHORT",
+        };
+      });
+      console.log("ADD SIDE", addSide);
 
       // Pull out trade array from each trade group
-      const tradesArray = addBalance.map((tradeGroup) => tradeGroup.trade);
+      const tradesArray = addSide.map((tradeGroup) => tradeGroup.trade);
       // flatten tradesArray
       const flattenedTrades = tradesArray.flat();
       console.log("FLATTENED TRADES", flattenedTrades);
       // Pull out id and userId from each trade group
-      const tradeGroupForSubmit = addBalance.map((tradeGroup) => {
+      const tradeGroupForSubmit = addSide.map((tradeGroup) => {
         return {
           id: tradeGroup.id,
           balance: tradeGroup.balance,
@@ -272,6 +281,7 @@ export const ThinkOrSwim = async (
           dateOpened: tradeGroup.dateOpened,
           dateClosed: tradeGroup.dateClosed,
           userId: tradeGroup.userId,
+          side: tradeGroup.side,
           platform: 'ThinkOrSwim',
         };
       });

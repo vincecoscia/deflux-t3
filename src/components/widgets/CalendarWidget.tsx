@@ -67,8 +67,6 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
     };
   });
 
-  console.log("Selected Date", selectedDay);
-
   return (
     <div className="pb-4 lg:flex lg:h-full lg:flex-col lg:pb-10">
       <header className="flex items-center justify-between py-4 px-6 lg:flex-none">
@@ -130,7 +128,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
           <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-6 lg:gap-px">
             {days.map((day, dayIdx) => (
               <div
-                key={day.toString()}
+                key={day.date.toString()}
                 onClick={() =>
                   setSelectedDay({ date: day.date, trades: day.trades || [] })
                 }
@@ -195,7 +193,7 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
           <div className="isolate grid w-full grid-cols-7 grid-rows-6 gap-px lg:hidden">
             {days.map((day) => (
               <button
-                key={day.toString()}
+                key={day.date.toString()}
                 type="button"
                 onClick={() =>
                   setSelectedDay({ date: day.date, trades: day.trades || [] })
