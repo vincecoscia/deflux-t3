@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import Trades from '../../../pages/dashboard/trades';
 
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 
@@ -18,7 +17,7 @@ export const tradeRouter = router({
     }
   ),
   addTagsToTrade: protectedProcedure
-    .input(z.object({ tradeId: z.string(), tags: z.array(z.object({ name: z.string(), userId: z.string() })) }))
+    .input(z.object({ tradeId: z.string(), tags: z.array(z.object({ id: z.string(), name: z.string() })) }))
     .mutation(async ({ctx, input}) => {
       // get the trade
       const trade = await ctx.prisma.trade.findUnique({
@@ -31,33 +30,64 @@ export const tradeRouter = router({
         throw new Error('Trade does not belong to user');
       }
 
-      // add the tags to the trade and if tags don't exist, create them
-      const tags = await ctx.prisma.trade.update({
+      // let tagsToSubmit = [];
+
+      // // Check if the tags exist by name and userId
+      // const existingUserTags = await ctx.prisma.tag.findMany({
+      //   where: {
+      //     name: {
+      //       in: input.tags.map(tag => tag.name),
+      //     },
+      //     userId: ctx.session.user.id,
+      //   },
+      // });
+
+      // // check if the tag exists on the trade
+      // const existingTradeTags = await ctx.prisma.tradeTag.findMany({
+      //   where: {
+      //     tradeId: input.tradeId,
+      //     tagId: {
+      //       in: existingUserTags.map(tag => tag.id),
+      //     },
+      //   },
+      // });
+
+      
+
+      
+
+      // add the tags to the trade using tradeId, if the tag does not exist, create it
+      const tradeTags = await ctx.prisma.trade.update({
         where: {
           id: input.tradeId,
         },
         data: {
-          tags: {
-            connectOrCreate: input.tags.map(tag => ({
-              where: {
-                name_userId: {
-                  name: tag.name,
-                  userId: tag.userId,
+          tradeTags: {
+            // For each tag, create a tag in tradeTags
+            create: input.tags.map(tag => ({
+              tag: {
+                connectOrCreate: {
+                  where: {
+                    id: tag.id,
+                  },
+                  create: {
+                    id: tag.id,
+                    name: tag.name,
+                    userId: ctx.session.user.id,
+                  },
                 },
-              },
-              create: {
-                name: tag.name,
-                userId: tag.userId,
               },
             })),
           },
         },
         include: {
-          tags: true,
+          tradeTags: true,
         },
       });
 
-      return tags;
+      // Return the trade and a success message
+      return { tradeTags, message: `${input.tags.length} tags added successfully!` };
+
 
     }
 
@@ -89,7 +119,6 @@ export const tradeRouter = router({
           id: input.id,
         },
         include: {
-          tags: true,
           executions: true,
         },
       });

@@ -6,21 +6,27 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import SideNav from "../../../components/SideNav";
 import { useState, useEffect, useContext } from "react";
-import type { Trade, Execution, TradeTag } from "@prisma/client";
+import type { Trade, Execution, TradeTag, Tag } from "@prisma/client";
 import { TradeContext } from "../../../context/TradeContext";
 import { useRouter } from "next/router";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import cuid from "cuid";
 
 const Trades: NextPage = () => {
   const { trades } = useContext(TradeContext);
   const [trade, setTrade] = useState<Trade | null>(null);
   const [executions, setExecutions] = useState<Execution[] | null>(null);
-  const [tags, setTags] = useState<TradeTag[] | null>(null);
+  const [tags, setTags] = useState<Tag[] | null>(null);
   const [tagInput, setTagInput] = useState<string>("");
+  const [tempTags, setTempTags] = useState<any>([]);
+
 
   // get the trade id from the url and put it in tradeId
   const router = useRouter();
   const tradeId = router.query.id as string;
+
+  // get userId from session
+  const { data: sessionData } = useSession();
 
   // get the trade by using trpc
   const { data: tradeData } = trpc.tradeRouter.getTradeById.useQuery(
@@ -29,10 +35,18 @@ const Trades: NextPage = () => {
       onSuccess(tradeData) {
         setTrade(tradeData);
         setExecutions(tradeData.executions);
-        setTags(tradeData.tags);
       },
     }
   );
+
+  // const { data: tagData } = trpc.tagRouter.getTagsByTradeId.useQuery(
+  //   {tradeId: tradeId},
+  //   {
+  //     onSuccess(tagData) {
+  //       setTags(tagData);
+  //     },
+  //   }
+  // );
 
   const { mutate: addTagsToTrade } = trpc.tradeRouter.addTagsToTrade.useMutation({
     onSuccess() {
@@ -42,7 +56,7 @@ const Trades: NextPage = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addTagsToTrade({ id: tradeId, tags: tagInput.split(",") });
+    addTagsToTrade({ tradeId: tradeId, tags: tempTags });
   }
 
 
@@ -50,15 +64,13 @@ const Trades: NextPage = () => {
     const { key } = e;
     const trimmedTag = tagInput.trim();
 
-    if (key === "Enter" && trimmedTag.length && !tags?.includes(trimmedTag)) {
-      e.preventDefault();
-      setTags([...tags, trimmedTag]);
+    // On enter key press, add the tag and assign id to the the tag using cuid
+    if (key === "Enter" && trimmedTag) {
+      setTempTags([...tempTags, { id: cuid(), name: trimmedTag }]);
       setTagInput("");
     }
+
   };
-
-
-  console.log("TEST", executions);
 
   return (
     <>
@@ -84,7 +96,7 @@ const Trades: NextPage = () => {
               <span className="text-gray-500">Back</span>
             </button>
             {/* Data here */}
-            {trade && (
+            {trade && sessionData && (
               <>
                 <div className="mb-3 flex">
                   <div>
@@ -283,12 +295,12 @@ const Trades: NextPage = () => {
                   <p className="text-sm uppercase text-gray-200">Tags</p>
                   <div className="mt-1 mb-4">
                     <div className="bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-gray-200">
-                    {tags.map((tag) => (
+                    {tempTags?.map((tag) => (
                       <span
-                        key={tag}
+                        key={tag.id}
                         className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2"
                       >
-                        {tag}
+                        {tag.name}
                       </span>
                     ))}
                     <form onSubmit={handleSubmit} className="inline-block">
@@ -300,6 +312,7 @@ const Trades: NextPage = () => {
                         onKeyDown={handleKeyDown}
                         onChange={(e) => setTagInput(e.target.value)}
                       />
+                      {/* <button type="submit" className="bg-primary p-3 rounded-lg">Submit</button> */}
                     </form>
                     </div>
                   </div>
