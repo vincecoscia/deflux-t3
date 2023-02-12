@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import { ThinkOrSwim } from "./mixins/ThinkOrSwim";
+import { TradingView } from "./mixins/TradingView";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { TradeContext } from "../context/TradeContext";
 
 export default function ImportTrades() {
   const [file, setFile] = useState(null); // TODO: Type this better
   const [platform, setPlatform] = useState("TD Ameritrade"); // TODO: Type this better
   const [previousTrades, setPreviousTrades] = useState([]);
   const [previousExecutions, setPreviousExecutions] = useState([]);
+  const { trades, setTrades } = useContext(TradeContext);
 
   const { data: sessionData } = useSession();
 
@@ -59,6 +62,7 @@ export default function ImportTrades() {
     {
       onSuccess(tradeData) {
         setPreviousTrades(tradeData);
+        setTrades(tradeData);
       },
     }
   );
@@ -93,9 +97,13 @@ export default function ImportTrades() {
       const userId = sessionData.user.id;
       ThinkOrSwim(file, userId, addExecutions, addTrades, previousTrades, previousExecutions);
       // get return value from ThinkOrSwim and console.log it
-      console.log("File uploaded and parsed");
-    } else {
-      console.log("File not uploaded or wrong platform selected");
+      console.log("File parsed and uploaded to server");
+    } 
+
+    if (file && platform === "TradingView") {
+      const userId = sessionData.user.id;
+      TradingView(file, userId, addExecutions, addTrades, previousTrades, previousExecutions);
+      console.log("File parsed and uploaded to server");
     }
   };
 
