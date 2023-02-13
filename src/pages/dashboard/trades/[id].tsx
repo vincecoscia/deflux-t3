@@ -9,16 +9,18 @@ import { useState, useEffect, useContext } from "react";
 import type { Trade, Execution, TradeTag, Tag } from "@prisma/client";
 import { TradeContext } from "../../../context/TradeContext";
 import { useRouter } from "next/router";
-import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import cuid from "cuid";
 
 const Trades: NextPage = () => {
   const { trades } = useContext(TradeContext);
   const [trade, setTrade] = useState<Trade | null>(null);
   const [executions, setExecutions] = useState<Execution[] | null>(null);
-  const [tags, setTags] = useState<Tag[] | null>(null);
+  const [tags, setTags] = useState<Tag[] | []>([]);
   const [tagInput, setTagInput] = useState<string>("");
-  const [tempTags, setTempTags] = useState<any>([]);
+  const [tempTag, setTempTag] = useState<any>({});
+
+  const utils = trpc.useContext();
 
 
   // get the trade id from the url and put it in tradeId
@@ -39,24 +41,39 @@ const Trades: NextPage = () => {
     }
   );
 
-  // const { data: tagData } = trpc.tagRouter.getTagsByTradeId.useQuery(
-  //   {tradeId: tradeId},
-  //   {
-  //     onSuccess(tagData) {
-  //       setTags(tagData);
-  //     },
-  //   }
-  // );
+  // get tags by trade id and refetch after adding a tag
 
-  const { mutate: addTagsToTrade } = trpc.tradeRouter.addTagsToTrade.useMutation({
+  const { data: tagData, refetch } = trpc.tagRouter.getTagsByTradeId.useQuery(
+    {tradeId: tradeId},
+    {
+      onSuccess(tagData) {
+        // pull out tags from each tradeTag and put them in an array
+        const tags = tagData.map((tradeTag) => tradeTag.tag);
+        setTags(tags);
+
+      },
+    }
+  );
+
+  const { mutate: addTagToTrade } = trpc.tradeRouter.addTagToTrade.useMutation({
     onSuccess() {
+      refetch();
       setTagInput("");
     }
   })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addTagsToTrade({ tradeId: tradeId, tags: tempTags });
+
+    const { tagId, tagName } = tempTag;
+    addTagToTrade({ tradeId: tradeId, tagId: tagId, tagName: tagName  });
+    if (sessionData && sessionData.user) {
+      // Only set tags if tag.name doesn't already exist
+      if (!tags.find((tag) => tag.name === tagName)) {
+        setTags([...tags, {id: tagId, name: tagName, userId: sessionData?.user.id}]);
+      }
+    }
+    setTempTag({});
   }
 
 
@@ -66,11 +83,21 @@ const Trades: NextPage = () => {
 
     // On enter key press, add the tag and assign id to the the tag using cuid
     if (key === "Enter" && trimmedTag) {
-      setTempTags([...tempTags, { id: cuid(), name: trimmedTag }]);
+      setTempTag({ tagId: cuid(), tagName: trimmedTag });
       setTagInput("");
     }
 
   };
+
+    const { mutate: deleteTagFromTrade } = trpc.tagRouter.deleteTagFromTrade.useMutation({
+      onSuccess(deletedTag) {
+        console.log("DELETED TAG", deletedTag)
+        setTagInput("");
+        setTags(tags.filter((tag) => tag.id !== deletedTag.tagId));
+      }
+    })
+
+    console.log("TAGS", tags)
 
   return (
     <>
@@ -295,12 +322,21 @@ const Trades: NextPage = () => {
                   <p className="text-sm uppercase text-gray-200">Tags</p>
                   <div className="mt-1 mb-4">
                     <div className="bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-gray-200">
-                    {tempTags?.map((tag) => (
+                    {tags?.map((tag) => (
                       <span
                         key={tag.id}
                         className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2"
                       >
                         {tag.name}
+                        <button
+                          type="button"
+                          className="-mr-1 ml-2 p-1 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                          onClick={() => deleteTagFromTrade({tradeId, tagId: tag.id})}
+                        >
+                          <span className="sr-only">Dismiss</span>
+                          <XCircleIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+
                       </span>
                     ))}
                     <form onSubmit={handleSubmit} className="inline-block">
@@ -312,7 +348,6 @@ const Trades: NextPage = () => {
                         onKeyDown={handleKeyDown}
                         onChange={(e) => setTagInput(e.target.value)}
                       />
-                      {/* <button type="submit" className="bg-primary p-3 rounded-lg">Submit</button> */}
                     </form>
                     </div>
                   </div>
