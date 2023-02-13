@@ -26,6 +26,9 @@ export const tagRouter = router({
     .query(async ({ ctx, input }) => {
       const tags = await ctx.prisma.tradeTag.findMany({
         where: { tradeId: input.tradeId },
+        include: {
+          tag: true,
+        },
       });
       return tags;
     }
@@ -36,6 +39,15 @@ export const tagRouter = router({
     .mutation(async ({ ctx, input }) => {
       const tag = await ctx.prisma.tag.delete({
         where: { id: input.id },
+      });
+      return tag;
+    }
+    ),
+    deleteTagFromTrade: protectedProcedure
+    .input(z.object({ tradeId: z.string(), tagId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const tag = await ctx.prisma.tradeTag.delete({
+        where: { tradeTagIdentifier: { tradeId: input.tradeId, tagId: input.tagId } },
       });
       return tag;
     }

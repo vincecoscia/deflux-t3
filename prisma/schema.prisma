@@ -151,6 +151,7 @@ model Tag {
   tradeTags TradeTag[]
 
   @@index([userId])
+  @@unique([name, userId], name: "tagIdentifier")
 }
 
 model TradeTag {
@@ -162,4 +163,5 @@ model TradeTag {
 
   @@index([tradeId])
   @@index([tagId])
+  @@unique([tradeId, tagId], name: "tradeTagIdentifier")
 }

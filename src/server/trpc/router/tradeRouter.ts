@@ -16,8 +16,8 @@ export const tradeRouter = router({
       
     }
   ),
-  addTagsToTrade: protectedProcedure
-    .input(z.object({ tradeId: z.string(), tags: z.array(z.object({ id: z.string(), name: z.string() })) }))
+  addTagToTrade: protectedProcedure
+    .input(z.object({ tradeId: z.string(), tagId: z.string(), tagName: z.string() }))
     .mutation(async ({ctx, input}) => {
       // get the trade
       const trade = await ctx.prisma.trade.findUnique({
@@ -63,21 +63,24 @@ export const tradeRouter = router({
         },
         data: {
           tradeTags: {
-            // For each tag, create a tag in tradeTags
-            create: input.tags.map(tag => ({
+            // For a single tag, 
+            create: {
               tag: {
                 connectOrCreate: {
                   where: {
-                    id: tag.id,
+                    tagIdentifier: {
+                      name: input.tagName,
+                      userId: ctx.session.user.id,
+                    },
                   },
                   create: {
-                    id: tag.id,
-                    name: tag.name,
+                    id: input.tagId,
+                    name: input.tagName,
                     userId: ctx.session.user.id,
                   },
                 },
               },
-            })),
+            },
           },
         },
         include: {
@@ -86,7 +89,7 @@ export const tradeRouter = router({
       });
 
       // Return the trade and a success message
-      return { tradeTags, message: `${input.tags.length} tags added successfully!` };
+      return tradeTags
 
 
     }
