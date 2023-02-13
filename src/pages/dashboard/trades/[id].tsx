@@ -11,6 +11,7 @@ import { TradeContext } from "../../../context/TradeContext";
 import { useRouter } from "next/router";
 import { ChevronLeftIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import cuid from "cuid";
+import ColorPicker from "../../../components/colorPicker";
 
 const Trades: NextPage = () => {
   const { trades } = useContext(TradeContext);
@@ -19,9 +20,10 @@ const Trades: NextPage = () => {
   const [tags, setTags] = useState<Tag[] | []>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [tempTag, setTempTag] = useState<any>({});
+  const [colorPickerClickedId, setColorPickerClickedId] = useState<string>("");
+  const [colorPickerActive, setColorPickerActive] = useState<boolean>(false);
 
   const utils = trpc.useContext();
-
 
   // get the trade id from the url and put it in tradeId
   const router = useRouter();
@@ -44,13 +46,12 @@ const Trades: NextPage = () => {
   // get tags by trade id and refetch after adding a tag
 
   const { data: tagData, refetch } = trpc.tagRouter.getTagsByTradeId.useQuery(
-    {tradeId: tradeId},
+    { tradeId: tradeId },
     {
       onSuccess(tagData) {
         // pull out tags from each tradeTag and put them in an array
         const tags = tagData.map((tradeTag) => tradeTag.tag);
         setTags(tags);
-
       },
     }
   );
@@ -59,23 +60,25 @@ const Trades: NextPage = () => {
     onSuccess() {
       refetch();
       setTagInput("");
-    }
-  })
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { tagId, tagName } = tempTag;
-    addTagToTrade({ tradeId: tradeId, tagId: tagId, tagName: tagName  });
+    addTagToTrade({ tradeId: tradeId, tagId: tagId, tagName: tagName });
     if (sessionData && sessionData.user) {
       // Only set tags if tag.name doesn't already exist
       if (!tags.find((tag) => tag.name === tagName)) {
-        setTags([...tags, {id: tagId, name: tagName, userId: sessionData?.user.id}]);
+        setTags([
+          ...tags,
+          { id: tagId, name: tagName, userId: sessionData?.user.id, color: "#18B4B7" },
+        ]);
       }
     }
     setTempTag({});
-  }
-
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { key } = e;
@@ -86,18 +89,42 @@ const Trades: NextPage = () => {
       setTempTag({ tagId: cuid(), tagName: trimmedTag });
       setTagInput("");
     }
-
   };
 
-    const { mutate: deleteTagFromTrade } = trpc.tagRouter.deleteTagFromTrade.useMutation({
+  const { mutate: deleteTagFromTrade } =
+    trpc.tagRouter.deleteTagFromTrade.useMutation({
       onSuccess(deletedTag) {
-        console.log("DELETED TAG", deletedTag)
+        console.log("DELETED TAG", deletedTag);
         setTagInput("");
         setTags(tags.filter((tag) => tag.id !== deletedTag.tagId));
-      }
-    })
+      },
+    });
 
-    console.log("TAGS", tags)
+    const { mutate: updateTagColor } = trpc.tagRouter.updateTagColor.useMutation({
+      onSuccess(updatedTag) {
+        console.log("UPDATED TAG", updatedTag);
+        setTagInput("");
+        setTags(tags.map((tag) => {
+          if (tag.id === updatedTag.id) {
+            return updatedTag;
+          }
+          return tag;
+        }));
+      },
+    });
+
+  const handleColorClick = (e: React.MouseEvent<HTMLButtonElement>, tagId) => {
+    e.preventDefault();
+    // Only open the colorPicker for the tag that was clicked
+    if (colorPickerClickedId === tagId) {
+      setColorPickerActive(!colorPickerActive);
+    } else {
+      setColorPickerActive(true);
+    }
+    setColorPickerClickedId(tagId);
+  };
+
+  console.log(tags);
 
   return (
     <>
@@ -230,7 +257,7 @@ const Trades: NextPage = () => {
                     </div>
                   </div>
                   <p className="text-sm uppercase text-gray-200">Executions</p>
-                  <div className="mt-1 flex flex-col mb-4">
+                  <div className="mt-1 mb-4 flex flex-col">
                     <div className="overflow-x-auto">
                       <div className="inline-block min-w-full py-2 align-middle">
                         <div className="overflow-hidden shadow sm:rounded-lg">
@@ -321,34 +348,56 @@ const Trades: NextPage = () => {
                   </div>
                   <p className="text-sm uppercase text-gray-200">Tags</p>
                   <div className="mt-1 mb-4">
-                    <div className="bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-gray-200">
-                    {tags?.map((tag) => (
-                      <span
-                        key={tag.id}
-                        className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800 mr-2"
-                      >
-                        {tag.name}
-                        <button
-                          type="button"
-                          className="-mr-1 ml-2 p-1 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                          onClick={() => deleteTagFromTrade({tradeId, tagId: tag.id})}
-                        >
-                          <span className="sr-only">Dismiss</span>
-                          <XCircleIcon className="h-5 w-5" aria-hidden="true" />
-                        </button>
-
-                      </span>
-                    ))}
-                    <form onSubmit={handleSubmit} className="inline-block">
-                      <input
-                        type="text"
-                        className="appearance-none bg-transparent border-none text-gray-200 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                        placeholder="Add a tag"
-                        value={tagInput}
-                        onKeyDown={handleKeyDown}
-                        onChange={(e) => setTagInput(e.target.value)}
-                      />
-                    </form>
+                    <div className="rounded-md border border-gray-700 bg-gray-800 px-2 py-1 text-gray-200">
+                      {tags?.map((tag) => (
+                        <>
+                          <span
+                            key={tag.id}
+                            onClick={() => {
+                              setColorPickerActive(!colorPickerActive);
+                              setColorPickerClickedId(tag.id);
+                            }}
+                            className={`relative mr-2 inline-flex cursor-pointer items-center rounded-full px-3 py-0.5 text-sm font-medium text-white`}
+                            style={{ backgroundColor: tag.color }}
+                          >
+                            {tag.name}
+                            <button
+                              type="button"
+                              className="-mr-1 ml-2 flex items-center justify-center rounded-full p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                              onClick={() =>
+                                deleteTagFromTrade({ tradeId, tagId: tag.id })
+                              }
+                            >
+                              <span className="sr-only">Dismiss</span>
+                              <XCircleIcon
+                                className="h-5 w-5 text-white"
+                                aria-hidden="true"
+                              />
+                            </button>
+                            {
+                              // Only open ColorPicker for the tag that was clicked
+                              colorPickerActive &&
+                              colorPickerClickedId === tag.id ? (
+                                <ColorPicker
+                                  color={tag.color}
+                                  tagId={tag.id}
+                                  updateTagColor={updateTagColor}
+                                />
+                              ) : null
+                            }
+                          </span>
+                        </>
+                      ))}
+                      <form onSubmit={handleSubmit} className="inline-block">
+                        <input
+                          type="text"
+                          className="mr-3 appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-200 focus:outline-none"
+                          placeholder="Add a tag"
+                          value={tagInput}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) => setTagInput(e.target.value)}
+                        />
+                      </form>
                     </div>
                   </div>
                 </div>

@@ -19,6 +19,7 @@ export default function ImportTrades() {
   const { mutate: addExecutions } =
     trpc.executionRouter.addExecutions.useMutation({
       onSuccess: (data) => {
+        refetch();
         console.log(data);
       },
       onError: (error) => {
@@ -28,6 +29,7 @@ export default function ImportTrades() {
 
   const { mutate: addTrades } = trpc.tradeRouter.addTrades.useMutation({
     onSuccess: (data) => {
+      refetch();
       console.log(data);
       // create toast
       toast.success(data.message, {
@@ -57,7 +59,7 @@ export default function ImportTrades() {
     }
   });
 
-  const { data: tradeData } = trpc.tradeRouter.getTrades.useQuery(
+  const { data: tradeData, refetch } = trpc.tradeRouter.getTrades.useQuery(
     undefined,
     {
       onSuccess(tradeData) {

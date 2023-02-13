@@ -52,5 +52,15 @@ export const tagRouter = router({
       return tag;
     }
     ),
+  updateTagColor: protectedProcedure
+    .input(z.object({ id: z.string(), color: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const tag = await ctx.prisma.tag.update({
+        where: { id: input.id },
+        data: { color: input.color },
+      });
+      return tag;
+    }
+    ),
     
 });
