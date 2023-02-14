@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import { ChevronLeftIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import cuid from "cuid";
 import ColorPicker from "../../../components/colorPicker";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Trades: NextPage = () => {
   const { trades } = useContext(TradeContext);
@@ -60,6 +62,20 @@ const Trades: NextPage = () => {
     onSuccess() {
       refetch();
       setTagInput("");
+    },
+    onError(error) {
+      // Create a toast to show error
+      toast.error('Tag already added to trade!', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+
     },
   });
 

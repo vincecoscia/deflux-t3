@@ -8,6 +8,7 @@ import { TradeProvider } from "../context/TradeContext";
 import Navbar from "../components/Navbar";
 
 import "../styles/globals.css";
+import { ToastContainer } from "react-toastify";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -18,6 +19,18 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <TradeProvider >
         <Navbar/>
         <Component {...pageProps} />
+        <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       </TradeProvider>
     </SessionProvider>
   );

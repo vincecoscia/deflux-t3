@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import { ThinkOrSwim } from "./mixins/ThinkOrSwim";
 import { TradingView } from "./mixins/TradingView";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { TradeContext } from "../context/TradeContext";
 
