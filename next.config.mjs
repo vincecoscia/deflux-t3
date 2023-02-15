@@ -14,7 +14,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["images.unsplash.com", "lh3.googleusercontent.com"],
+    domains: ["images.unsplash.com", "lh3.googleusercontent.com", "deflux-test.s3.amazonaws.com"],
   },
 };
 export default config;

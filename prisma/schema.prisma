@@ -54,6 +54,7 @@ model User {
   notes         Note[]
   studies       Study[]
   tags          Tag[]
+  images        Image[]
 }
 
 model VerificationToken {
@@ -136,6 +137,7 @@ model Trade {
   tradeTags       TradeTag[]
   executions      Execution[]
   studies         StudyTrade[]
+  screenshots     Image[]
   userId          String       @default(cuid())
   user            User         @relation(fields: [userId], references: [id])
   dateCreated     DateTime     @default(now())
@@ -165,4 +167,17 @@ model TradeTag {
   @@index([tradeId])
   @@index([tagId])
   @@unique([tradeId, tagId], name: "tradeTagIdentifier")
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  caption   String?
+  tradeId   String?
+  trade     Trade?   @relation(fields: [tradeId], references: [id])
+  timestamp DateTime @default(now())
+  userId    String   @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([tradeId])
 }
