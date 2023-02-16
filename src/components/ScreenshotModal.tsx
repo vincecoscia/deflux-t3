@@ -1,6 +1,5 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 const ScreenshotModal = ({ url, setScreenshotModalOpen, open }) => {
@@ -39,7 +38,7 @@ const ScreenshotModal = ({ url, setScreenshotModalOpen, open }) => {
                 alt="Screenshot"
                 width={1920}
                 height={1080}
-                className="inline-block transform overflow-hidden rounded-lg shadow-xl transition-all align-middle lg:max-w-[90vw]"
+                className="inline-block transform overflow-hidden rounded-lg shadow-xl transition-all align-middle lg:max-w-[90vw] lg:max-h-[90vh]"
               />
             </Transition.Child>
           </div>

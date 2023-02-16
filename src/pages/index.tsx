@@ -22,8 +22,15 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* If not logged in, view homepage */}
-      <main className="flex flex-col h-[calc(100vh-59px)] items-center justify-center bg-gray-900">
-
+      <main className="">
+        <section className="h-screen bg-gray-900 w-full">
+          <div className="curve"></div>
+          <div className="container mx-auto">
+          <div className="">
+            TEST
+          </div>
+          </div>
+        </section>
       </main>
     </>
   );

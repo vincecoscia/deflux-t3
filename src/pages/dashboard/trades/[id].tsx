@@ -1,10 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
-
+import axios from "axios";
 import { trpc } from "../../../utils/trpc";
 import SideNav from "../../../components/SideNav";
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import type { Trade, Execution, TradeTag, Tag } from "@prisma/client";
 import { useRouter } from "next/router";
 import { ChevronLeftIcon, XCircleIcon, ArrowUpTrayIcon  } from "@heroicons/react/24/solid";
@@ -28,6 +28,8 @@ const Trades: NextPage = () => {
   const [screenshotModalOpen, setScreenshotModalOpen] = useState<boolean>(false);
   const [screenshotClickedId, setScreenshotClickedId] = useState<string>("");
   const [screenshots, setScreenshots] = useState<any>([]);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -157,6 +159,7 @@ const Trades: NextPage = () => {
     const handleScreenshotSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!file) return;
+      setIsUploading(true);
 
       const { url, fields } = await createPresignedUrl({tradeId: tradeId}) as any;
 
@@ -171,20 +174,37 @@ const Trades: NextPage = () => {
       for (const key in data) {
         formData.append(key, data[key]);
       }
-      await fetch(url, {
-        method: 'POST',
-        body: formData,
-      });
+      // await fetch(url, {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      const options = {
+        onUploadProgress: (progressEvent: any) => {
+          const { loaded, total } = progressEvent;
+          // eslint-disable-next-line prefer-const
+          let percent = Math.floor((loaded * 100) / total);
+          console.log(`${loaded}kb of ${total}kb | ${percent}%`);
+          if (percent < 100) {
+            setUploadProgress(percent);
+          }
+        },
+      };
+
+      await axios.post(url, formData, options)
+
       setFile(null)
+      setIsUploading(false);
       refetchScreenshots();
     }
 
     const { mutate: deleteScreenshotFromTrade } = trpc.imageRouter.deleteScreenshotFromTrade.useMutation({
       onSuccess(deletedScreenshot) {
         console.log("DELETED SCREENSHOT", deletedScreenshot);
-        setScreenshots(screenshots.filter((screenshot) => screenshot.id !== deletedScreenshot.id));
+        refetchScreenshots();
       },
     });
+
+    console.log(file);
 
   return (
     <>
@@ -479,8 +499,8 @@ const Trades: NextPage = () => {
                             src={screenshot.url}
                             alt="Screenshot"
                             className="h-full w-full object-cover rounded-lg"
-                            width={640}
-                            height={480}
+                            width={150}
+                            height={100}
                           />
                           <div className="absolute top-0 right-0 invisible group-hover:visible z-20">
                             <button
@@ -518,9 +538,14 @@ const Trades: NextPage = () => {
                           />
                           {!file && <span className='text-xs text-center mt-2 hover:cursor-pointer'>Click to add an image</span>}
                           {file && <span className='text-xs text-center mt-2'>{file.name}</span>}
+                          {file && isUploading && (
+                          <div className="bg-gray-200 w-5/6 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${uploadProgress}%`}}></div>
+                          </div>
+                          )}
                           </div>
                         </label>
-                        {file && (
+                        {file && !isUploading && (
                         <button
                           type="submit"
                           className="w-full py-2 bg-primary text-white rounded-lg mt-2"

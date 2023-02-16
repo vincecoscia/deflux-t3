@@ -21,7 +21,7 @@ export const TradeProvider = ({ children }) => {
 
   console.log('FROM PROVIDER', trades)
 // Only call the query if there is a session
-  const {data: tradeData, refetch } = trpc.tradeRouter.getTrades.useQuery(
+  const {data: tradeData, refetch: refetchGlobalTrades } = trpc.tradeRouter.getTrades.useQuery(
       undefined,
       {
         onSuccess(tradeData) {

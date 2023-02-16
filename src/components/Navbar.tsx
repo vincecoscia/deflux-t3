@@ -46,22 +46,29 @@ export default function Navbar() {
     }
   };
 
+  console.log("PATHNAME", router.pathname)
+
   return (
-    <nav className="flex w-full bg-gray-800 px-4 py-2">
-      <div className="grid w-full lg:grid-cols-2 grid-cols-3 items-center justify-items-center">
+    <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" ? "fixed top-0" : "bg-gray-800"}`}>
+      <div className="grid w-full grid-cols-3 items-center justify-items-center">
         <Link href="/" className="justify-self-start ml-2 mt-2">
           <h1 className={`${azonix.className} text-3xl text-white`}>
             Deflu<span className="text-primary">x</span>
           </h1>
         </Link>
-        {/* <div className="hidden text-gray-500 lg:flex">
-          <Link href="/" className={`+ mr-10 ${isActive("/")}`}>
+        {router.pathname == "/" && (
+        <div className="hidden text-gray-500 lg:flex">
+          <Link href="/" className={`mr-10 ${isActive("/")}`}>
             Home
           </Link>
-          <Link href="/dashboard" className={isActive("/dashboard")}>
-            Dashboard
+          <Link href="/pricing" className={`mr-10 ${isActive("/pricing")}`}>
+            Pricing
           </Link>
-        </div> */}
+          <Link href="/about" className={isActive("/about")}>
+            About
+          </Link>
+        </div>
+        )}
         {sessionData && (
           <>
             <div className="relative mr-10 hidden justify-self-end lg:block">
@@ -347,12 +354,18 @@ export default function Navbar() {
           </>
         )}
         {!sessionData && (
+          <div className="flex text-sm justify-center items-center col-span-2 justify-self-end lg:col-span-1 lg:mr-10">
           <button
             onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-            className="col-span-2 justify-self-end rounded bg-primary px-4 py-2 text-white lg:col-span-1 lg:mr-10"
+            className="rounded px-3 py-1 text-white mr-2"
           >
-            Sign In
+            Log In
           </button>
+          <button 
+            className="text-white text-sm rounded-lg px-3 py-1 bg-slate-900">
+            Sign Up
+          </button>
+          </div>
         )}
       </div>
     </nav>
