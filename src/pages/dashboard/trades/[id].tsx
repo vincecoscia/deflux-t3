@@ -199,7 +199,7 @@ const Trades: NextPage = () => {
       <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
-          <div className="mr-3 text-white">
+          <div className="mr-3 text-white mb-24 lg:mb-3">
             {/* Create next Link that goes back to previous page */}
 
             <button
