@@ -71,7 +71,7 @@ export default function Navbar() {
         )}
         {sessionData && (
           <>
-            <div className="relative mr-10 hidden justify-self-end lg:block">
+            <div className="relative mr-10 hidden justify-self-end lg:block col-span-2">
               <div className="flex text-white">
                 <button className="" onClick={() => showOptions()}>
                   <Image
