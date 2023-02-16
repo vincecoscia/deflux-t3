@@ -49,7 +49,7 @@ export default function Navbar() {
   console.log("PATHNAME", router.pathname)
 
   return (
-    <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "fixed top-0" : "bg-gray-800"}`}>
+    <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "fixed top-0 bg-gray-800 lg:bg-transparent" : "bg-gray-800"}`}>
       <div className="grid w-full grid-cols-3 items-center justify-items-center">
         <Link href="/" className="justify-self-start ml-2 mt-2">
           <h1 className={`deflux text-3xl text-white`}>
