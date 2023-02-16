@@ -84,13 +84,13 @@ const Dashboard: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
+      <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
           <div className="mr-3 mb-24 lg:mb-0">
             <div className="mb-3 grid gap-3 lg:grid-cols-12">
               <div className="flex flex-col lg:col-span-8">
-                <div className="mb-3 flex justify-between">
+                <div className="mb-3 flex justify-between flex-col-reverse gap-y-3 lg:flex-row lg:gap-y-0">
                   <div className="flex w-full gap-x-3">
                     <p className="w-full rounded-lg py-2 px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
                       Account Balance:{" "}

@@ -53,7 +53,7 @@ const Trades: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
+      <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
           <div className="mr-3 ">

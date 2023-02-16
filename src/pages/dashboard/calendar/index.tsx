@@ -25,7 +25,7 @@ const Calendar: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-[calc(100vh-84px)] bg-white dark:bg-gray-900">
+      <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
           <div className="mb-24 lg:mb-3 mr-3 grid grid-cols-12 gap-3">

@@ -22,7 +22,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* If not logged in, view homepage */}
-      <main className="flex flex-col h-[calc(100vh-84px)] items-center justify-center bg-gray-900">
+      <main className="flex flex-col h-[calc(100vh-59px)] items-center justify-center bg-gray-900">
 
       </main>
     </>

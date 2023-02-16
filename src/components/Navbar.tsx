@@ -48,20 +48,20 @@ export default function Navbar() {
 
   return (
     <nav className="flex w-full bg-gray-800 px-4 py-2">
-      <div className="grid w-full grid-cols-3 items-center justify-items-center">
-        <Link href="/" className="justify-self-start px-4 py-4">
+      <div className="grid w-full lg:grid-cols-2 grid-cols-3 items-center justify-items-center">
+        <Link href="/" className="justify-self-start ml-2 mt-2">
           <h1 className={`${azonix.className} text-3xl text-white`}>
             Deflu<span className="text-primary">x</span>
           </h1>
         </Link>
-        <div className="hidden text-gray-500 lg:flex">
+        {/* <div className="hidden text-gray-500 lg:flex">
           <Link href="/" className={`+ mr-10 ${isActive("/")}`}>
             Home
           </Link>
           <Link href="/dashboard" className={isActive("/dashboard")}>
             Dashboard
           </Link>
-        </div>
+        </div> */}
         {sessionData && (
           <>
             <div className="relative mr-10 hidden justify-self-end lg:block">
@@ -72,7 +72,7 @@ export default function Navbar() {
                     alt="user image"
                     width={50}
                     height={50}
-                    className="rounded-full"
+                    className="rounded-full w-10 h-10"
                   />
                 </button>
                 <div className="ml-4 flex flex-col justify-center">
