@@ -104,7 +104,7 @@ const Home: NextPage = () => {
               <button className="rounded-lg bg-primary lg:py-4 lg:px-6 py-2 px-4 lg:text-xl font-semibold text-black/75 hover:bg-primary/75">
                 Get Started
               </button>
-              <button className="flex rounded-lg border-2 border-primary lg:py-4  py-2 px-4 lg:px-6 text-xl font-semibold text-white hover:bg-primary">
+              <button className="flex rounded-lg border-2 border-primary lg:py-4  py-2 px-4 lg:px-6 lg:text-xl font-semibold text-white hover:bg-primary items-center">
                 <span className="mr-2">Learn More </span>
 
                 <svg
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
                   viewBox="0 0 24 24"
                   strokeWidth={2.5}
                   stroke="currentColor"
-                  className="h-7 w-7"
+                  className="lg:h-7 lg:w-7 w-5 h-5"
                 >
                   <path
                     strokeLinecap="round"
