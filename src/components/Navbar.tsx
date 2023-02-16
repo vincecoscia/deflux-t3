@@ -49,14 +49,14 @@ export default function Navbar() {
   console.log("PATHNAME", router.pathname)
 
   return (
-    <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" ? "fixed top-0" : "bg-gray-800"}`}>
+    <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "fixed top-0" : "bg-gray-800"}`}>
       <div className="grid w-full grid-cols-3 items-center justify-items-center">
         <Link href="/" className="justify-self-start ml-2 mt-2">
-          <h1 className={`${azonix.className} text-3xl text-white`}>
+          <h1 className={`deflux text-3xl text-white`}>
             Deflu<span className="text-primary">x</span>
           </h1>
         </Link>
-        {router.pathname == "/" && (
+        {router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? (
         <div className="hidden text-gray-500 lg:flex">
           <Link href="/" className={`mr-10 ${isActive("/")}`}>
             Home
@@ -68,10 +68,10 @@ export default function Navbar() {
             About
           </Link>
         </div>
-        )}
+        ) : null}
         {sessionData && (
           <>
-            <div className="relative mr-10 hidden justify-self-end lg:block col-span-2">
+            <div className={`relative mr-10 hidden justify-self-end lg:block ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "" : "col-span-2"}`}>
               <div className="flex text-white">
                 <button className="" onClick={() => showOptions()}>
                   <Image
@@ -79,7 +79,7 @@ export default function Navbar() {
                     alt="user image"
                     width={50}
                     height={50}
-                    className="rounded-full w-10 h-10"
+                    className="rounded-full w-10 h-10 border border-white"
                   />
                 </button>
                 <div className="ml-4 flex flex-col justify-center">
