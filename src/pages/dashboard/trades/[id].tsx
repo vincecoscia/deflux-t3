@@ -504,7 +504,7 @@ const Trades: NextPage = () => {
                         </>
                       ))}
                       {screenshots.length < 3 && (
-                      <form onSubmit={handleScreenshotSubmit} className="inline-block w-48 h-32 border border-dashed border-gray-700 rounded-lg">
+                      <form onSubmit={handleScreenshotSubmit} className="inline-block lg:w-48 h-32 w-full border border-dashed border-gray-700 rounded-lg mb-10 lg:mb-2">
                         <label htmlFor="uploadImage">
                           <div className="flex flex-col items-center justify-center h-full w-full">
                           <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 mx-auto hover:cursor-pointer" />
