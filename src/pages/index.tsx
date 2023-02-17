@@ -83,7 +83,8 @@ const Home: NextPage = () => {
             height={600}
             className="absolute right-[-4rem] top-1/3 object-contain rounded-lg shadow-2xl lg:block hidden"
           />
-          <div className="container mx-auto flex h-full flex-col justify-center">
+          <div className="container mx-auto h-full">
+            <div className="flex flex-col lg:justify-center lg:h-full mx-4 pt-48 lg:pt-0">
             <h2 className="mb-10 lg:w-1/2 w-full lg:text-6xl text-4xl font-semibold leading-none tracking-wide text-white text-center lg:text-start">
               Unleash your trading potential.
             </h2>
@@ -122,6 +123,7 @@ const Home: NextPage = () => {
                   />
                 </svg>
               </button>
+            </div>
             </div>
           </div>
         </section>
