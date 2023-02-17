@@ -54,17 +54,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
   data,
 }) {
   const [showColumnFilter, setShowColumnFilter] = useState(false);
-  const [sortedTrades, setSortedTrades] = useState<any[]>([]);
 
-  useEffect(() => {
-    // Sort trades by dateClosed descending
-    const sortedTrades = data.sort((a, b) => {
-      const dateA = new Date(a.dateClosed);
-      const dateB = new Date(b.dateClosed);
-      return dateB.getTime() - dateA.getTime();
-    });
-    setSortedTrades(sortedTrades);
-  }, [data]);
 
   const columns = useMemo(
     () => [
@@ -147,7 +137,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
     getToggleHideAllColumnsProps,
   } = useTable({ 
     columns, 
-    data: sortedTrades,
+    data: data,
     initialState: { 
       pageIndex: 0, 
       pageSize: 10,

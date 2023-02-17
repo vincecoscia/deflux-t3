@@ -16,5 +16,13 @@ const config = {
   images: {
     domains: ["images.unsplash.com", "lh3.googleusercontent.com", "deflux-test.s3.amazonaws.com", "deflux-qa.s3.amazonaws.com"],
   },
+  // redirects: async () => [
+  //   {
+  //     source: "/dashboard",
+  //     destination: "/dashboard/overview",
+  //     permanent: true,
+  //   },
+  // ],
+
 };
 export default config;

@@ -97,10 +97,16 @@ export const tradeRouter = router({
   ),
   getTrades: protectedProcedure
     .query(async ({ctx}) => {
-      const trades = await ctx.prisma.trade.findMany();
-      // get only the users trades
-      const userTrades = trades.filter(trade => trade.userId === ctx.session.user.id);
-      return userTrades;
+      const trades = await ctx.prisma.trade.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        orderBy: {
+          dateClosed: 'desc',
+        },
+      });
+
+      return trades;
     }
   ),
   getUserPlatforms: protectedProcedure

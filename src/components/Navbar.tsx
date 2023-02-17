@@ -31,7 +31,7 @@ export default function Navbar() {
   };
 
   const isActiveLink = (route: string) => {
-    if (route === router.pathname) {
+    if (router.pathname.startsWith(route)) {
       return "text-primary dark:text-primary bg-primary/10 dark:bg-primary/10";
     } else {
       return "text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700";
@@ -39,7 +39,7 @@ export default function Navbar() {
   };
 
   const isActiveSVG = (route: string) => {
-    if (route === router.pathname) {
+    if (router.pathname.startsWith(route)) {
       return "text-primary dark:text-primary";
     } else {
       return "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
@@ -91,7 +91,7 @@ export default function Navbar() {
               </div>
               {show && (
                 <div className="absolute mt-2 flex w-48 flex-col rounded-md bg-gray-900 px-4 py-4 text-white shadow-xl">
-                  <Link href="/dashboard" className="py-3">
+                  <Link href="/dashboard/overview" className="py-3">
                     Dashboard
                   </Link>
                   <Link href="/profile" className="py-3">
@@ -167,17 +167,17 @@ export default function Navbar() {
                           <li>
                             <Link
                               onClick={() => showMobileOptions()}
-                              href="/dashboard"
+                              href="/dashboard/overview"
                               className={
                                 "group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " +
-                                isActiveLink("/dashboard")
+                                isActiveLink("/dashboard/overview")
                               }
                             >
                               <svg
                                 aria-hidden="true"
                                 className={
                                   "h-6 w-6 transition duration-75" +
-                                  isActiveSVG("/dashboard")
+                                  isActiveSVG("/dashboard/overview")
                                 }
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
@@ -356,7 +356,7 @@ export default function Navbar() {
         {!sessionData && (
           <div className="flex text-sm justify-center items-center col-span-2 justify-self-end lg:col-span-1 lg:mr-10">
           <button
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard/overview" })}
             className="rounded px-3 py-1 text-white mr-2"
           >
             Log In

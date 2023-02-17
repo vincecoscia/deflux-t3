@@ -12,7 +12,7 @@ export default function SideNav() {
   const router = useRouter();
 
   const isActiveLink = (route: string) => {
-    if (route === router.pathname) {
+    if (router.pathname.startsWith(route)) {
       return "text-primary dark:text-primary bg-primary/10 dark:bg-primary/10";
     } else {
       return "text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700";
@@ -20,11 +20,14 @@ export default function SideNav() {
   };
 
   const isActiveSVG = (route: string) => {
-    if (route === router.pathname) {
-      return "text-primary dark:text-primary";
-    } else {
-      return "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
-    }
+    router.pathname.startsWith(route) ? "text-primary dark:text-primary" : "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
+    // if (router.pathname === route) {
+    //   return "text-primary dark:text-primary";
+    // } else if (router.pathname.startsWith(route)) {
+    //   return "text-primary dark:text-primary";
+    // } else {
+    //   return "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
+    // }
   };
 
   return (
@@ -37,10 +40,10 @@ export default function SideNav() {
           <ul className="space-y-2">
             <li>
               <Link
-                href="/dashboard"
+                href="/dashboard/overview"
                 className={
                   "group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " +
-                  isActiveLink("/dashboard")
+                  isActiveLink("/dashboard/overview")
                 }
               >
                 <svg
