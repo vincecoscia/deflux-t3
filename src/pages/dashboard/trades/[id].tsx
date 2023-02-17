@@ -277,8 +277,6 @@ const IndividualTrade: NextPage = () => {
     // find current trade index in trades array by comparing trade.id
     const index = tradeIds.indexOf(id);
 
-    console.log("INDEX", index);
-
     // set next trade to the trade at the next index
     const nextTrade = trades[index - 1];
 
@@ -301,8 +299,6 @@ const IndividualTrade: NextPage = () => {
     // find current trade index in trades array by comparing trade.id
     const index = tradeIds.indexOf(id);
 
-    console.log("INDEX", index);
-
     // set next trade to the trade at the next index
     const prevTrade = trades[index + 1];
 
@@ -310,9 +306,6 @@ const IndividualTrade: NextPage = () => {
       setPrevTrade(prevTrade);
     }
   };
-
-  console.log("NEXT TRADE", nextTrade);
-  console.log("PREV TRADE", prevTrade);
 
   return (
     <>
