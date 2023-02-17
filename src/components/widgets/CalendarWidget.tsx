@@ -21,6 +21,7 @@ import {
   parseISO,
   isSameDay,
 } from "date-fns";
+import Link from "next/link";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -290,9 +291,11 @@ const CalendarWidget: FC<CalendarDayProps> = memo(function CalendarWidget({
                     {format(trade.dateClosed, "h:mm a")}
                   </time>
                 </div>
-                <button className="ml-6 flex-none self-center rounded-md bg-primary py-2 px-3 font-semibold text-white opacity-0 shadow-sm hover:opacity-90 focus:opacity-100 group-hover:opacity-100">
+                <Link href={`/dashboard/trades/${trade.id}`}>
+                <button className="ml-6 flex-none self-center rounded-md bg-primary py-2 px-3 font-semibold text-white lg:opacity-0 shadow-sm lg:hover:opacity-90 lg:focus:opacity-100 lg:group-hover:opacity-100">
                   View<span className="sr-only">, {trade.name}</span>
                 </button>
+                </Link>
               </li>
             ))}
           </ol>

@@ -356,11 +356,15 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
         </div>
       </div>
       <div className="flex items-center justify-between py-1">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <button onClick={() => previousPage()} disabled={!canPreviousPage} className="py-2 w-20 bg-primary text-white rounded-lg">
+        <div className="flex flex-1 justify-between sm:hidden items-center mt-2">
+          <button onClick={() => previousPage()} disabled={!canPreviousPage} className={`w-20 py-2 border rounded-lg ${canPreviousPage ? 'border-primary text-white' : 'border-gray-500 text-gray-500'}`}>
             Previous
           </button>
-          <button onClick={() => nextPage()} disabled={!canNextPage} className="w-20 py-2 bg-primary text-white rounded-lg">
+          <p className="text-sm text-white">
+              Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
+              <span className="font-medium">{pageOptions.length}</span>
+          </p>
+          <button onClick={() => nextPage()} disabled={!canNextPage} className={`w-20 py-2 border rounded-lg ${canNextPage ? 'border-primary text-white' : 'border-gray-500 text-gray-500'}`}>
             Next
           </button>
         </div>

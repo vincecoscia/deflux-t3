@@ -1,11 +1,9 @@
 import React from "react";
-import localFont from "@next/font/local";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-
-const azonix = localFont({ src: "../styles/fonts/Azonix.woff2" });
+import OutsideClickHandler from 'react-outside-click-handler';
 
 export default function Navbar() {
   const [show, setShow] = React.useState(false);
@@ -46,8 +44,6 @@ export default function Navbar() {
     }
   };
 
-  console.log("PATHNAME", router.pathname)
-
   return (
     <nav className={`flex w-full px-4 py-2 z-20 ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "fixed top-0 bg-gray-800 lg:bg-transparent" : "bg-gray-800"}`}>
       <div className="grid w-full grid-cols-3 items-center justify-items-center">
@@ -73,7 +69,7 @@ export default function Navbar() {
           <>
             <div className={`relative mr-10 hidden justify-self-end lg:block ${router.pathname == "/" || router.pathname == "/pricing" || router.pathname == "/about" ? "" : "col-span-2"}`}>
               <div className="flex text-white">
-                <button className="" onClick={() => showOptions()}>
+                <button className="" onClick={() => setShow(!show)}>
                   <Image
                     src={sessionData.user?.image || "/default-avatar.png"}
                     alt="user image"
@@ -90,15 +86,33 @@ export default function Navbar() {
                 </div>
               </div>
               {show && (
-                <div className="absolute mt-2 flex w-48 flex-col rounded-md bg-gray-900 px-4 py-4 text-white shadow-xl">
-                  <Link href="/dashboard/overview" className="py-3">
-                    Dashboard
-                  </Link>
-                  <Link href="/profile" className="py-3">
-                    Profile
-                  </Link>
-                  <Link href="/settings" className="mb-4 py-3">
-                    Settings
+                <OutsideClickHandler 
+                  onOutsideClick={() => setShow(false)}
+                  useCapture={true}
+                >
+                <div id="nav-menu" className="absolute mt-2 flex flex-col rounded-md bg-gray-900 px-2 py-4 text-white shadow-xl gap-y-4 w-64">
+                  <Link
+                    onClick={() => setShow(!show)}
+                    href="/dashboard/overview"
+                    className={
+                      "group flex items-center rounded-lg p-2 text-base font-normal transition duration-75 " +
+                      isActiveLink("/dashboard/overview")
+                    }
+                  >
+                    <svg
+                      aria-hidden="true"
+                      className={
+                        "h-6 w-6 transition duration-75" +
+                        isActiveSVG("/dashboard/overview")
+                      }
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
+                      <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                    </svg>
+                    <span className="ml-2">Dashboard</span>
                   </Link>
                   <button
                     onClick={() => signOut()}
@@ -107,6 +121,7 @@ export default function Navbar() {
                     Sign Out
                   </button>
                 </div>
+                </OutsideClickHandler>
               )}
             </div>
             {/* Mobile Navigation */}
