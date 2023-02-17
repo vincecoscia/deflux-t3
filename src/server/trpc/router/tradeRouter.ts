@@ -139,4 +139,24 @@ export const tradeRouter = router({
       return trade;
     }
   ),
+  updateTradeWithNotes: protectedProcedure
+    .input(z.object({ id: z.string(), notes: z.string() }))
+    .mutation(async ({ctx, input}) => {
+      // include tags and executions
+      const trade = await ctx.prisma.trade.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          notes: input.notes,
+        },
+      });
+      // make sure the trade belongs to the user
+      if (trade?.userId !== ctx.session.user.id) {
+        throw new Error('Trade does not belong to user');
+      }
+
+      return trade;
+    }
+  ),
 })

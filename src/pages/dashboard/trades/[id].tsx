@@ -4,18 +4,26 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { trpc } from "../../../utils/trpc";
 import SideNav from "../../../components/SideNav";
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import type { Trade, Execution, TradeTag, Tag } from "@prisma/client";
 import { useRouter } from "next/router";
-import { ChevronLeftIcon, XCircleIcon, ArrowUpTrayIcon  } from "@heroicons/react/24/solid";
+import {
+  ChevronLeftIcon,
+  XCircleIcon,
+  ArrowUpTrayIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/solid";
 import cuid from "cuid";
 import ColorPicker from "../../../components/colorPicker";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import ScreenshotModal from "../../../components/ScreenshotModal";
+import { TradeContext } from "../../../context/TradeContext";
+import Link from "next/link";
 
-const Trades: NextPage = () => {
+const IndividualTrade: NextPage = () => {
+  const { trades } = useContext(TradeContext);
   const [trade, setTrade] = useState<Trade | null>(null);
   const [executions, setExecutions] = useState<Execution[] | null>(null);
   const [tags, setTags] = useState<Tag[] | []>([]);
@@ -25,11 +33,22 @@ const Trades: NextPage = () => {
   const [colorPickerActive, setColorPickerActive] = useState<boolean>(false);
   const [file, setFile] = useState<any>(null);
   const [presignedData, setPresignedData] = useState<any>(null);
-  const [screenshotModalOpen, setScreenshotModalOpen] = useState<boolean>(false);
+  const [screenshotModalOpen, setScreenshotModalOpen] =
+    useState<boolean>(false);
   const [screenshotClickedId, setScreenshotClickedId] = useState<string>("");
   const [screenshots, setScreenshots] = useState<any>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [notes, setNotes] = useState<string>("");
+  const [nextTrade, setNextTrade] = useState<Trade | null>(null);
+  const [prevTrade, setPrevTrade] = useState<Trade | null>(null);
+
+  useEffect(() => {
+    if (trade) {
+      getNextTrade();
+      getPrevTrade();
+    }
+  }, [trade]);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -49,6 +68,8 @@ const Trades: NextPage = () => {
       onSuccess(tradeData) {
         setTrade(tradeData);
         setExecutions(tradeData.executions);
+        setNotes(tradeData.notes ? tradeData.notes : "");
+        getNextTrade();
       },
     }
   );
@@ -73,7 +94,7 @@ const Trades: NextPage = () => {
     },
     onError(error) {
       // Create a toast to show error
-      toast.error('Tag already added to trade!', {
+      toast.error("Tag already added to trade!", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -83,7 +104,6 @@ const Trades: NextPage = () => {
         progress: undefined,
         theme: "colored",
       });
-
     },
   });
 
@@ -97,7 +117,12 @@ const Trades: NextPage = () => {
       if (!tags.find((tag) => tag.name === tagName)) {
         setTags([
           ...tags,
-          { id: tagId, name: tagName, userId: sessionData?.user.id, color: "#18B4B7" },
+          {
+            id: tagId,
+            name: tagName,
+            userId: sessionData?.user.id,
+            color: "#18B4B7",
+          },
         ]);
       }
     }
@@ -124,27 +149,31 @@ const Trades: NextPage = () => {
       },
     });
 
-    const { mutate: updateTagColor } = trpc.tagRouter.updateTagColor.useMutation({
-      onSuccess(updatedTag) {
-        console.log("UPDATED TAG", updatedTag);
-        setTagInput("");
-        setTags(tags.map((tag) => {
+  const { mutate: updateTagColor } = trpc.tagRouter.updateTagColor.useMutation({
+    onSuccess(updatedTag) {
+      console.log("UPDATED TAG", updatedTag);
+      setTagInput("");
+      setTags(
+        tags.map((tag) => {
           if (tag.id === updatedTag.id) {
             return updatedTag;
           }
           return tag;
-        }));
-      },
-    });
+        })
+      );
+    },
+  });
 
-    const { mutateAsync: createPresignedUrl } = trpc.imageRouter.createPresignedUrl.useMutation({
+  const { mutateAsync: createPresignedUrl } =
+    trpc.imageRouter.createPresignedUrl.useMutation({
       onSuccess(presignedStuff) {
         setPresignedData(presignedStuff);
       },
     });
 
-    const { data: screenshotsData, refetch: refetchScreenshots }= trpc.imageRouter.getImagesForTrade.useQuery(
-      {tradeId: tradeId},
+  const { data: screenshotsData, refetch: refetchScreenshots } =
+    trpc.imageRouter.getImagesForTrade.useQuery(
+      { tradeId: tradeId },
       {
         onSuccess(screenshotsData) {
           setScreenshots(screenshotsData);
@@ -152,59 +181,138 @@ const Trades: NextPage = () => {
       }
     );
 
-    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFile(e.currentTarget.files?.[0]);
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.currentTarget.files?.[0]);
+  };
+
+  const handleScreenshotSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    if (!file) return;
+    setIsUploading(true);
+
+    const { url, fields } = (await createPresignedUrl({
+      tradeId: tradeId,
+    })) as any;
+
+    console.log("PRESIGNED DATA", presignedData);
+
+    const data = {
+      ...fields,
+      "Content-Type": file.type,
+      file,
+    };
+    const formData = new FormData();
+    for (const key in data) {
+      formData.append(key, data[key]);
+    }
+    // await fetch(url, {
+    //   method: 'POST',
+    //   body: formData,
+    // });
+    const options = {
+      onUploadProgress: (progressEvent: any) => {
+        const { loaded, total } = progressEvent;
+        // eslint-disable-next-line prefer-const
+        let percent = Math.floor((loaded * 100) / total);
+        console.log(`${loaded}kb of ${total}kb | ${percent}%`);
+        if (percent < 100) {
+          setUploadProgress(percent);
+        }
+      },
     };
 
-    const handleScreenshotSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!file) return;
-      setIsUploading(true);
+    await axios.post(url, formData, options);
 
-      const { url, fields } = await createPresignedUrl({tradeId: tradeId}) as any;
+    setFile(null);
+    setIsUploading(false);
+    refetchScreenshots();
+  };
 
-      console.log("PRESIGNED DATA", presignedData);
-
-      const data = {
-        ...fields,
-        'Content-Type': file.type,
-        file,
-      }
-      const formData = new FormData();
-      for (const key in data) {
-        formData.append(key, data[key]);
-      }
-      // await fetch(url, {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      const options = {
-        onUploadProgress: (progressEvent: any) => {
-          const { loaded, total } = progressEvent;
-          // eslint-disable-next-line prefer-const
-          let percent = Math.floor((loaded * 100) / total);
-          console.log(`${loaded}kb of ${total}kb | ${percent}%`);
-          if (percent < 100) {
-            setUploadProgress(percent);
-          }
-        },
-      };
-
-      await axios.post(url, formData, options)
-
-      setFile(null)
-      setIsUploading(false);
-      refetchScreenshots();
-    }
-
-    const { mutate: deleteScreenshotFromTrade } = trpc.imageRouter.deleteScreenshotFromTrade.useMutation({
+  const { mutate: deleteScreenshotFromTrade } =
+    trpc.imageRouter.deleteScreenshotFromTrade.useMutation({
       onSuccess(deletedScreenshot) {
         console.log("DELETED SCREENSHOT", deletedScreenshot);
         refetchScreenshots();
       },
     });
 
-    console.log(file);
+  const { mutate: updateTradeWithNotes } =
+    trpc.tradeRouter.updateTradeWithNotes.useMutation({
+      onError(error) {
+        toast.error("Only 500 characters allowed", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      },
+    });
+
+  const handleNotesSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await updateTradeWithNotes({
+      id: tradeId,
+      notes: notes,
+    });
+    refetch();
+  };
+
+  const getNextTrade = async () => {
+    // get next trade by using the current trade's index in the trades array
+    if (!trades) return;
+    if (!trade) return;
+
+    // get id out of trade
+    const { id } = trade;
+
+    // get array of trade ids
+    const tradeIds = trades.map((trade) => trade.id);
+
+    // find current trade index in trades array by comparing trade.id
+    const index = tradeIds.indexOf(id);
+
+    console.log("INDEX", index);
+
+    // set next trade to the trade at the next index
+    const nextTrade = trades[index - 1];
+
+    if (nextTrade) {
+      setNextTrade(nextTrade);
+    }
+  };
+
+  const getPrevTrade = async () => {
+    // get next trade by using the current trade's index in the trades array
+    if (!trades) return;
+    if (!trade) return;
+
+    // get id out of trade
+    const { id } = trade;
+
+    // get array of trade ids
+    const tradeIds = trades.map((trade) => trade.id);
+
+    // find current trade index in trades array by comparing trade.id
+    const index = tradeIds.indexOf(id);
+
+    console.log("INDEX", index);
+
+    // set next trade to the trade at the next index
+    const prevTrade = trades[index + 1];
+
+    if (prevTrade) {
+      setPrevTrade(prevTrade);
+    }
+  };
+
+  console.log("NEXT TRADE", nextTrade);
+  console.log("PREV TRADE", prevTrade);
 
   return (
     <>
@@ -219,7 +327,7 @@ const Trades: NextPage = () => {
       <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
-          <div className="mr-3 text-white mb-24 lg:mb-3">
+          <div className="mr-3 mb-24 text-white lg:mb-3">
             {/* Create next Link that goes back to previous page */}
 
             <button
@@ -480,83 +588,156 @@ const Trades: NextPage = () => {
                       </form>
                     </div>
                   </div>
-                  <div className="w-full flex justify-between flex-col lg:flex-row mb-4">
-                    <p className="text-sm uppercase text-gray-200">Screenshots</p>
-                    <p className='text-xs text-gray-500'>Limited to 3 per trade</p>
+                  <div className="mb-4 flex w-full flex-col justify-between lg:flex-row">
+                    <p className="text-sm uppercase text-gray-200">
+                      Screenshots
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Limited to 3 per trade
+                    </p>
                   </div>
                   <div className="mt-1 mb-4">
-                    <div className="flex gap-x-4 gap-y-3 lg:gap-y-0 flex-col lg:flex-row">
+                    <div className="flex flex-col gap-x-4 gap-y-3 lg:flex-row lg:gap-y-0">
                       {screenshots?.map((screenshot) => (
                         <>
-                        <div
-                          key={screenshot.id}
-                          className="lg:w-48 lg:h-32 w-full h-full hover:bg-blend-overlay hover:cursor-pointer relative group"
-                          onClick={() => {
-                            setScreenshotClickedId(screenshot.id);
-                            setScreenshotModalOpen(!screenshotModalOpen)}}
-                        >
-                          <Image
-                            src={screenshot.url}
-                            alt="Screenshot"
-                            className="h-full w-full object-cover rounded-lg"
-                            width={150}
-                            height={100}
-                          />
-                          <div className="absolute top-0 right-0 invisible group-hover:visible z-20">
-                            <button
-                              type="button"
-                              className="inline-flex items-center p-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                              onClick={() =>
-                                deleteScreenshotFromTrade({
-                                  tradeId,
-                                  imageId: screenshot.id,
-                                })
-                              }
-                            >
-                              <XCircleIcon className="h-4 w-4" aria-hidden="true" />
-                              <span className="sr-only">Dismiss</span>
-                            </button>
+                          <div
+                            key={screenshot.id}
+                            className="group relative h-full w-full hover:cursor-pointer hover:bg-blend-overlay lg:h-32 lg:w-48"
+                            onClick={() => {
+                              setScreenshotClickedId(screenshot.id);
+                              setScreenshotModalOpen(!screenshotModalOpen);
+                            }}
+                          >
+                            <Image
+                              src={screenshot.url}
+                              alt="Screenshot"
+                              className="h-full w-full rounded-lg object-cover"
+                              width={150}
+                              height={100}
+                            />
+                            <div className="invisible absolute top-0 right-0 z-20 group-hover:visible">
+                              <button
+                                type="button"
+                                className="inline-flex items-center rounded-full border border-transparent bg-red-600 p-1 text-xs font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                onClick={() =>
+                                  deleteScreenshotFromTrade({
+                                    tradeId,
+                                    imageId: screenshot.id,
+                                  })
+                                }
+                              >
+                                <XCircleIcon
+                                  className="h-4 w-4"
+                                  aria-hidden="true"
+                                />
+                                <span className="sr-only">Dismiss</span>
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        {screenshotClickedId === screenshot.id && (
-                        <ScreenshotModal url={screenshot.url} setScreenshotModalOpen={setScreenshotModalOpen} open={screenshotModalOpen}/>
-                        )}
+                          {screenshotClickedId === screenshot.id && (
+                            <ScreenshotModal
+                              url={screenshot.url}
+                              setScreenshotModalOpen={setScreenshotModalOpen}
+                              open={screenshotModalOpen}
+                            />
+                          )}
                         </>
                       ))}
                       {screenshots.length < 3 && (
-                      <form onSubmit={handleScreenshotSubmit} className="inline-block lg:w-48 h-32 w-full border border-dashed border-gray-700 rounded-lg mb-10 lg:mb-2">
-                        <label htmlFor="uploadImage">
-                          <div className="flex flex-col items-center justify-center h-full w-full">
-                          <ArrowUpTrayIcon className="h-8 w-8 text-gray-400 mx-auto hover:cursor-pointer" />
-                          <input
-                            type="file"
-                            id="uploadImage"
-                            ref={fileRef}
-                            className="hidden"
-                            placeholder="Add a screenshot"
-                            onChange={onFileChange}
-                          />
-                          {!file && <span className='text-xs text-center mt-2 hover:cursor-pointer'>Click to add an image</span>}
-                          {file && <span className='text-xs text-center mt-2'>{file.name}</span>}
-                          {file && isUploading && (
-                          <div className="bg-gray-200 w-5/6 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${uploadProgress}%`}}></div>
-                          </div>
-                          )}
-                          </div>
-                        </label>
-                        {file && !isUploading && (
-                        <button
-                          type="submit"
-                          className="w-full py-2 bg-primary text-white rounded-lg mt-2"
+                        <form
+                          onSubmit={handleScreenshotSubmit}
+                          className="mb-10 inline-block h-32 w-full rounded-lg border border-dashed border-gray-700 lg:mb-2 lg:w-48"
                         >
-                          Upload
-                        </button>
+                          <label htmlFor="uploadImage">
+                            <div className="flex h-full w-full flex-col items-center justify-center">
+                              <ArrowUpTrayIcon className="mx-auto h-8 w-8 text-gray-400 hover:cursor-pointer" />
+                              <input
+                                type="file"
+                                id="uploadImage"
+                                ref={fileRef}
+                                className="hidden"
+                                placeholder="Add a screenshot"
+                                onChange={onFileChange}
+                              />
+                              {!file && (
+                                <span className="mt-2 text-center text-xs hover:cursor-pointer">
+                                  Click to add an image
+                                </span>
+                              )}
+                              {file && (
+                                <span className="mt-2 text-center text-xs">
+                                  {file.name}
+                                </span>
+                              )}
+                              {file && isUploading && (
+                                <div className="mt-2 h-2.5 w-5/6 rounded-full bg-gray-200 dark:bg-gray-700">
+                                  <div
+                                    className="h-2.5 rounded-full bg-blue-600"
+                                    style={{ width: `${uploadProgress}%` }}
+                                  ></div>
+                                </div>
+                              )}
+                            </div>
+                          </label>
+                          {file && !isUploading && (
+                            <button
+                              type="submit"
+                              className="mt-2 w-full rounded-lg bg-primary py-2 text-white"
+                            >
+                              Upload
+                            </button>
+                          )}
+                        </form>
                       )}
-                      </form>
-                      )}
-                      </div>
                     </div>
+                  </div>
+                  <div className="mb-4 flex w-full flex-col justify-between lg:flex-row">
+                    <p className="text-sm uppercase text-gray-200">Notes</p>
+                    <p className="text-xs text-gray-500">
+                      <span
+                        className={`${
+                          notes.length > 500 ? "text-red-600" : ""
+                        }`}
+                      >
+                        {notes.length}
+                      </span>
+                      /500
+                    </p>
+                  </div>
+                  <div className="mt-1 mb-4">
+                    <form onSubmit={handleNotesSubmit}>
+                      <textarea
+                        className="h-32 w-full rounded-md border border-gray-700 bg-gray-800 p-2 text-gray-200 focus:border-primary focus:ring-0"
+                        placeholder="Add notes"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                      />
+                      <button
+                        type="submit"
+                        className="mt-2 w-full rounded-lg bg-primary py-2 text-white lg:w-auto lg:px-4"
+                      >
+                        Save Note
+                      </button>
+                    </form>
+                  </div>
+                  <div className="mt-8 flex w-full lg:justify-center lg:gap-x-8 justify-between">
+                    <Link href={`/dashboard/trades/${prevTrade ? prevTrade.id : trade.id}`}>
+                      <button
+                        type="button"
+                        className={`flex items-center text-primary ${prevTrade ? prevTrade.id === trade.id ? "opacity-50" : null : null}`}
+                      >
+                        <ChevronLeftIcon className="h-6 w-6" />Previous Trade 
+                      </button>
+                    </Link>
+                    <Link href={`/dashboard/trades/${nextTrade ? nextTrade.id : trade.id}`}>
+                      <button
+                        type="button"
+                        className={`flex items-center text-primary ${nextTrade ? nextTrade.id === trade.id ? "opacity-50" : null : null}`}
+                      >
+                        Next Trade <ChevronRightIcon className="h-6 w-6" />
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </>
             )}
@@ -567,4 +748,4 @@ const Trades: NextPage = () => {
   );
 };
 
-export default Trades;
+export default IndividualTrade;

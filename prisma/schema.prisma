@@ -51,7 +51,6 @@ model User {
   sessions      Session[]
   executions    Execution[]
   trades        Trade[]
-  notes         Note[]
   studies       Study[]
   tags          Tag[]
   images        Image[]
@@ -85,17 +84,6 @@ model Execution {
   @@unique([userId, id])
   @@index([userId])
   @@index([tradeId])
-}
-
-model Note {
-  id        String   @id
-  tradeId   String   @unique
-  text      String
-  timestamp DateTime @default(now())
-  userId    String   @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@index([userId])
 }
 
 model Study {
@@ -134,6 +122,7 @@ model Trade {
   closePrice      Float
   dateOpened      DateTime
   dateClosed      DateTime
+  notes           String?       @db.VarChar(500) @default("")
   tradeTags       TradeTag[]
   executions      Execution[]
   studies         StudyTrade[]
