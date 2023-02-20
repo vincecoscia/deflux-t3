@@ -18,11 +18,21 @@ const Trades: NextPage = () => {
   // const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [platform, setPlatform] = useState<string>("All");
+  const [tagsAndWinRate, setTagsAndWinRate] = useState<any>([]);
   useEffect(() => {
     getBalance(trades, setBalance);
   }, [trades]);
 
   const { data: sessionData } = useSession();
+
+  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
+    undefined,
+    {
+      onSuccess(tagWinRate) {
+        setTagsAndWinRate(tagWinRate);
+      },
+    }
+  );
 
   // const { data: executionData } = trpc.executionRouter.getExecutions.useQuery(
   //   undefined,
@@ -91,7 +101,7 @@ const Trades: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={trades} />
+                <Statistics data={trades} tagWinRate={tagsAndWinRate} />
               </div>
             </div>
           </div>
