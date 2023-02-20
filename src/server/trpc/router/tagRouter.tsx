@@ -62,5 +62,35 @@ export const tagRouter = router({
       return tag;
     }
     ),
+    getTradesByTag: protectedProcedure
+    .input(z.object({ tagId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const trades = await ctx.prisma.tradeTag.findMany({
+        where: { tagId: input.tagId },
+        include: {
+          trade: true,
+        },
+      });
+      return trades;
+    }
+    ),
+    // calculateTagWinRate: protectedProcedure
+    // .query(async ({ ctx }) => {
+    //   const trades = await ctx.prisma.trade.findMany({
+    //     where: { isClosed: true },
+    //     include: {
+    //       tradeTags: true,
+    //     },
+    //   });
+    //   const tags = await ctx.prisma.tag.findMany();
+    //   const tagWinRates = tags.map((tag) => {
+    //     const tradesWithTag = trades.filter((trade) => trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id));
+    //     const winTrades = tradesWithTag.filter((trade) => trade.winLoss === 'WIN');
+    //     const winRate = winTrades.length / tradesWithTag.length;
+    //     return { tagId: tag.id, winRate };
+    //   });
+    //   return tagWinRates;
+    // }
+    // ),
     
 });

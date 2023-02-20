@@ -240,6 +240,18 @@ const IndividualTrade: NextPage = () => {
 
   const { mutate: updateTradeWithNotes } =
     trpc.tradeRouter.updateTradeWithNotes.useMutation({
+      onSuccess() {
+        toast.success("Notes updated!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      },
       onError(error) {
         toast.error("Only 500 characters allowed", {
           position: "bottom-right",
@@ -306,6 +318,8 @@ const IndividualTrade: NextPage = () => {
       setPrevTrade(prevTrade);
     }
   };
+
+  console.log("NEXT TRADE", nextTrade);
 
   return (
     <>
