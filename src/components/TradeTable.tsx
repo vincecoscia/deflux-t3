@@ -283,7 +283,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                         className="border-b border-gray-700  bg-gray-800 px-2 py-3 last:rounded-b-lg last:border-0 hover:bg-primary hover:bg-opacity-10 dark:text-white"
                       >
                         {row.cells.map((cell) => {
-                          console.log(cell)
+                          // console.log(cell)
                           return (
                             <td
                               {...cell.getCellProps()}

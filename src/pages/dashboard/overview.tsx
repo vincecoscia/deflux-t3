@@ -22,10 +22,11 @@ const Overview: NextPage = () => {
   const [balance, setBalance] = useState<number>(0);
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
+  const [tagsAndWinRate, setTagsAndWinRate] = useState<any>([]);
 
   const { data: sessionData } = useSession();
 
-  console.log('selectedPlatform', selectedPlatform)
+  // console.log('selectedPlatform', selectedPlatform)
 
   // Write a function for filtering trades by platform
   const filterTradesByPlatform = (trades, platform) => {
@@ -36,6 +37,15 @@ const Overview: NextPage = () => {
       setFilteredTrades(filteredTrades);
     }
   };
+
+  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
+    undefined,
+    {
+      onSuccess(tagWinRate) {
+        setTagsAndWinRate(tagWinRate);
+      },
+    }
+  );
 
   useEffect(() => {
     filterTradesByPlatform(trades, selectedPlatform);
@@ -120,7 +130,7 @@ const Overview: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={filteredTrades} />
+                <Statistics data={filteredTrades} tagWinRate={tagsAndWinRate} />
               </div>
             </div>
             <div className="text-sm">

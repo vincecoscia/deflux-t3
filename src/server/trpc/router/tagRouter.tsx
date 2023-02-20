@@ -74,23 +74,38 @@ export const tagRouter = router({
       return trades;
     }
     ),
-    // calculateTagWinRate: protectedProcedure
-    // .query(async ({ ctx }) => {
-    //   const trades = await ctx.prisma.trade.findMany({
-    //     where: { isClosed: true },
-    //     include: {
-    //       tradeTags: true,
-    //     },
-    //   });
-    //   const tags = await ctx.prisma.tag.findMany();
-    //   const tagWinRates = tags.map((tag) => {
-    //     const tradesWithTag = trades.filter((trade) => trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id));
-    //     const winTrades = tradesWithTag.filter((trade) => trade.winLoss === 'WIN');
-    //     const winRate = winTrades.length / tradesWithTag.length;
-    //     return { tagId: tag.id, winRate };
-    //   });
-    //   return tagWinRates;
-    // }
-    // ),
+    calculateTagWinRate: protectedProcedure
+    .query(async ({ ctx }) => {
+      const trades = await ctx.prisma.trade.findMany({
+        where: { 
+          userId: ctx.session.user.id,
+        },
+        include: {
+          tradeTags: true,
+        },
+      });
+      const tags = await ctx.prisma.tag.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          tradeTags: {
+            some: {
+              trade: {
+                userId: ctx.session.user.id,
+              },
+            }
+          },
+        },
+      });
+      const tagWinRate = tags.map((tag) => {
+        const tradesWithThisTag = trades.filter((trade) => {
+          return trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id);
+        });
+        const tradesWithThisTagAndProfit = tradesWithThisTag.filter((trade) => trade.winLoss === "WIN");
+        const winRate = tradesWithThisTagAndProfit.length / tradesWithThisTag.length;
+        return { tag, winRate };
+      });
+      return tagWinRate;
+    }
+    ),
     
 });

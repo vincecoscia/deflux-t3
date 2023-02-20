@@ -53,6 +53,7 @@ model User {
   trades        Trade[]
   studies       Study[]
   tags          Tag[]
+  tradeTags     TradeTag[]
   images        Image[]
 }
 
@@ -152,6 +153,8 @@ model TradeTag {
   trade   Trade  @relation(fields: [tradeId], references: [id])
   tagId   String
   tag     Tag    @relation(fields: [tagId], references: [id])
+  userId  String 
+  user    User   @relation(fields: [userId], references: [id]) 
 
   @@index([tradeId])
   @@index([tagId])
