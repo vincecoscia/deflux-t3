@@ -22,7 +22,6 @@ const Dashboard: NextPage = () => {
   const [balance, setBalance] = useState<number>(0);
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
-  const [tagsAndWinRate, setTagsAndWinRate] = useState<any>([]);
 
   const { data: sessionData } = useSession();
 
@@ -75,15 +74,6 @@ const Dashboard: NextPage = () => {
     );
   }
 
-  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
-    undefined,
-    {
-      onSuccess(tagWinRate) {
-        setTagsAndWinRate(tagWinRate);
-      },
-    }
-  );
-
   return (
     <>
       <Head>
@@ -130,7 +120,7 @@ const Dashboard: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={filteredTrades} tagWinRate={tagsAndWinRate} />
+                <Statistics data={filteredTrades} />
               </div>
             </div>
             <div className="text-sm">
