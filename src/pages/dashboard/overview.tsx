@@ -38,6 +38,15 @@ const Overview: NextPage = () => {
     }
   };
 
+  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
+    undefined,
+    {
+      onSuccess(tagWinRate) {
+        setTagsAndWinRate(tagWinRate);
+      },
+    }
+  );
+
   useEffect(() => {
     filterTradesByPlatform(trades, selectedPlatform);
     getBalance(trades, setBalance);
@@ -121,7 +130,7 @@ const Overview: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={filteredTrades} />
+                <Statistics data={filteredTrades} tagWinRate={tagsAndWinRate} />
               </div>
             </div>
             <div className="text-sm">

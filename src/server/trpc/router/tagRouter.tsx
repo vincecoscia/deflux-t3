@@ -74,38 +74,38 @@ export const tagRouter = router({
       return trades;
     }
     ),
-    // calculateTagWinRate: protectedProcedure
-    // .query(async ({ ctx }) => {
-    //   const trades = await ctx.prisma.trade.findMany({
-    //     where: { 
-    //       userId: ctx.session.user.id,
-    //     },
-    //     include: {
-    //       tradeTags: true,
-    //     },
-    //   });
-    //   const tags = await ctx.prisma.tag.findMany({
-    //     where: {
-    //       userId: ctx.session.user.id,
-    //       tradeTags: {
-    //         some: {
-    //           trade: {
-    //             userId: ctx.session.user.id,
-    //           },
-    //         }
-    //       },
-    //     },
-    //   });
-    //   const tagWinRate = tags.map((tag) => {
-    //     const tradesWithThisTag = trades.filter((trade) => {
-    //       return trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id);
-    //     });
-    //     const tradesWithThisTagAndProfit = tradesWithThisTag.filter((trade) => trade.winLoss === "WIN");
-    //     const winRate = tradesWithThisTagAndProfit.length / tradesWithThisTag.length;
-    //     return { tag, winRate };
-    //   });
-    //   return tagWinRate;
-    // }
-    // ),
+    calculateTagWinRate: protectedProcedure
+    .query(async ({ ctx }) => {
+      const trades = await ctx.prisma.trade.findMany({
+        where: { 
+          userId: ctx.session.user.id,
+        },
+        include: {
+          tradeTags: true,
+        },
+      });
+      const tags = await ctx.prisma.tag.findMany({
+        where: {
+          userId: ctx.session.user.id,
+          tradeTags: {
+            some: {
+              trade: {
+                userId: ctx.session.user.id,
+              },
+            }
+          },
+        },
+      });
+      const tagWinRate = tags.map((tag) => {
+        const tradesWithThisTag = trades.filter((trade) => {
+          return trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id);
+        });
+        const tradesWithThisTagAndProfit = tradesWithThisTag.filter((trade) => trade.winLoss === "WIN");
+        const winRate = tradesWithThisTagAndProfit.length / tradesWithThisTag.length;
+        return { tag, winRate };
+      });
+      return tagWinRate;
+    }
+    ),
     
 });

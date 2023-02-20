@@ -4,16 +4,17 @@ import type { Trade } from "@prisma/client";
 interface StatisticsProps {
   data: Trade[];
   // tagWinRate comes as an array of objects with a tag and winRate property
+  tagWinRate: any;
 }
 
-const Statistics: FC<StatisticsProps> = memo(function Statistics({ data }) {
+const Statistics: FC<StatisticsProps> = memo(function Statistics({ data, tagWinRate }) {
   console.log("STATISTICS DATA", data);
   const [winRate, setWinRate] = useState<number>(0);
   const [averageWin, setAverageWin] = useState<number>(0);
   const [averageLoss, setAverageLoss] = useState<number>(0);
   const [riskReward, setRiskReward] = useState<number>(0);
-  // const [winningTags, setWinningTags] = useState<any>([]);
-  // const [losingTags, setLosingTags] = useState<any>([]);
+  const [winningTags, setWinningTags] = useState<any>([]);
+  const [losingTags, setLosingTags] = useState<any>([]);
 
   useEffect(() => {
     setWinRate(
@@ -35,24 +36,24 @@ const Statistics: FC<StatisticsProps> = memo(function Statistics({ data }) {
         }, 0) / data.filter((trade) => trade.winLoss === "LOSS").length || 0;
     setAverageLoss(avgLoss);
     setRiskReward(Math.abs(avgWin / avgLoss) || 0);
-    // setWinningTagsFunc()
-    // setLosingTagsFunc()
-  }, [data]);
+    setWinningTagsFunc()
+    setLosingTagsFunc()
+  }, [data, tagWinRate]);
 
-  // const setWinningTagsFunc = () => {
-  //   // get top 3 tags with highest win rate. tagWinRate is an array of objects with a tag and winRate property
-  //   console.log("tagWinRate STAT PAGE", tagWinRate)
-  //   const top3Tags = tagWinRate.sort((a, b) => b.winRate - a.winRate).slice(0, 3);
-  //   setWinningTags(top3Tags);
-  // };
+  const setWinningTagsFunc = () => {
+    // get top 3 tags with highest win rate. tagWinRate is an array of objects with a tag and winRate property
+    console.log("tagWinRate STAT PAGE", tagWinRate)
+    const top3Tags = tagWinRate.sort((a, b) => b.winRate - a.winRate).slice(0, 3);
+    setWinningTags(top3Tags);
+  };
 
-  // const setLosingTagsFunc = () => {
-  //   // get top 3 tags with lowest win rate. tagWinRate is an array of objects with a tag and winRate property
-  //   const bottom3Tags = tagWinRate.sort((a, b) => a.winRate - b.winRate).slice(0, 3);
-  //   setLosingTags(bottom3Tags);
-  // };
+  const setLosingTagsFunc = () => {
+    // get top 3 tags with lowest win rate. tagWinRate is an array of objects with a tag and winRate property
+    const bottom3Tags = tagWinRate.sort((a, b) => a.winRate - b.winRate).slice(0, 3);
+    setLosingTags(bottom3Tags);
+  };
 
-  // console.log("WINNING TAGS", winningTags)
+  console.log("WINNING TAGS", winningTags)
 
   return (
     <div className="flex h-full w-full flex-col p-2">
@@ -86,7 +87,7 @@ const Statistics: FC<StatisticsProps> = memo(function Statistics({ data }) {
             </p>
           </div>
         </div>
-        {/* <div>
+        <div>
           <div className="mb-4">
             <p className="text-sm font-light text-white">Best Tags & Win Rate</p>
             {winningTags.map((winners) => {
@@ -110,7 +111,7 @@ const Statistics: FC<StatisticsProps> = memo(function Statistics({ data }) {
                 )
               })}
               </div>
-          </div> */}
+          </div>
         </div>
       </div>
   );

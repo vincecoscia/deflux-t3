@@ -14,6 +14,16 @@ import { TradeContext } from "../../../context/TradeContext";
 
 const Calendar: NextPage = () => {
   const { trades } = useContext(TradeContext);
+  const [tagsAndWinRate, setTagsAndWinRate] = useMemoizedState<any>([]);
+
+  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
+    undefined,
+    {
+      onSuccess(tagWinRate) {
+        setTagsAndWinRate(tagWinRate);
+      },
+    }
+  );
 
   return (
     <>
@@ -33,7 +43,7 @@ const Calendar: NextPage = () => {
               <CalendarWidget trades={trades}/>
             </div>
             <div className="flex rounded-lg bg-gray-800 p-2 text-white lg:col-span-2 col-span-12">
-              <Statistics data={trades} />
+              <Statistics data={trades} tagWinRate={tagsAndWinRate} />
             </div>
           </div>
         </div>
