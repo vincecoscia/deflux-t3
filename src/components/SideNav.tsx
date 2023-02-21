@@ -11,8 +11,6 @@ export default function SideNav() {
 
   const router = useRouter();
 
-  console.log("COLLAPSED? ", isCollapsed);
-
   const isActiveLink = (route: string) => {
     if (router.pathname.startsWith(route)) {
       return "text-primary dark:text-primary bg-primary/10 dark:bg-primary/10";
@@ -33,7 +31,7 @@ export default function SideNav() {
       aria-label="Sidenav"
     >
       <button
-        className="absolute top-1/2 -right-5 z-10 rounded-full bg-white p-2 shadow-lg dark:bg-primary"
+        className="absolute top-1/2 -right-4 z-10 rounded-full bg-white p-2 shadow-lg dark:bg-primary"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? (
@@ -43,7 +41,7 @@ export default function SideNav() {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-6 w-6 text-white"
+            className="h-5 w-5 text-white"
           >
             <path
               strokeLinecap="round"
@@ -58,7 +56,7 @@ export default function SideNav() {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-6 w-6 text-white"
+            className="h-5 w-5 text-white"
           >
             <path
               strokeLinecap="round"
