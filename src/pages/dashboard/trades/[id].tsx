@@ -13,6 +13,7 @@ import {
   ArrowUpTrayIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
+import OutsideClickHandler from 'react-outside-click-handler';
 import cuid from "cuid";
 import ColorPicker from "../../../components/colorPicker";
 import { toast } from "react-toastify";
@@ -166,7 +167,7 @@ const IndividualTrade: NextPage = () => {
 
   const { mutate: updateTagColor } = trpc.tagRouter.updateTagColor.useMutation({
     onSuccess(updatedTag) {
-      console.log("UPDATED TAG", updatedTag);
+      refetchUserTags();
       setTagInput("");
       setTags(
         tags.map((tag) => {
@@ -595,11 +596,17 @@ const IndividualTrade: NextPage = () => {
                               // Only open ColorPicker for the tag that was clicked
                               colorPickerActive &&
                               colorPickerClickedId === tag.id ? (
+                                <OutsideClickHandler
+                                  onOutsideClick={() =>
+                                    setColorPickerActive(false)
+                                  }
+                                >
                                 <ColorPicker
                                   color={tag.color}
                                   tagId={tag.id}
                                   updateTagColor={updateTagColor}
                                 />
+                                </OutsideClickHandler>
                               ) : null
                             }
                           </span>

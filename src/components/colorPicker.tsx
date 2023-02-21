@@ -28,7 +28,7 @@ function ColorPicker({ color, tagId, updateTagColor} ) {
   console.log('TAG COLOR', color)
 
   return (
-    <div className="absolute top-10 z-20 w-max">
+    <div className="absolute top-10 left-0 z-20 w-max">
       <div className="lg:flex lg:flex-row bg-gray-700 rounded-md p-3 gap-x-4 grid grid-cols-3 gap-y-2">
         {colors.map((color) => (
           <div
