@@ -32,6 +32,7 @@ export const TradeProvider = ({ children }) => {
           // return a response if there is an error
           console.log(error);
         },
+        enabled: sessionData ? true : false,
       }
     );
 
