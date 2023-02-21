@@ -2,6 +2,9 @@
 ## Priority
 - [x] Add predictive text or box for adding tags
 - [x] Redesign color picker (Especially for mobile)
+- [ ] Add Setups which combine certain tags and can be shareable with community eventually
+- [ ] Add date selector to filter trades by date range for trade table
+- [ ] Add TradeAccounts with the name of the trade account and the ability to rename it as well as other settings
 - [ ] Design analytics page for use with widgets
 - [ ] Calendar on desktop needs better design within each day
 - [ ] Provide date-specific statistics on calendar page
@@ -17,6 +20,11 @@
 - [x] Tags on mobile should appear differently
 - [x] On individual trade, "Next Trade" & "Previous Trade" should be disabled if at end or beginning (Only happens on initial load)
 
+### Potential additions
+- [ ] Add strategies that groups tags together (Trades should only have 1 strategy?)
+- [ ] Add mistake tags to trades
+- [ ] Lexical for text editing (Not sure how to store... maybe S3?)
+
 ### Before launch
 - [ ] Create a new planetscale DB to separate QA, STG, & PROD branches
 - [ ] Should have local DB set up so that changes can be made locally
@@ -28,6 +36,7 @@
 - [ ] A user should be able to get analytics on their overall trading strategies (tags)
 - [ ] A user should be able to add their trades to a study and get custom analytics based on that study
 - [ ] A user should be able to compare studies to their overall account and to other studies
+- [ ] A user should be able to publish their studies publicly where other users can favorite (star?) them to save to their studies screen and maybe add comments
 - [ ] A user should be able to get analytics on tags and combinations of tags to provide better insight
 - [ ] A user should be able to save their view settings so when they login, their data is presented the way they want
 - [ ] A user should be able to get a 7 day free trial (Must put in card info) or "beta pass" to test new features (Card info not required)

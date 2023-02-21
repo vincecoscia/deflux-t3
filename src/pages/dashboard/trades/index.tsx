@@ -25,15 +25,6 @@ const Trades: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
-    undefined,
-    {
-      onSuccess(tagWinRate) {
-        setTagsAndWinRate(tagWinRate);
-      },
-    }
-  );
-
   // const { data: executionData } = trpc.executionRouter.getExecutions.useQuery(
   //   undefined,
   //   {

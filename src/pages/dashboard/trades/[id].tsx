@@ -698,47 +698,50 @@ const IndividualTrade: NextPage = () => {
                       {screenshots.length < 3 && (
                         <form
                           onSubmit={handleScreenshotSubmit}
-                          className="mb-10 inline-block h-32 w-full rounded-lg border border-dashed border-gray-700 lg:mb-2 lg:w-48"
+                          className="w-full lg:w-48"
                         >
-                          <label htmlFor="uploadImage">
-                            <div className="flex h-full w-full flex-col items-center justify-center">
-                              <ArrowUpTrayIcon className="mx-auto h-8 w-8 text-gray-400 hover:cursor-pointer" />
-                              <input
-                                type="file"
-                                id="uploadImage"
-                                ref={fileRef}
-                                className="hidden"
-                                placeholder="Add a screenshot"
-                                onChange={onFileChange}
-                              />
-                              {!file && (
-                                <span className="mt-2 text-center text-xs hover:cursor-pointer">
-                                  Click to add an image
-                                </span>
-                              )}
-                              {file && (
-                                <span className="mt-2 text-center text-xs">
-                                  {file.name}
-                                </span>
-                              )}
-                              {file && isUploading && (
-                                <div className="mt-2 h-2.5 w-5/6 rounded-full bg-gray-200 dark:bg-gray-700">
-                                  <div
-                                    className="h-2.5 rounded-full bg-blue-600"
-                                    style={{ width: `${uploadProgress}%` }}
-                                  ></div>
-                                </div>
-                              )}
-                            </div>
-                          </label>
+                          <div className="mb-10 inline-block h-32 w-full rounded-lg border border-dashed border-gray-700 lg:mb-2 lg:w-48">
+                            <label htmlFor="uploadImage">
+                              <div className="flex h-full w-full flex-col items-center justify-center">
+                                <ArrowUpTrayIcon className="mx-auto h-8 w-8 text-gray-400 hover:cursor-pointer" />
+                                <input
+                                  type="file"
+                                  id="uploadImage"
+                                  ref={fileRef}
+                                  className="hidden"
+                                  placeholder="Add a screenshot"
+                                  onChange={onFileChange}
+                                />
+                                {!file && (
+                                  <span className="mt-2 text-center text-xs hover:cursor-pointer">
+                                    Click to add an image
+                                  </span>
+                                )}
+                                {file && (
+                                  <span className="mt-2 text-center text-xs">
+                                    {file.name}
+                                  </span>
+                                )}
+                                {file && isUploading && (
+                                  <div className="mt-2 h-2.5 w-5/6 rounded-full bg-gray-200 dark:bg-gray-700">
+                                    <div
+                                      className="h-2.5 rounded-full bg-blue-600"
+                                      style={{ width: `${uploadProgress}%` }}
+                                    ></div>
+                                  </div>
+                                )}
+                              </div>
+                            </label>
+                          </div>
                           {file && !isUploading && (
                             <button
                               type="submit"
-                              className="mt-2 w-full rounded-lg bg-primary py-2 text-white"
+                              className='mt-2 w-full rounded-lg bg-primary py-2 text-white'
                             >
                               Upload
                             </button>
                           )}
+                          
                         </form>
                       )}
                     </div>

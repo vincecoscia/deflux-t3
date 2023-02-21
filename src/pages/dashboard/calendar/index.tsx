@@ -16,15 +16,6 @@ const Calendar: NextPage = () => {
   const { trades } = useContext(TradeContext);
   const [tagsAndWinRate, setTagsAndWinRate] = useMemoizedState<any>([]);
 
-  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
-    undefined,
-    {
-      onSuccess(tagWinRate) {
-        setTagsAndWinRate(tagWinRate);
-      },
-    }
-  );
-
   return (
     <>
       <Head>

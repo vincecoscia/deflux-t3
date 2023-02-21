@@ -38,15 +38,6 @@ const Overview: NextPage = () => {
     }
   };
 
-  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
-    undefined,
-    {
-      onSuccess(tagWinRate) {
-        setTagsAndWinRate(tagWinRate);
-      },
-    }
-  );
-
   useEffect(() => {
     filterTradesByPlatform(trades, selectedPlatform);
     getBalance(trades, setBalance);

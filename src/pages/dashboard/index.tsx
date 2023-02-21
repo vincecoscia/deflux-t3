@@ -75,15 +75,6 @@ const Dashboard: NextPage = () => {
     );
   }
 
-  const { data: tagWinRate } = trpc.tagRouter.calculateTagWinRate.useQuery(
-    undefined,
-    {
-      onSuccess(tagWinRate) {
-        setTagsAndWinRate(tagWinRate);
-      },
-    }
-  );
-
   return (
     <>
       <Head>

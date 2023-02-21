@@ -73,7 +73,7 @@ export const tagRouter = router({
       return trades;
     }
     ),
-    calculateTagWinRate: protectedProcedure
+    getTagAnalytics: protectedProcedure
     .query(async ({ ctx }) => {
       const trades = await ctx.prisma.trade.findMany({
         where: { 
@@ -95,15 +95,30 @@ export const tagRouter = router({
           },
         },
       });
-      const tagWinRate = tags.map((tag) => {
+      // get win rate for each tag
+      const tagAnalytics = tags.map((tag) => {
         const tradesWithThisTag = trades.filter((trade) => {
           return trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id);
         });
         const tradesWithThisTagAndProfit = tradesWithThisTag.filter((trade) => trade.winLoss === "WIN");
         const winRate = tradesWithThisTagAndProfit.length / tradesWithThisTag.length;
-        return { tag, winRate };
+        
+        const totalProfit = tradesWithThisTagAndProfit.reduce((acc, trade) => acc + trade.netProfit, 0);
+        const avgProfit = totalProfit / tradesWithThisTagAndProfit.length;
+
+        const totalWin = tradesWithThisTagAndProfit.reduce((acc, trade) => acc + trade.netProfit, 0);
+        const avgWin = totalWin / tradesWithThisTagAndProfit.length;
+
+        const tradesWithThisTagAndLoss = tradesWithThisTag.filter((trade) => trade.winLoss === "LOSS");
+        const totalLoss = tradesWithThisTagAndLoss.reduce((acc, trade) => acc + trade.netProfit, 0);
+
+        const avgLoss = totalLoss / tradesWithThisTagAndProfit.length;
+        const riskReward = totalProfit / totalLoss;
+
+        return { tag, winRate, avgProfit, avgWin, avgLoss, riskReward };
       });
-      return tagWinRate;
+
+      return tagAnalytics;
     }
     ),
     

@@ -1,15 +1,17 @@
-import React from "react";
+import { useContext } from "react";
 import localFont from "@next/font/local";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-const azonix = localFont({ src: "../styles/fonts/Azonix.woff2" });
+import { SideNavContext } from "../context/SideNavContext";
 
 export default function SideNav() {
   const { data: sessionData } = useSession();
+  const { isCollapsed, setIsCollapsed } = useContext(SideNavContext);
 
   const router = useRouter();
+
+  console.log("COLLAPSED? ", isCollapsed);
 
   const isActiveLink = (route: string) => {
     if (router.pathname.startsWith(route)) {
@@ -23,20 +25,49 @@ export default function SideNav() {
     router.pathname.startsWith(route)
       ? "text-primary dark:text-primary"
       : "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
-    // if (router.pathname === route) {
-    //   return "text-primary dark:text-primary";
-    // } else if (router.pathname.startsWith(route)) {
-    //   return "text-primary dark:text-primary";
-    // } else {
-    //   return "group-hover:text-gray-900 text-gray-400 dark:text-gray-400 dark:group-hover:text-white";
-    // }
   };
 
   return (
     <aside
-      className="hidden h-full w-64 flex-none lg:block"
+      className={`relative hidden h-full flex-none lg:block transition-all ease-out duration-200 ${isCollapsed ? "w-16" : "w-64"}`}
       aria-label="Sidenav"
     >
+      <button
+        className="absolute top-1/2 -right-5 z-10 rounded-full bg-white p-2 shadow-lg dark:bg-primary"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        {isCollapsed ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="h-6 w-6 text-white"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 4.5l7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="h-6 w-6 text-white"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 19.5L8.25 12l7.5-7.5"
+            />
+          </svg>
+        )}
+      </button>
       <div className="flex h-full flex-col justify-between overflow-y-auto bg-white py-5 px-3 dark:border-gray-700 dark:bg-gray-800">
         <div>
           <ul className="space-y-2">
@@ -60,7 +91,7 @@ export default function SideNav() {
                   <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                   <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                 </svg>
-                <span className="ml-3">Overview</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Overview</span>
               </Link>
             </li>
             <li>
@@ -89,7 +120,7 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className="ml-3">Journal</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Journal</span>
               </Link>
             </li>
             <li>
@@ -118,7 +149,7 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className="ml-3">Calendar</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Calendar</span>
               </Link>
             </li>
             <li>
@@ -144,7 +175,7 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className="ml-3">Analytics</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Analytics</span>
               </Link>
             </li>
           </ul>
@@ -175,7 +206,7 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className="ml-3">Import Trades</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Import Trades</span>
               </Link>
             </li>
             <li>
@@ -192,7 +223,7 @@ export default function SideNav() {
                 >
                   <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
                 </svg>
-                <span className="ml-3">Components</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Components</span>
               </a>
             </li>
             <li>
@@ -213,7 +244,7 @@ export default function SideNav() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                <span className="ml-3">Help</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Help</span>
               </a>
             </li>
           </ul>

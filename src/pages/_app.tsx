@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar";
 
 import "../styles/globals.css";
 import { ToastContainer } from "react-toastify";
+import { SideNavProvider } from "../context/SideNavContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <SideNavProvider>
       <TradeProvider >
         <Navbar/>
         <Component {...pageProps} />
@@ -32,6 +34,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         theme="colored"
       />
       </TradeProvider>
+      </SideNavProvider>
     </SessionProvider>
   );
 };

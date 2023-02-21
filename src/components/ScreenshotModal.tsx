@@ -38,7 +38,7 @@ const ScreenshotModal = ({ url, setScreenshotModalOpen, open }) => {
                 alt="Screenshot"
                 width={1920}
                 height={1080}
-                className="inline-block transform overflow-hidden rounded-lg shadow-xl transition-all align-middle lg:max-w-[90vw] lg:max-h-[90vh]"
+                className="inline-block transform overflow-hidden rounded-lg shadow-xl transition-all align-middle lg:max-w-[90vw] lg:max-h-[90vh] object-contain"
               />
             </Transition.Child>
           </div>
