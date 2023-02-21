@@ -29,12 +29,13 @@ const IndividualTrade: NextPage = () => {
   const [tags, setTags] = useState<Tag[] | []>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [tempTag, setTempTag] = useState<any>({});
+  const [userTags, setUserTags] = useState<Tag[] | []>([]);
+  const [suggestedTags, setSuggestedTags] = useState<Tag[] | []>([]);
   const [colorPickerClickedId, setColorPickerClickedId] = useState<string>("");
   const [colorPickerActive, setColorPickerActive] = useState<boolean>(false);
   const [file, setFile] = useState<any>(null);
   const [presignedData, setPresignedData] = useState<any>(null);
-  const [screenshotModalOpen, setScreenshotModalOpen] =
-    useState<boolean>(false);
+  const [screenshotModalOpen, setScreenshotModalOpen] = useState<boolean>(false);
   const [screenshotClickedId, setScreenshotClickedId] = useState<string>("");
   const [screenshots, setScreenshots] = useState<any>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -47,8 +48,13 @@ const IndividualTrade: NextPage = () => {
     if (trade) {
       getNextTrade();
       getPrevTrade();
+      // Set suggested tags 
+      setSuggestedTags(userTags.filter((tag) => {
+        // Only show 5 suggested tags
+        return tag.name.toLowerCase().includes(tagInput.toLowerCase());
+      }));
     }
-  }, [trade]);
+  }, [trade, userTags, tagInput]);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -73,10 +79,18 @@ const IndividualTrade: NextPage = () => {
       },
     }
   );
+  // get tags
+  const { data: userTagsData, refetch: refetchUserTags } = trpc.tagRouter.getTags.useQuery(
+    undefined,
+    {
+      onSuccess(userTagsData) {
+        setUserTags(userTagsData);
+      },
+    }
+  );
 
   // get tags by trade id and refetch after adding a tag
-
-  const { data: tagData, refetch } = trpc.tagRouter.getTagsByTradeId.useQuery(
+  const { data: tagData, refetch: refetchTags } = trpc.tagRouter.getTagsByTradeId.useQuery(
     { tradeId: tradeId },
     {
       onSuccess(tagData) {
@@ -89,7 +103,8 @@ const IndividualTrade: NextPage = () => {
 
   const { mutate: addTagToTrade } = trpc.tradeRouter.addTagToTrade.useMutation({
     onSuccess() {
-      refetch();
+      refetchTags();
+      refetchUserTags();
       setTagInput("");
     },
     onError(error) {
@@ -272,7 +287,6 @@ const IndividualTrade: NextPage = () => {
       id: tradeId,
       notes: notes,
     });
-    refetch();
   };
 
   const getNextTrade = async () => {
@@ -319,7 +333,15 @@ const IndividualTrade: NextPage = () => {
     }
   };
 
-  console.log("NEXT TRADE", nextTrade);
+  // Write a function that filters out userTags based on their name using tagInput
+
+  console.log("USER TAGS", userTags)
+  console.log("TAG INPUT", tagInput);
+  console.log("SUGGESTED TAGS", suggestedTags);
+
+
+  // console.log("NEXT TRADE", nextTrade);
+
 
   return (
     <>
@@ -329,7 +351,7 @@ const IndividualTrade: NextPage = () => {
           name="description"
           content="Track your trades, optimize your profits"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
@@ -543,7 +565,7 @@ const IndividualTrade: NextPage = () => {
                   </div>
                   <p className="text-sm uppercase text-gray-200">Tags</p>
                   <div className="mt-1 mb-4">
-                    <div className="rounded-md border border-gray-700 bg-gray-800 px-2 py-1 text-gray-200">
+                    <div className="lg:rounded-md lg:border lg:border-gray-700 lg:bg-gray-800 lg:px-2 lg:py-1 text-gray-200">
                       {tags?.map((tag) => (
                         <>
                           <span
@@ -552,7 +574,7 @@ const IndividualTrade: NextPage = () => {
                               setColorPickerActive(!colorPickerActive);
                               setColorPickerClickedId(tag.id);
                             }}
-                            className={`relative mr-2 inline-flex cursor-pointer items-center rounded-full px-3 py-0.5 text-sm font-medium text-white`}
+                            className={`relative mr-2 inline-flex cursor-pointer items-center rounded-full px-3 py-0.5 text-sm font-medium text-white my-1`}
                             style={{ backgroundColor: tag.color }}
                           >
                             {tag.name}
@@ -583,15 +605,38 @@ const IndividualTrade: NextPage = () => {
                           </span>
                         </>
                       ))}
-                      <form onSubmit={handleSubmit} className="inline-block">
+                      <form onSubmit={handleSubmit} className="lg:inline-block w-full lg:w-auto relative">
                         <input
                           type="text"
-                          className="mr-3 appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-200 focus:outline-none"
+                          className="mr-3 lg:mt-0 appearance-none lg:border-none lg:bg-transparent lg:py-1 lg:px-2 leading-tight text-gray-200 lg:focus:outline-none border border-gray-700 bg-gray-800 rounded-md mt-4 w-full p-2"
                           placeholder="Add a tag"
                           value={tagInput}
                           onKeyDown={handleKeyDown}
                           onChange={(e) => setTagInput(e.target.value)}
                         />
+                        {tagInput && (
+                          <div className="p-2 bg-gray-700 rounded-md absolute top-12">
+                            <p className="text-sm mb-2 text-gray-400">Suggestions</p>
+                            {suggestedTags?.map((suggestion) => (
+                              <button
+                                key={suggestion.id}
+                                type="button"
+                                className={`relative mr-2 inline-flex cursor-pointer items-center rounded-full px-3 py-0.5 text-sm font-medium text-white my-1`}
+                                style={{ backgroundColor: suggestion.color }}
+                                onClick={() => {
+                                  addTagToTrade({
+                                    tradeId,
+                                    tagId: suggestion.id,
+                                    tagName: suggestion.name,
+                                  });
+                                  setTagInput("");
+                                }}
+                              >
+                                {suggestion.name}
+                              </button>
+                            ))}
+                          </div>
+                      )}
                       </form>
                     </div>
                   </div>

@@ -106,6 +106,10 @@ model StudyTrade {
   study     Study    @relation(fields: [studyId], references: [id])
   trade     Trade    @relation(fields: [tradeId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([studyId])
+  @@index([tradeId])
+  @@unique([studyId, tradeId], name: "studyTradeIdentifier")
 }
 
 model Trade {

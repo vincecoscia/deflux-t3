@@ -16,7 +16,7 @@ const Import: NextPage = () => {
           name="description"
           content="Track your trades, optimize your profits"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
 
       {/* If not logged in, can't view page */}

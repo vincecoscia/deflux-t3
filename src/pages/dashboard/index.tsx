@@ -92,7 +92,7 @@ const Dashboard: NextPage = () => {
           name="description"
           content="Track your trades, optimize your profits"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />

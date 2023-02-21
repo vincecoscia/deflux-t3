@@ -21,7 +21,7 @@ const Home: NextPage = () => {
           name="description"
           content="Track your trades, optimize your profits"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       {/* If not logged in, view homepage */}
       <main className="overflow-y-scroll h-screen overflow-x-hidden bg-gray-900">

@@ -28,12 +28,12 @@ function ColorPicker({ color, tagId, updateTagColor} ) {
   console.log('TAG COLOR', color)
 
   return (
-    <div className="absolute top-10">
-      <div className="flex flex-row bg-gray-700 p-3 gap-x-2 rounded-lg-full">
+    <div className="absolute top-10 z-20 w-max">
+      <div className="lg:flex lg:flex-row bg-gray-700 rounded-md p-3 gap-x-4 grid grid-cols-3 gap-y-2">
         {colors.map((color) => (
           <div
             key={color}
-            className={`w-6 h-6 rounded-full cursor-pointer` + (color === selectedColor ? " border-2 border-white" : "")}
+            className={`w-6 h-6 col rounded-full cursor-pointer` + (color === selectedColor ? " border-2 border-white" : "")}
             style={{ backgroundColor: color }}
             onClick={() => handleColorChange(color, tagId)}
           />

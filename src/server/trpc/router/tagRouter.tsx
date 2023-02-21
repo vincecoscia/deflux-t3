@@ -13,10 +13,9 @@ export const tagRouter = router({
       return tags;
     }),
   getTags: protectedProcedure
-    .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const tags = await ctx.prisma.tag.findMany({
-        where: { userId: input.userId },
+        where: { userId: ctx.session.user.id },
       });
       return tags;
     }
