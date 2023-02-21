@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { trpc } from "../../utils/trpc";
-import GridLayout, { WidthProvider, Responsive } from "react-grid-layout";
+import { WidthProvider, Responsive } from "react-grid-layout";
 import SideNav from "../../components/SideNav";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -28,10 +28,10 @@ const DashboardAnalyticsPage: NextPage = () => {
       { i: "d", x: 6, y: 0, w: 2, h: 1 },
     ],
     xs: [
-      { i: "a", x: 0, y: 0, w: 1, h: 1 },
-      { i: "b", x: 1, y: 0, w: 1, h: 1 },
-      { i: "c", x: 0, y: 1, w: 1, h: 1 },
-      { i: "d", x: 1, y: 1, w: 1, h: 1 },
+      { i: "a", x: 0, y: 0, w: 2, h: 1 },
+      { i: "b", x: 2, y: 0, w: 2, h: 1 },
+      { i: "c", x: 0, y: 1, w: 2, h: 1 },
+      { i: "d", x: 2, y: 1, w: 2, h: 1 },
     ],
     xxs: [
       { i: "a", x: 0, y: 0, w: 1, h: 1 },
@@ -39,7 +39,6 @@ const DashboardAnalyticsPage: NextPage = () => {
       { i: "c", x: 0, y: 1, w: 1, h: 1 },
       { i: "d", x: 1, y: 1, w: 1, h: 1 },
     ],
-
   });
 
   console.log(layouts)
@@ -61,7 +60,7 @@ const DashboardAnalyticsPage: NextPage = () => {
               rowHeight={60}
               breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
               cols={{ lg: 12, md: 12, sm: 8, xs: 4, xxs: 2 }}
-              onLayoutChange={(layout) => setLayouts(layout)}
+              onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
             >
               <div key="a" className="bg-gray-800 rounded-lg text-white">a</div>
               <div key="b" className="bg-gray-800 rounded-lg text-white">b</div>

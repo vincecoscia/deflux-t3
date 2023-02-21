@@ -11,10 +11,10 @@
 
 ## Can wait
 - [ ] Finish TradingView Import. Work on how we may need to refeactor some of the processes (Maybe remove balance and instead add overall P&L OR for those that don't include balance, just make balance = overall P&L)
+- [ ] Add the ability for a trade to be OPEN if there is no closed execution (Remember to do this by symbol)
 
 ## Bugs (As of 2/20/23)
 - [x] Tags on mobile should appear differently
-- [ ] Add the ability for a trade to be OPEN if there is no closed execution (Remember to do this by symbol)
 - [x] On individual trade, "Next Trade" & "Previous Trade" should be disabled if at end or beginning (Only happens on initial load)
 
 ### Before launch
