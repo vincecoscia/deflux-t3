@@ -100,7 +100,9 @@ export const tagRouter = router({
         const tradesWithThisTag = trades.filter((trade) => {
           return trade.tradeTags.find((tradeTag) => tradeTag.tagId === tag.id);
         });
+        const amountOfTrades = tradesWithThisTag.length;
         const tradesWithThisTagAndProfit = tradesWithThisTag.filter((trade) => trade.winLoss === "WIN");
+        const winningTrades = tradesWithThisTagAndProfit.length;
         const winRate = tradesWithThisTagAndProfit.length / tradesWithThisTag.length;
         
         const totalProfit = tradesWithThisTagAndProfit.reduce((acc, trade) => acc + trade.netProfit, 0);
@@ -110,12 +112,13 @@ export const tagRouter = router({
         const avgWin = totalWin / tradesWithThisTagAndProfit.length;
 
         const tradesWithThisTagAndLoss = tradesWithThisTag.filter((trade) => trade.winLoss === "LOSS");
+        const losingTrades = tradesWithThisTagAndLoss.length;
         const totalLoss = tradesWithThisTagAndLoss.reduce((acc, trade) => acc + trade.netProfit, 0);
 
         const avgLoss = totalLoss / tradesWithThisTagAndProfit.length;
         const riskReward = totalProfit / totalLoss;
 
-        return { tag, winRate, avgProfit, avgWin, avgLoss, riskReward };
+        return { tag, winRate, avgProfit, avgWin, avgLoss, riskReward, amountOfTrades, winningTrades, losingTrades };
       });
 
       return tagAnalytics;

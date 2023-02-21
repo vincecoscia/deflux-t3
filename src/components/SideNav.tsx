@@ -31,7 +31,7 @@ export default function SideNav() {
       aria-label="Sidenav"
     >
       <button
-        className="absolute top-1/2 -right-4 z-10 rounded-full bg-white p-2 shadow-lg dark:bg-primary"
+        className="absolute top-1/2 -right-3 z-10 rounded-full bg-white p-[.375rem] shadow-lg dark:bg-primary"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         {isCollapsed ? (
@@ -41,7 +41,7 @@ export default function SideNav() {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-5 w-5 text-white"
+            className="h-4 w-4 text-white"
           >
             <path
               strokeLinecap="round"
@@ -56,7 +56,7 @@ export default function SideNav() {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-5 w-5 text-white"
+            className="h-4 w-4 text-white"
           >
             <path
               strokeLinecap="round"
