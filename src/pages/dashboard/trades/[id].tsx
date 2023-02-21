@@ -334,14 +334,7 @@ const IndividualTrade: NextPage = () => {
     }
   };
 
-  // Write a function that filters out userTags based on their name using tagInput
-
-  console.log("USER TAGS", userTags)
-  console.log("TAG INPUT", tagInput);
-  console.log("SUGGESTED TAGS", suggestedTags);
-
-
-  // console.log("NEXT TRADE", nextTrade);
+  console.log("NEXT TRADE", nextTrade);
 
 
   return (
@@ -783,7 +776,7 @@ const IndividualTrade: NextPage = () => {
                     <Link href={`/dashboard/trades/${prevTrade ? prevTrade.id : trade.id}`}>
                       <button
                         type="button"
-                        className={`flex items-center text-primary ${prevTrade ? prevTrade.id === trade.id ? "opacity-50" : null : null}`}
+                        className={`flex items-center text-primary ${prevTrade === null ? "opacity-50" : prevTrade.id === trade.id ? "opacity-50" : null}`}
                       >
                         <ChevronLeftIcon className="h-6 w-6" />Previous Trade 
                       </button>
@@ -791,7 +784,7 @@ const IndividualTrade: NextPage = () => {
                     <Link href={`/dashboard/trades/${nextTrade ? nextTrade.id : trade.id}`}>
                       <button
                         type="button"
-                        className={`flex items-center text-primary ${nextTrade ? nextTrade.id === trade.id ? "opacity-50" : null : null}`}
+                        className={`flex items-center text-primary ${nextTrade === null ? "opacity-50" : nextTrade.id === trade.id ? "opacity-50" : null}`}
                       >
                         Next Trade <ChevronRightIcon className="h-6 w-6" />
                       </button>

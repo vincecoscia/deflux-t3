@@ -1,7 +1,7 @@
 # TODO
 ## Priority
 - [x] Add predictive text or box for adding tags
-- [ ] Redesign color picker (Especially for mobile)
+- [x] Redesign color picker (Especially for mobile)
 - [ ] Design analytics page for use with widgets
 - [ ] Calendar on desktop needs better design within each day
 - [ ] Provide date-specific statistics on calendar page
@@ -15,7 +15,7 @@
 ## Bugs (As of 2/20/23)
 - [x] Tags on mobile should appear differently
 - [ ] Add the ability for a trade to be OPEN if there is no closed execution (Remember to do this by symbol)
-- [ ] On individual trade, "Next Trade" & "Previous Trade" should be disabled if at end or beginning (Only happens on initial load)
+- [x] On individual trade, "Next Trade" & "Previous Trade" should be disabled if at end or beginning (Only happens on initial load)
 
 ### Before launch
 - [ ] Create a new planetscale DB to separate QA, STG, & PROD branches
