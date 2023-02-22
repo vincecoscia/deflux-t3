@@ -2,6 +2,7 @@
 ## Priority
 - [x] Add predictive text or box for adding tags
 - [x] Redesign color picker (Especially for mobile)
+- [ ] Add restore to default settings on widgets (AKA delete user preference)
 - [ ] Add Setups which combine certain tags and can be shareable with community eventually
 - [ ] Add date selector to filter trades by date range for trade table
 - [ ] Add TradeAccounts with the name of the trade account and the ability to rename it as well as other settings
@@ -24,6 +25,7 @@
 - [ ] Add strategies that groups tags together (Trades should only have 1 strategy?)
 - [ ] Add mistake tags to trades
 - [ ] Lexical for text editing (Not sure how to store... maybe S3?)
+- [ ] Add workspaces for preferences
 
 ### Before launch
 - [ ] Create a new planetscale DB to separate QA, STG, & PROD branches

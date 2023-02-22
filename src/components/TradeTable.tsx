@@ -17,6 +17,7 @@ import {
   usePagination,
 } from "react-table";
 import Link from "next/link";
+import OutsideClickHandler from "react-outside-click-handler";
 
 interface TradeTableProps {
   data: any[];
@@ -38,7 +39,7 @@ function GlobalFilter({
     <label className="flex items-baseline gap-x-2">
       <input
         type="text"
-        className="block rounded-md bg-gray-600 py-2 px-4 lg:w-64 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+        className="block rounded-md bg-gray-600 py-2 px-4 text-white placeholder-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm lg:w-64"
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);
@@ -55,15 +56,19 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
 }) {
   const [showColumnFilter, setShowColumnFilter] = useState(false);
 
-
   const columns = useMemo(
     () => [
       {
         Header: "View",
         accessor: "id",
         Cell: ({ row }) => (
-          <Link className="px-4 py-2 bg-primary rounded-full text-xs" href={{ pathname: `/dashboard/trades/${row.original.id}` }}>View</Link>
-          )
+          <Link
+            className="rounded-full bg-primary px-4 py-2 text-xs"
+            href={{ pathname: `/dashboard/trades/${row.original.id}` }}
+          >
+            View
+          </Link>
+        ),
       },
       {
         Header: "Symbol",
@@ -135,15 +140,20 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
     setPageSize,
     allColumns,
     getToggleHideAllColumnsProps,
-  } = useTable({ 
-    columns, 
-    data: data,
-    initialState: { 
-      pageIndex: 0, 
-      pageSize: 10,
-      hiddenColumns: ['grossProfit', 'totalCommission']
-    }
-   }, useGlobalFilter, useSortBy, usePagination);
+  } = useTable(
+    {
+      columns,
+      data: data,
+      initialState: {
+        pageIndex: 0,
+        pageSize: 10,
+        hiddenColumns: ["grossProfit", "totalCommission"],
+      },
+    },
+    useGlobalFilter,
+    useSortBy,
+    usePagination
+  );
 
   return (
     <>
@@ -159,7 +169,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
               <button
                 type="button"
                 onClick={() => setShowColumnFilter(!showColumnFilter)}
-                className="hidden lg:inline-flex w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="hidden w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900 lg:inline-flex"
                 id="menu-button"
                 aria-expanded="true"
                 aria-haspopup="true"
@@ -183,7 +193,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
               <button
                 type="button"
                 onClick={() => setShowColumnFilter(!showColumnFilter)}
-                className="inline-flex lg:hidden w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900"
+                className="inline-flex w-full justify-center rounded-md border border-gray-700 bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900 lg:hidden"
                 id="menu-button"
                 aria-expanded="true"
                 aria-haspopup="true"
@@ -205,15 +215,18 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
               </button>
             </div>
             {showColumnFilter && (
-            <div
-              className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-600 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-              role="menu"
-              aria-orientation="vertical"
-              aria-labelledby="menu-button"
-              tabIndex={-1}
-            >
-              <div className="py-1 px-2" role="none">
-                {/* <label className="flex items-baseline gap-x-2">
+              <OutsideClickHandler
+                onOutsideClick={() => setShowColumnFilter(!showColumnFilter)}
+              >
+                <div
+                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-600 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="menu-button"
+                  tabIndex={-1}
+                >
+                  <div className="py-1 px-2" role="none">
+                    {/* <label className="flex items-baseline gap-x-2">
                   <input
                     type="checkbox"
                     {...getToggleHideAllColumnsProps()}
@@ -221,18 +234,21 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                   />
                   <span className="text-white">Toggle All</span>
                 </label> */}
-                {allColumns.map((column) => (
-                  <label className="flex items-baseline gap-x-2 mt-1">
-                    <input
-                      type="checkbox"
-                      {...column.getToggleHiddenProps()}
-                      className="form-checkbox rounded-md text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
-                    <span className="text-white"><>{column.Header}</></span>
-                  </label>
-                ))}
-              </div>
-            </div>
+                    {allColumns.map((column) => (
+                      <label className="mt-1 flex items-baseline gap-x-2">
+                        <input
+                          type="checkbox"
+                          {...column.getToggleHiddenProps()}
+                          className="form-checkbox rounded-md text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                        <span className="text-white">
+                          <>{column.Header}</>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </OutsideClickHandler>
             )}
           </div>
         </div>
@@ -330,17 +346,16 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
                                   {cell.value}
                                 </span>
                               ) : cell.column.id === "side" ? (
-                                  <span
-                                    className={`${
-                                      cell.value === "LONG"
-                                        ? "text-green-400"
-                                        : "text-red-400"
-                                    }`}
-                                  >
-                                    {cell.value}
-                                  </span>
-                                ) :
-                                (
+                                <span
+                                  className={`${
+                                    cell.value === "LONG"
+                                      ? "text-green-400"
+                                      : "text-red-400"
+                                  }`}
+                                >
+                                  {cell.value}
+                                </span>
+                              ) : (
                                 cell.render("Cell")
                               )}
                             </td>
@@ -356,15 +371,31 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
         </div>
       </div>
       <div className="flex items-center justify-between py-1">
-        <div className="flex flex-1 justify-between sm:hidden items-center mt-2">
-          <button onClick={() => previousPage()} disabled={!canPreviousPage} className={`w-20 py-2 border rounded-lg ${canPreviousPage ? 'border-primary text-white' : 'border-gray-500 text-gray-500'}`}>
+        <div className="mt-2 flex flex-1 items-center justify-between sm:hidden">
+          <button
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+            className={`w-20 rounded-lg border py-2 ${
+              canPreviousPage
+                ? "border-primary text-white"
+                : "border-gray-500 text-gray-500"
+            }`}
+          >
             Previous
           </button>
           <p className="text-sm text-white">
-              Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
-              <span className="font-medium">{pageOptions.length}</span>
+            Page <span className="font-medium">{state.pageIndex + 1}</span> of{" "}
+            <span className="font-medium">{pageOptions.length}</span>
           </p>
-          <button onClick={() => nextPage()} disabled={!canNextPage} className={`w-20 py-2 border rounded-lg ${canNextPage ? 'border-primary text-white' : 'border-gray-500 text-gray-500'}`}>
+          <button
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
+            className={`w-20 rounded-lg border py-2 ${
+              canNextPage
+                ? "border-primary text-white"
+                : "border-gray-500 text-gray-500"
+            }`}
+          >
             Next
           </button>
         </div>
