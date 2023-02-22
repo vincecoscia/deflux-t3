@@ -34,7 +34,7 @@ const Calendar: NextPage = () => {
               <CalendarWidget trades={trades}/>
             </div>
             <div className="flex rounded-lg bg-gray-800 p-2 text-white lg:col-span-2 col-span-12">
-              <Statistics data={trades} tagWinRate={tagsAndWinRate} />
+              <Statistics />
             </div>
           </div>
         </div>

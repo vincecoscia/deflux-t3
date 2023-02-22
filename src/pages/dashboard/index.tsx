@@ -121,7 +121,7 @@ const Dashboard: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={filteredTrades} tagWinRate={tagsAndWinRate} />
+                <Statistics />
               </div>
             </div>
             <div className="text-sm">

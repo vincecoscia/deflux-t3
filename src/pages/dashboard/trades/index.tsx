@@ -92,7 +92,7 @@ const Trades: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={trades} tagWinRate={tagsAndWinRate} />
+                <Statistics />
               </div>
             </div>
           </div>
