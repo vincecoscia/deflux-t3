@@ -1,45 +1,54 @@
-import { memo, useContext, useEffect, useState, useMemo } from "react";
+import { memo, useContext, useEffect, useState, useMemo, useLayoutEffect } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import { AnalyticsContext } from "../../context/AnalyticsContext";
 import { UserPreferenceContext } from "../../context/UserPreferencesContext";
 import OutsideClickHandler from "react-outside-click-handler";
 import { trpc } from "../../utils/trpc";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 const Statistics = memo(function Statistics() {
   const { tradeAnalytics, tagAnalytics } = useContext(AnalyticsContext);
-  const { userPreferences } = useContext(UserPreferenceContext);
+  const { userPreferences, refetchUserPreferences } = useContext(UserPreferenceContext);
   const [selectedAnalytics, setSelectedAnalytics] = useState<any[]>([]);
   const [layouts, setLayouts] = useState({});
   const [open, setOpen] = useState(false);
 
   const ResponsiveGridLayout = useMemo(()=>WidthProvider(Responsive), [])
 
-  const { mutate: updateUserPreference } = trpc.userPreferenceRouter.updateUserPreference.useMutation();
+  const { mutate: updateUserPreference } = trpc.userPreferenceRouter.updateUserPreference.useMutation({
+    onSuccess() {
+      refetchUserPreferences();
+      toast.success("Preferences Updated", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    },
+    onError(error) {
+      toast.error(error.message, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+});
 
 
-  useEffect(() => {
-    // if a userPreferences key === "Stat-Widget-Layout" exists, then we need to set the layout to the value of the key
-    const layoutPreference = userPreferences.find(
-      (userPreference) => userPreference.key === "Stat-Widget-Layout"
-    );
-    const analyticsPreference = userPreferences.find(
-      (userPreference) => userPreference.key === "Stat-Widget-Selection"
-    );
-    console.log("LAYOUT PREFERENCE", layoutPreference?.value);
-    // if the layoutPreference exists, then we need to set the layout to the value of the key
-    if (layoutPreference) {
-      setLayouts(layoutPreference.value as any);
-    } else {
-      setLayouts(getInitialLayouts(tradeAnalytics));
-    }
-    if (analyticsPreference) {
-      setSelectedAnalytics(analyticsPreference.value as any);
-    } else {
-    setSelectedAnalytics(tradeAnalytics);
-    }
-  
-  }, [tradeAnalytics, userPreferences, layouts]);
+  useLayoutEffect(() => {
+    getLayoutAndAnalytics();
+  }, [tradeAnalytics, userPreferences]);
 
   const getInitialLayouts = (selectedAnalytics) => {
     // map over the selected analytics and return the layout
@@ -97,6 +106,28 @@ const Statistics = memo(function Statistics() {
       xs: xsBreakpoints,
       xxs: xxsBreakpoints,
     };
+  };
+
+  const getLayoutAndAnalytics = () => {
+      // if a userPreferences key === "Stat-Widget-Layout" exists, then we need to set the layout to the value of the key
+      const layoutPreference = userPreferences.find(
+        (userPreference) => userPreference.key === "Stat-Widget-Layout"
+      );
+      const analyticsPreference = userPreferences.find(
+        (userPreference) => userPreference.key === "Stat-Widget-Selection"
+      );
+      console.log("LAYOUT PREFERENCE", layoutPreference?.value);
+      // if the layoutPreference exists, then we need to set the layout to the value of the key
+      if (layoutPreference) {
+        setLayouts(layoutPreference.value as any);
+      } else {
+        setLayouts(getInitialLayouts(tradeAnalytics));
+      }
+      if (analyticsPreference) {
+        setSelectedAnalytics(analyticsPreference.value as any);
+      } else {
+      setSelectedAnalytics(tradeAnalytics);
+      }
   };
 
   console.log("THE FUCKING LAYOUTS", layouts);

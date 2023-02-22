@@ -47,6 +47,11 @@ export const userPreferenceRouter = router({
           userId: ctx.session.user.id,
         },
       });
+
+      if (!userPreferences) {
+        return [];
+      }
+      
       return userPreferences;
     }
   ),
