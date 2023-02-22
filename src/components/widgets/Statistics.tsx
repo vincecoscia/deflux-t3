@@ -108,7 +108,7 @@ const Statistics = memo(function Statistics() {
           className="mb-2 flex w-full items-center justify-center rounded-lg border border-dashed border-gray-500 py-2"
           onClick={() => setOpen(!open)}
         >
-          Edit Statitics Widgets
+          Edit Statistics Widgets
         </button>
         <div className="rounded-lg bg-gray-800 p-2">
           <h3 className="px-3">Statistics</h3>
