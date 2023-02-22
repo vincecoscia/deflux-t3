@@ -31,20 +31,10 @@ const Import: NextPage = () => {
         />
         <link rel="icon" href="/favicon.svg" />
       </Head>
-
-      {/* If not logged in, can't view page */}
-      {!sessionData && (
-        <main className="dark:bg-gray-900 h-[calc(100vh-59px)] flex justify-center items-center">
-            <h1 className="text-white text-3xl">Must be logged in to view this page</h1>
-        </main>
-      )}
-      {/* If logged in, show page */}
-      {sessionData && (
       <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
         <ImportWizard />
       </main>
-      )}
       <ToastContainer
         position="bottom-right"
         autoClose={5000}

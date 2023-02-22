@@ -216,7 +216,7 @@ const TradeTable: React.FC<TradeTableProps> = memo(function TradeTable({
             </div>
             {showColumnFilter && (
               <OutsideClickHandler
-                onOutsideClick={() => setShowColumnFilter(!showColumnFilter)}
+                onOutsideClick={() => setShowColumnFilter(false)}
               >
                 <div
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-600 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"

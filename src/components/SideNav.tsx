@@ -27,7 +27,9 @@ export default function SideNav() {
 
   return (
     <aside
-      className={`relative hidden h-full flex-none lg:block transition-all ease-out duration-200 ${isCollapsed ? "w-16" : "w-64"}`}
+      className={`relative hidden h-full flex-none transition-all duration-200 ease-out lg:block ${
+        isCollapsed ? "w-16" : "w-64"
+      }`}
       aria-label="Sidenav"
     >
       <button
@@ -78,18 +80,23 @@ export default function SideNav() {
                 }
               >
                 <svg
-                  aria-hidden="true"
-                  className={
-                    "h-6 w-6 transition duration-75" + isActiveSVG("/dashboard")
-                  }
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-6 w-6"
                 >
-                  <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                  <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z"
+                  />
                 </svg>
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Overview</span>
+
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Overview
+                </span>
               </Link>
             </li>
             <li>
@@ -118,7 +125,9 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Journal</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Journal
+                </span>
               </Link>
             </li>
             <li>
@@ -147,7 +156,9 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Calendar</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Calendar
+                </span>
               </Link>
             </li>
             <li>
@@ -173,7 +184,9 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Analytics</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Analytics
+                </span>
               </Link>
             </li>
           </ul>
@@ -204,7 +217,9 @@ export default function SideNav() {
                   />
                 </svg>
 
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Import Trades</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Import Trades
+                </span>
               </Link>
             </li>
             <li>
@@ -221,7 +236,9 @@ export default function SideNav() {
                 >
                   <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
                 </svg>
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Components</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Components
+                </span>
               </a>
             </li>
             <li>
@@ -242,7 +259,9 @@ export default function SideNav() {
                     clipRule="evenodd"
                   ></path>
                 </svg>
-                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>Help</span>
+                <span className={`${isCollapsed ? "hidden" : "ml-3"}`}>
+                  Help
+                </span>
               </a>
             </li>
           </ul>
