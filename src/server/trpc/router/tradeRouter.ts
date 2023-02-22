@@ -159,4 +159,43 @@ export const tradeRouter = router({
       return trade;
     }
   ),
+  getTradeAnalytics: protectedProcedure
+    .query(async ({ctx}) => {
+      const trades = await ctx.prisma.trade.findMany({
+        where: {
+          userId: ctx.session.user.id,
+        },
+      });
+
+      // get overall win rate
+      const totalTrades = trades.length;
+      const totalWins = trades.filter(trade => trade.winLoss === 'WIN').length;
+      const totalLosses = trades.filter(trade => trade.winLoss === 'LOSS').length;
+      const winRate = (totalWins / totalTrades) * 100;
+      // get overall average profit
+      const totalProfit = trades.reduce((acc, trade) => acc + trade.netProfit, 0);
+      const averageProfit = totalProfit / totalTrades;
+      // get average profit per trade by win/loss
+      const totalWinProfit = trades.filter(trade => trade.winLoss === 'WIN').reduce((acc, trade) => acc + trade.netProfit, 0);
+      const totalLossProfit = trades.filter(trade => trade.winLoss === 'LOSS').reduce((acc, trade) => acc + trade.netProfit, 0);
+      const averageWinProfit = totalWinProfit / totalWins;
+      const averageLossProfit = totalLossProfit / totalLosses;
+      // get risk/reward ratio
+      const riskRewardRatio = Number(Math.abs(averageWinProfit / averageLossProfit).toFixed(2));
+
+      return [
+        { name: 'Total Trades', value: totalTrades },
+        { name: 'Total Wins', value: totalWins },
+        { name: 'Total Losses', value: totalLosses },
+        { name: 'Win Rate', value: Number(winRate.toFixed(2)) },
+        { name: 'Total Profit', value: Number(totalProfit.toFixed(2)) },
+        { name: 'Average Profit', value: Number(averageProfit.toFixed(2)) },
+        { name: 'Win Total', value: Number(totalWinProfit.toFixed(2)) },
+        { name: 'Loss Total', value: Number(totalLossProfit.toFixed(2)) },
+        { name: 'Average Win', value: Number(averageWinProfit.toFixed(2)) },
+        { name: 'Average Loss', value: Number(averageLossProfit.toFixed(2)) },
+        { name: 'Risk/Reward Ratio', value: riskRewardRatio },
+      ]
+    }
+  ),
 })

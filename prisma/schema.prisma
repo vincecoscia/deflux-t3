@@ -54,6 +54,20 @@ model User {
   studies       Study[]
   tags          Tag[]
   images        Image[]
+  preferences   UserPreference[]
+}
+
+model UserPreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@unique([userId, key], name: "userPreferenceIdentifier")
 }
 
 model VerificationToken {

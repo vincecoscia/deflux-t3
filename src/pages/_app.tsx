@@ -10,6 +10,7 @@ import Navbar from "../components/Navbar";
 import "../styles/globals.css";
 import { ToastContainer } from "react-toastify";
 import { SideNavProvider } from "../context/SideNavContext";
+import { AnalyticsProvider } from "../context/AnalyticsContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -19,6 +20,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <SideNavProvider>
       <TradeProvider >
+      <AnalyticsProvider>
         <Navbar/>
         <Component {...pageProps} />
         <ToastContainer
@@ -33,6 +35,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         pauseOnHover
         theme="colored"
       />
+      </AnalyticsProvider>
       </TradeProvider>
       </SideNavProvider>
     </SessionProvider>

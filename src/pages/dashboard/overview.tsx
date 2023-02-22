@@ -22,7 +22,6 @@ const Overview: NextPage = () => {
   const [balance, setBalance] = useState<number>(0);
   const [platforms, setPlatforms] = useState<string[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
-  const [tagsAndWinRate, setTagsAndWinRate] = useState<any>([]);
 
   const { data: sessionData } = useSession();
 
@@ -120,8 +119,8 @@ const Overview: NextPage = () => {
                 </div>
               </div>
 
-              <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics data={filteredTrades} tagWinRate={tagsAndWinRate} />
+              <div className="flex h-full lg:col-span-4">
+                <Statistics />
               </div>
             </div>
             <div className="text-sm">

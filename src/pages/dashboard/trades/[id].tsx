@@ -22,9 +22,11 @@ import Image from "next/image";
 import ScreenshotModal from "../../../components/ScreenshotModal";
 import { TradeContext } from "../../../context/TradeContext";
 import Link from "next/link";
+import { AnalyticsContext } from "../../../context/AnalyticsContext";
 
 const IndividualTrade: NextPage = () => {
   const { trades } = useContext(TradeContext);
+  const { refetchTagAnalytics } = useContext(AnalyticsContext);
   const [trade, setTrade] = useState<Trade | null>(null);
   const [executions, setExecutions] = useState<Execution[] | null>(null);
   const [tags, setTags] = useState<Tag[] | []>([]);
@@ -106,6 +108,7 @@ const IndividualTrade: NextPage = () => {
     onSuccess() {
       refetchTags();
       refetchUserTags();
+      refetchTagAnalytics();
       setTagInput("");
     },
     onError(error) {
