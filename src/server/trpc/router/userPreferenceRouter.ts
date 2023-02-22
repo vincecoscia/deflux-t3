@@ -4,7 +4,7 @@ import { router, protectedProcedure } from '../trpc';
 
 export const userPreferenceRouter = router({
   updateUserPreference: protectedProcedure
-    .input(z.object({ id: z.string().nullish(), key: z.string(), value: z.any() }))
+    .input(z.object({ key: z.string(), value: z.any() }))
     .mutation(async ({ctx, input}) => {
       const userPreference = await ctx.prisma.userPreference.upsert({
         where: {

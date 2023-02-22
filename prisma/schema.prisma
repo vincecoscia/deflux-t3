@@ -59,7 +59,7 @@ model User {
 
 model UserPreference {
   id        String   @id @default(cuid())
-  userId    String   @unique
+  userId    String
   user      User     @relation(fields: [userId], references: [id])
   key       String   @unique
   value     Json

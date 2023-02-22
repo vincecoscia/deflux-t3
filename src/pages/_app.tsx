@@ -11,6 +11,7 @@ import "../styles/globals.css";
 import { ToastContainer } from "react-toastify";
 import { SideNavProvider } from "../context/SideNavContext";
 import { AnalyticsProvider } from "../context/AnalyticsContext";
+import { UserPreferenceProvider } from "../context/UserPreferencesContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -18,6 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <UserPreferenceProvider>
       <SideNavProvider>
       <TradeProvider >
       <AnalyticsProvider>
@@ -38,6 +40,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       </AnalyticsProvider>
       </TradeProvider>
       </SideNavProvider>
+      </UserPreferenceProvider>
     </SessionProvider>
   );
 };
