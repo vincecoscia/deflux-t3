@@ -90,7 +90,7 @@ export default function Navbar() {
                   onOutsideClick={() => setShow(false)}
                   useCapture={true}
                 >
-                <div id="nav-menu" className="absolute mt-2 flex flex-col rounded-md bg-gray-900 px-2 py-4 text-white shadow-xl gap-y-4 w-64">
+                <div id="nav-menu" className="absolute mt-2 flex flex-col rounded-md bg-gray-900 px-2 py-4 text-white shadow-xl gap-y-4 w-64 z-20">
                   <Link
                     onClick={() => setShow(!show)}
                     href="/dashboard/overview"
