@@ -618,7 +618,7 @@ const IndividualTrade: NextPage = () => {
                           onChange={(e) => setTagInput(e.target.value)}
                         />
                         {tagInput && (
-                          <div className="p-2 bg-gray-700 rounded-md absolute top-12">
+                          <div className="p-2 bg-gray-700 rounded-md absolute lg:top-12 top-16 z-20">
                             <p className="text-sm mb-2 text-gray-400">Suggestions</p>
                             {suggestedTags?.map((suggestion) => (
                               <button

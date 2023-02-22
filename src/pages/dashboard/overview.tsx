@@ -16,7 +16,7 @@ import Dropdown from "../../components/shared/Dropdown";
 import { TradeContext } from "../../context/TradeContext";
 
 const Overview: NextPage = () => {
-  const { trades } = useContext(TradeContext);
+  const { trades, isLoadingGlobalTrades } = useContext(TradeContext);
   const [filteredTrades, setFilteredTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
@@ -71,6 +71,16 @@ const Overview: NextPage = () => {
         <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
           <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
             <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+          </div>
+        </div>
+      );
+    }
+
+    if (isLoadingGlobalTrades) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+          <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+            <div className="lds-ripple"><div></div><div></div></div>
           </div>
         </div>
       );

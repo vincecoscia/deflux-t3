@@ -6,12 +6,14 @@ import { trpc } from "../utils/trpc";
 interface IGlobalContextProps {
   trades: Trade[];
   setTrades: (trades: Trade[]) => void;
+  isLoadingGlobalTrades: boolean;
 }
 
 export const TradeContext = createContext<IGlobalContextProps>({
   trades: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setTrades: () => {},
+  isLoadingGlobalTrades: false,
 });
 
 export const TradeProvider = ({ children }) => {
@@ -21,7 +23,7 @@ export const TradeProvider = ({ children }) => {
 
   console.log('FROM PROVIDER', trades)
 // Only call the query if there is a session
-  const {data: tradeData, refetch: refetchGlobalTrades } = trpc.tradeRouter.getTrades.useQuery(
+  const {data: tradeData, refetch: refetchGlobalTrades, isLoading: isLoadingGlobalTrades } = trpc.tradeRouter.getTrades.useQuery(
       undefined,
       {
         onSuccess(tradeData) {
@@ -41,6 +43,7 @@ export const TradeProvider = ({ children }) => {
     <TradeContext.Provider value={{
       trades,
       setTrades,
+      isLoadingGlobalTrades,
     }}>
       {children}
     </TradeContext.Provider>
