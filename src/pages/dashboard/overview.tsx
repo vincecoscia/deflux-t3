@@ -74,6 +74,15 @@ const Overview: NextPage = () => {
     );
   }
 
+  if (!trades || trades.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+        <h1 className="text-2xl text-white font-semibold">Looks like you don&apos;t have any trades yet!</h1>
+        <p className="text-lg text-white">Head to the <Link href={'/dashboard/import'} className="text-primary underline font-semibold">Import Wizard</Link> to get started</p>
+      </div>
+    )
+  }
+
   return (
     <>
       <Head>
