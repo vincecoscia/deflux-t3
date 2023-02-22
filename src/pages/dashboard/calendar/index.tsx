@@ -21,7 +21,9 @@ const Calendar: NextPage = () => {
   if (!sessionData) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-        <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+        <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+          <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+        </div>
       </div>
     );
   }
@@ -29,8 +31,11 @@ const Calendar: NextPage = () => {
   if (!trades || trades.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-        <h1 className="text-2xl text-white font-semibold">Looks like you don&apos;t have any trades yet!</h1>
-        <p className="text-lg text-white">Head to the <Link href={'/dashboard/import'} className="text-primary underline font-semibold">Import Wizard</Link> to get started</p>
+        <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+          <h1 className="text-2xl text-white font-semibold mb-5">Looks like you don&apos;t have any trades yet!</h1>
+          <Link href={'/dashboard/import'} className="p-2 rounded-lg bg-primary text-white w-full lg:w-fit mb-4">Import Wizard</Link>
+          <p className="text-lg text-white">Head to the import wizard to get started</p>
+        </div>
       </div>
     )
   }

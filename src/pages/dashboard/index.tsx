@@ -67,13 +67,27 @@ const Dashboard: NextPage = () => {
   const accountReturnsPercentage =
     (accountReturns / (balance - accountReturns)) * 100 || 0;
 
-  if (!sessionData) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-        <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
-      </div>
-    );
-  }
+    if (!sessionData) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+          <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+            <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+          </div>
+        </div>
+      );
+    }
+  
+    if (!trades || trades.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+          <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+            <h1 className="text-2xl text-white font-semibold mb-5">Looks like you don&apos;t have any trades yet!</h1>
+            <Link href={'/dashboard/import'} className="p-2 rounded-lg bg-primary text-white w-full lg:w-fit mb-4">Import Wizard</Link>
+            <p className="text-lg text-white">Head to the import wizard to get started</p>
+          </div>
+        </div>
+      )
+    }
 
   return (
     <>

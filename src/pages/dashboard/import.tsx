@@ -6,8 +6,21 @@ import ImportWizard from "../../components/ImportWizard";
 import SideNav from "../../components/SideNav";
 import { ToastContainer } from "react-toastify";
 
+
+
 const Import: NextPage = () => {
   const { data: sessionData } = useSession();
+
+  if (!sessionData) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
+        <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
+          <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <>
       <Head>
