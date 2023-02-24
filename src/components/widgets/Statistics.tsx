@@ -2,20 +2,33 @@ import { memo, useContext, useEffect, useState, useMemo, useLayoutEffect } from 
 import { WidthProvider, Responsive } from "react-grid-layout";
 import { AnalyticsContext } from "../../context/AnalyticsContext";
 import { UserPreferenceContext } from "../../context/UserPreferencesContext";
+import { SideNavContext } from "../../context/SideNavContext";
 import OutsideClickHandler from "react-outside-click-handler";
 import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { withSize, SizeMe } from "react-sizeme";
 
 
-const Statistics = memo(function Statistics() {
+
+const Statistics = ({ size }) => {
   const { tradeAnalytics, tagAnalytics } = useContext(AnalyticsContext);
+  const { isCollapsed } = useContext(SideNavContext)
   const { userPreferences, refetchUserPreferences } = useContext(UserPreferenceContext);
   const [selectedAnalytics, setSelectedAnalytics] = useState<any[]>([]);
   const [layouts, setLayouts] = useState({});
   const [open, setOpen] = useState(false);
 
   const ResponsiveGridLayout = useMemo(()=>WidthProvider(Responsive), [])
+
+  useEffect(() => {
+    // when isCollapsed changes, we need to call onWindowResize to resize the grid
+    setTimeout(
+      ()=>{window.dispatchEvent(new Event('resize'));},
+      200
+      );
+  }, [isCollapsed]);
+
 
   const { mutate: updateUserPreference } = trpc.userPreferenceRouter.updateUserPreference.useMutation({
     onSuccess() {
@@ -48,7 +61,8 @@ const Statistics = memo(function Statistics() {
 
   useLayoutEffect(() => {
     getLayoutAndAnalytics();
-  }, [tradeAnalytics, userPreferences]);
+    ResponsiveGridLayout
+  }, [tradeAnalytics, userPreferences, ResponsiveGridLayout]);
 
   const getInitialLayouts = (selectedAnalytics) => {
     // map over the selected analytics and return the layout
@@ -147,11 +161,13 @@ const Statistics = memo(function Statistics() {
             className="layout"
             layouts={layouts}
             rowHeight={60}
+            preventCollision={true}
             breakpoints={{ lg: 800, xs: 480, xxs: 0 }}
             cols={{ lg: 4, xs: 3, xxs: 2 }}
             onLayoutChange={(currentLayout, allLayouts) =>
               setLayouts(allLayouts)
             }
+            
           >
             {selectedAnalytics.map((analytics) => (
               <div key={analytics.name} className="rounded-lg bg-gray-700 p-2">
@@ -233,6 +249,6 @@ const Statistics = memo(function Statistics() {
       )}
     </>
   );
-});
+};
 
-export default Statistics;
+export default Statistics
