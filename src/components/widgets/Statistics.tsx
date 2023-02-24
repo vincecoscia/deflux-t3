@@ -7,7 +7,6 @@ import OutsideClickHandler from "react-outside-click-handler";
 import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { withSize, SizeMe } from "react-sizeme";
 
 
 
@@ -22,7 +21,7 @@ const Statistics = ({ size }) => {
   const ResponsiveGridLayout = useMemo(()=>WidthProvider(Responsive), [])
 
   useEffect(() => {
-    // when isCollapsed changes, we need to call onWindowResize to resize the grid
+    // when isCollapsed changes, we need to dispatch a resize event to the window to force the grid to re-render
     setTimeout(
       ()=>{window.dispatchEvent(new Event('resize'));},
       200
@@ -161,7 +160,6 @@ const Statistics = ({ size }) => {
             className="layout"
             layouts={layouts}
             rowHeight={60}
-            preventCollision={true}
             breakpoints={{ lg: 800, xs: 480, xxs: 0 }}
             cols={{ lg: 4, xs: 3, xxs: 2 }}
             onLayoutChange={(currentLayout, allLayouts) =>

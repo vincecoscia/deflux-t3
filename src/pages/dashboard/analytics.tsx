@@ -1,13 +1,25 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { trpc } from "../../utils/trpc";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import SideNav from "../../components/SideNav";
+import { SideNavContext } from "../../context/SideNavContext";
 
-const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardAnalyticsPage: NextPage = () => {
+  const { isCollapsed } = useContext(SideNavContext);
+
+  const ResponsiveGridLayout = WidthProvider(Responsive);
+
+  useEffect(() => {
+    // when isCollapsed changes, we need to dispatch a resize event to the window to force the grid to re-render
+    setTimeout(
+      ()=>{window.dispatchEvent(new Event('resize'));},
+      200
+      );
+  }, [isCollapsed])
+
   const [layouts, setLayouts] = useState({
     lg: [
       { i: "a", x: 0, y: 0, w: 3, h: 2 },
