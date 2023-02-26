@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 
-const Statistics = ({ size }) => {
+const Statistics = () => {
   const { tradeAnalytics, tagAnalytics } = useContext(AnalyticsContext);
   const { isCollapsed } = useContext(SideNavContext)
   const { userPreferences, refetchUserPreferences } = useContext(UserPreferenceContext);
