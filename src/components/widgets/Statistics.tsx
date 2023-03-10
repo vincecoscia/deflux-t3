@@ -5,6 +5,7 @@ import {
   useState,
   useMemo,
   useLayoutEffect,
+  FC,
 } from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import { AnalyticsContext } from "../../context/AnalyticsContext";
@@ -15,7 +16,11 @@ import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Statistics = ({ tradeAnalytics }) => {
+interface StatisticsProps {
+  tradeAnalytics: any[];
+}
+
+const Statistics: FC<StatisticsProps> = ({ tradeAnalytics }) => {
   const { tagAnalytics } = useContext(AnalyticsContext);
   const { isCollapsed } = useContext(SideNavContext);
   const { userPreferences, refetchUserPreferences } = useContext(
