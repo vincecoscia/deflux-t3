@@ -3,15 +3,15 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import { TradeProvider } from "../context/TradeContext";
-
 import Navbar from "../components/Navbar";
-
 import "../styles/globals.css";
 import { ToastContainer } from "react-toastify";
+// Contexts
+import { TradeProvider } from "../context/TradeContext";
 import { SideNavProvider } from "../context/SideNavContext";
 import { AnalyticsProvider } from "../context/AnalyticsContext";
 import { UserPreferenceProvider } from "../context/UserPreferencesContext";
+import { TradeAccountProvider } from "../context/TradeAccountContext";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -21,6 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <UserPreferenceProvider>
       <SideNavProvider>
+      <TradeAccountProvider>
       <TradeProvider >
       <AnalyticsProvider>
         <Navbar/>
@@ -39,6 +40,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       />
       </AnalyticsProvider>
       </TradeProvider>
+      </TradeAccountProvider>
       </SideNavProvider>
       </UserPreferenceProvider>
     </SessionProvider>

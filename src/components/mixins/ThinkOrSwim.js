@@ -38,9 +38,39 @@ export const ThinkOrSwim = async (
   addExecutions,
   addTrades,
   previousTrades,
-  previousExecutions
+  previousExecutions,
+  tradeAccounts,
+  addTradeAccount,
+  accountName
 ) => {
   let tempTrades = [];
+  let identifier = "";
+  let tradeAccount = {};
+  await parse(file, {
+    preview: 1,
+    complete: (results) => {
+      // Split the string after the word 'Account Statement for ' and before the word 'since'
+      identifier = results.data[0][0].split("Account Statement for ")[1].split(" since")[0];
+      console.log("I THINK I DID IT BITCH", identifier)
+
+      // Look for identifier within tradeAccounts, if a tradeAccount with identifier exists, set tradeAccount to that tradeAccount. If it does not exist, create it
+      const tempTradeAccount = tradeAccounts.find((account) => account.identifier === identifier);
+
+      if (!tempTradeAccount) {
+        tradeAccount = {
+          id: cuid(),
+          identifier: identifier,
+          platform: "ThinkOrSwim",
+          name: accountName ? accountName : "",
+          balance: 0
+        }
+        addTradeAccount(tradeAccount)
+      } else {
+        tradeAccount = tempTradeAccount
+      }
+    },
+  }
+  );
   await parse(file, {
     beforeFirstChunk: (chunk) => {
       // Only parse after the row with 'Account Trade History' in it
@@ -282,6 +312,7 @@ export const ThinkOrSwim = async (
           dateClosed: tradeGroup.dateClosed,
           userId: tradeGroup.userId,
           side: tradeGroup.side,
+          accountId: tradeAccount.id,
           platform: 'ThinkOrSwim',
         };
       });
@@ -306,9 +337,9 @@ export const ThinkOrSwim = async (
         );
       });
       console.log("FILTERED EXECUTIONS", filteredExecutions);
-      // 
-      addTrades(filteredTrades);
       // Submit trades to database
+      addTrades(filteredTrades);
+      // Submit executions to database
       addExecutions(filteredExecutions);
       // if error, return toast.error
       if(tradeGroupForSubmit.length === 0) {

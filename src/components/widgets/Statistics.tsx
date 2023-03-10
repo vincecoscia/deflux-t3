@@ -1,4 +1,11 @@
-import { memo, useContext, useEffect, useState, useMemo, useLayoutEffect } from "react";
+import {
+  memo,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import { AnalyticsContext } from "../../context/AnalyticsContext";
 import { UserPreferenceContext } from "../../context/UserPreferencesContext";
@@ -8,59 +15,87 @@ import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
-const Statistics = () => {
-  const { tradeAnalytics, tagAnalytics } = useContext(AnalyticsContext);
-  const { isCollapsed } = useContext(SideNavContext)
-  const { userPreferences, refetchUserPreferences } = useContext(UserPreferenceContext);
+const Statistics = ({ tradeAnalytics }) => {
+  const { tagAnalytics } = useContext(AnalyticsContext);
+  const { isCollapsed } = useContext(SideNavContext);
+  const { userPreferences, refetchUserPreferences } = useContext(
+    UserPreferenceContext
+  );
   const [selectedAnalytics, setSelectedAnalytics] = useState<any[]>([]);
   const [layouts, setLayouts] = useState({});
   const [open, setOpen] = useState(false);
 
-  const ResponsiveGridLayout = useMemo(()=>WidthProvider(Responsive), [])
+  const ResponsiveGridLayout = useMemo(() => WidthProvider(Responsive), []);
 
   useEffect(() => {
     // when isCollapsed changes, we need to dispatch a resize event to the window to force the grid to re-render
-    setTimeout(
-      ()=>{window.dispatchEvent(new Event('resize'));},
-      200
-      );
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+    }, 200);
   }, [isCollapsed]);
 
+  const { mutate: updateUserPreference } =
+    trpc.userPreferenceRouter.updateUserPreference.useMutation({
+      onSuccess() {
+        refetchUserPreferences();
+        toast.success("Preferences Updated", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      },
+      onError(error) {
+        toast.error(error.message, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      },
+    });
 
-  const { mutate: updateUserPreference } = trpc.userPreferenceRouter.updateUserPreference.useMutation({
-    onSuccess() {
-      refetchUserPreferences();
-      toast.success("Preferences Updated", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    },
-    onError(error) {
-      toast.error(error.message, {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+  const getLayoutAndAnalytics = () => {
+    // if a userPreferences key === "Stat-Widget-Layout" exists, then we need to set the layout to the value of the key
+    const layoutPreference = userPreferences.find(
+      (userPreference) => userPreference.key === "Stat-Widget-Layout"
+    );
+    const analyticsPreference = userPreferences.find(
+      (userPreference) => userPreference.key === "Stat-Widget-Selection"
+    );
+    // if the layoutPreference exists, then we need to set the layout to the value of the key
+    if (layoutPreference) {
+      setLayouts(layoutPreference.value as any);
+    } else {
+      setLayouts(getInitialLayouts(tradeAnalytics));
     }
-});
+    if (analyticsPreference) {
+      // filter the tradeAnalytics to only include the analytics that are in the analyticsPreference
+      const filteredAnalytics = tradeAnalytics.filter((analytics) =>
+        // analyticsPreference.value is an array of objects with a name property
+        (analyticsPreference.value as { name: string; value: number }[]).some(
+          (analyticsPreference) => analyticsPreference.name === analytics.name
+        )
+      );
 
+      // set the selectedAnalytics2 to the filteredAnalytics
+      setSelectedAnalytics(filteredAnalytics);
+    } else {
+      setSelectedAnalytics(tradeAnalytics);
+    }
+  };
 
   useLayoutEffect(() => {
     getLayoutAndAnalytics();
-    ResponsiveGridLayout
+    ResponsiveGridLayout;
   }, [tradeAnalytics, userPreferences, ResponsiveGridLayout]);
 
   const getInitialLayouts = (selectedAnalytics) => {
@@ -121,30 +156,6 @@ const Statistics = () => {
     };
   };
 
-  const getLayoutAndAnalytics = () => {
-      // if a userPreferences key === "Stat-Widget-Layout" exists, then we need to set the layout to the value of the key
-      const layoutPreference = userPreferences.find(
-        (userPreference) => userPreference.key === "Stat-Widget-Layout"
-      );
-      const analyticsPreference = userPreferences.find(
-        (userPreference) => userPreference.key === "Stat-Widget-Selection"
-      );
-      console.log("LAYOUT PREFERENCE", layoutPreference?.value);
-      // if the layoutPreference exists, then we need to set the layout to the value of the key
-      if (layoutPreference) {
-        setLayouts(layoutPreference.value as any);
-      } else {
-        setLayouts(getInitialLayouts(tradeAnalytics));
-      }
-      if (analyticsPreference) {
-        setSelectedAnalytics(analyticsPreference.value as any);
-      } else {
-      setSelectedAnalytics(tradeAnalytics);
-      }
-  };
-
-  console.log("THE FUCKING LAYOUTS", layouts);
-
   return (
     <>
       <div className="w-full text-white">
@@ -165,19 +176,20 @@ const Statistics = () => {
             onLayoutChange={(currentLayout, allLayouts) =>
               setLayouts(allLayouts)
             }
-            
           >
-            {selectedAnalytics.map((analytics) => (
-              <div key={analytics.name} className="rounded-lg bg-gray-700 p-2">
-                <h5 className="text-xs text-gray-400">{analytics.name}</h5>
-                <p>{analytics.value}</p>
-              </div>
-            ))}
+            
+            {
+              selectedAnalytics.map((analytics) => (
+                <div key={analytics.name} className="rounded-lg bg-gray-700 p-2">
+                  <h5 className="text-xs text-gray-400">{analytics.name}</h5>
+                  <p>{analytics.value}</p>
+                </div>
+              ))}
           </ResponsiveGridLayout>
         </div>
       </div>
       {open && (
-        <div className="fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur px-3 lg:px-0">
+        <div className="fixed top-0 left-0 z-50 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-50 px-3 backdrop-blur lg:px-0">
           <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
             <div className="rounded-lg bg-gray-800 p-4">
               <h3 className="text-lg text-white">Available Widgets</h3>
@@ -227,20 +239,30 @@ const Statistics = () => {
                   </div>
                 ))}
               </fieldset>
-              <div className="flex w-full gap-x-2 mt-4 text-white">
+              <div className="mt-4 flex w-full gap-x-2 text-white">
                 <button
-                  className="w-full flex items-center justify-center rounded-lg bg-primary py-2"
-                  onClick={() => updateUserPreference({ key: "Stat-Widget-Layout", value: layouts })}
+                  className="flex w-full items-center justify-center rounded-lg bg-primary py-2"
+                  onClick={() =>
+                    updateUserPreference({
+                      key: "Stat-Widget-Layout",
+                      value: layouts,
+                    })
+                  }
                 >
                   Save Layout
                 </button>
                 <button
-                  className="w-full flex items-center justify-center rounded-lg bg-primary py-2"
-                  onClick={() => updateUserPreference({ key: "Stat-Widget-Selection", value: selectedAnalytics })}
+                  className="flex w-full items-center justify-center rounded-lg bg-primary py-2"
+                  onClick={() =>
+                    updateUserPreference({
+                      key: "Stat-Widget-Selection",
+                      value: selectedAnalytics,
+                    })
+                  }
                 >
                   Save Selections
                 </button>
-                </div>
+              </div>
             </div>
           </OutsideClickHandler>
         </div>
@@ -249,4 +271,4 @@ const Statistics = () => {
   );
 };
 
-export default Statistics
+export default Statistics;

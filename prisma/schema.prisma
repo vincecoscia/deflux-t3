@@ -42,9 +42,9 @@ model Session {
 }
 
 model User {
-  id            String      @id @default(cuid())
+  id            String           @id @default(cuid())
   name          String?
-  email         String?     @unique
+  email         String?          @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -55,6 +55,7 @@ model User {
   tags          Tag[]
   images        Image[]
   preferences   UserPreference[]
+  tradeAccounts TradeAccount[]
 }
 
 model UserPreference {
@@ -66,8 +67,8 @@ model UserPreference {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   @@unique([userId, key], name: "userPreferenceIdentifier")
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -93,7 +94,7 @@ model Execution {
   userId        String   @default(cuid())
   user          User     @relation(fields: [userId], references: [id])
   tradeId       String?  @default("None")
-  trade         Trade?   @relation(fields: [tradeId], references: [id])
+  trade         Trade?   @relation(fields: [tradeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, id])
   @@index([userId])
@@ -121,9 +122,9 @@ model StudyTrade {
   trade     Trade    @relation(fields: [tradeId], references: [id])
   createdAt DateTime @default(now())
 
+  @@unique([studyId, tradeId], name: "studyTradeIdentifier")
   @@index([studyId])
   @@index([tradeId])
-  @@unique([studyId, tradeId], name: "studyTradeIdentifier")
 }
 
 model Trade {
@@ -140,16 +141,36 @@ model Trade {
   closePrice      Float
   dateOpened      DateTime
   dateClosed      DateTime
-  notes           String?       @db.VarChar(500) @default("")
+  notes           String?      @default("") @db.VarChar(500)
   tradeTags       TradeTag[]
   executions      Execution[]
   studies         StudyTrade[]
   screenshots     Image[]
+  accountId       String
+  account         TradeAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
   userId          String       @default(cuid())
   user            User         @relation(fields: [userId], references: [id])
   dateCreated     DateTime     @default(now())
 
   @@index([userId])
+  @@index([accountId])
+}
+
+model TradeAccount {
+  id         String   @id @default(cuid())
+  identifier String
+  name       String?
+  platform   String
+  balance    Float?
+  userId     String   @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  trades     Trade[]
+  tags       TradeAccountTags[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+  @@unique([identifier, userId], name: "tradeAccountIdentifier")
 }
 
 model Tag {
@@ -159,9 +180,12 @@ model Tag {
   userId    String     @default(cuid())
   user      User       @relation(fields: [userId], references: [id])
   tradeTags TradeTag[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  account   TradeAccountTags[]
 
-  @@index([userId])
   @@unique([name, userId], name: "tagIdentifier")
+  @@index([userId])
 }
 
 model TradeTag {
@@ -171,9 +195,21 @@ model TradeTag {
   tagId   String
   tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
+  @@unique([tradeId, tagId], name: "tradeTagIdentifier")
   @@index([tradeId])
   @@index([tagId])
-  @@unique([tradeId, tagId], name: "tradeTagIdentifier")
+}
+
+model TradeAccountTags {
+  id      String @id @default(cuid())
+  tradeAccountId String
+  tradeAccount   TradeAccount  @relation(fields: [tradeAccountId], references: [id], onDelete: Cascade)
+  tagId   String
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tradeAccountId, tagId], name: "tradeAccountTagIdentifier")
+  @@index([tradeAccountId])
+  @@index([tagId])
 }
 
 model Image {

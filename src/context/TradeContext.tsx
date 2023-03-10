@@ -7,6 +7,7 @@ interface IGlobalContextProps {
   trades: Trade[];
   setTrades: (trades: Trade[]) => void;
   isLoadingGlobalTrades: boolean;
+  refetchGlobalTrades: () => void;
 }
 
 export const TradeContext = createContext<IGlobalContextProps>({
@@ -14,6 +15,8 @@ export const TradeContext = createContext<IGlobalContextProps>({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setTrades: () => {},
   isLoadingGlobalTrades: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  refetchGlobalTrades: () => {},
 });
 
 export const TradeProvider = ({ children }) => {
@@ -44,6 +47,7 @@ export const TradeProvider = ({ children }) => {
       trades,
       setTrades,
       isLoadingGlobalTrades,
+      refetchGlobalTrades
     }}>
       {children}
     </TradeContext.Provider>

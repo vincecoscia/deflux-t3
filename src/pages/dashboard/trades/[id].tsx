@@ -141,6 +141,8 @@ const IndividualTrade: NextPage = () => {
             name: tagName,
             userId: sessionData?.user.id,
             color: "#18B4B7",
+            updatedAt: new Date(),
+            createdAt: new Date()
           },
         ]);
       }

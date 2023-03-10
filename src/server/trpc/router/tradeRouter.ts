@@ -4,7 +4,7 @@ import { router, publicProcedure, protectedProcedure } from '../trpc';
 
 export const tradeRouter = router({
   addTrades: protectedProcedure
-    .input(z.array(z.object({ id: z.string(), userId: z.string(), balance: z.number(), platform: z.string(), side: z.string(), grossProfit: z.number(), netProfit: z.number(), totalCommission: z.number(), winLoss: z.string(), symbol: z.string(),openPrice: z.number(), closePrice: z.number(), dateOpened: z.date(), dateClosed: z.date() })))
+    .input(z.array(z.object({ id: z.string(), userId: z.string(), accountId: z.string(), balance: z.number(), platform: z.string(), side: z.string(), grossProfit: z.number(), netProfit: z.number(), totalCommission: z.number(), winLoss: z.string(), symbol: z.string(), openPrice: z.number(), closePrice: z.number(), dateOpened: z.date(), dateClosed: z.date() })))
     .mutation(async ({ctx, input}) => {
       const trades = await ctx.prisma.trade.createMany({
         data: input ?? [],
@@ -160,10 +160,14 @@ export const tradeRouter = router({
     }
   ),
   getTradeAnalytics: protectedProcedure
-    .query(async ({ctx}) => {
+    .input(z.object({ platform: z.string().nullish(), symbol: z.string().nullish(), accountId: z.string().nullish() }).nullish())
+    .query(async ({ctx, input}) => {
       const trades = await ctx.prisma.trade.findMany({
         where: {
           userId: ctx.session.user.id,
+          symbol: input?.symbol ?? undefined,
+          accountId: input?.accountId ?? undefined,
+          platform: input?.platform ?? undefined,
         },
       });
 
