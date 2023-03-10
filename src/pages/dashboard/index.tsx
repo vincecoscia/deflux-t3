@@ -101,48 +101,7 @@ const Dashboard: NextPage = () => {
       </Head>
       <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
         <SideNav />
-        <div className="my-3 ml-3 w-full overflow-y-scroll">
-          <div className="mr-3 mb-24 lg:mb-0">
-            <div className="mb-3 grid gap-3 lg:grid-cols-12">
-              <div className="flex flex-col lg:col-span-8">
-                <div className="mb-3 flex justify-between flex-col-reverse gap-y-3 lg:flex-row lg:gap-y-0">
-                  <div className="flex w-full gap-x-3">
-                    <p className="w-full rounded-lg py-2 px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
-                      Account Balance:{" "}
-                      <span className="font-semibold text-primary">
-                        ${balance.toLocaleString()}
-                      </span>
-                    </p>
-                    <p className="w-full rounded-lg py-2  px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
-                      Total Returns:{" "}
-                      <span
-                        className={
-                          accountReturns >= 0
-                            ? "whitespace-pre font-semibold text-green-500 sm:whitespace-normal"
-                            : "whitespace-pre font-semibold text-red-500 sm:whitespace-normal"
-                        }
-                      >
-                        ${accountReturns.toFixed(2)} (
-                        {accountReturnsPercentage.toFixed(2)}%)
-                      </span>
-                    </p>
-                  </div>
-                  <Dropdown options={platforms} selected={selectedPlatform} setSelected={setSelectedPlatform}/>
-                </div>
-                <div className="col-span-2 flex rounded-lg bg-gray-800 p-2 text-white">
-                  <Chart data={filteredTrades} />
-                </div>
-              </div>
-
-              <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics />
-              </div>
-            </div>
-            <div className="text-sm">
-              <TradeTable data={filteredTrades} />
-            </div>
-          </div>
-        </div>
+        Ello
       </main>
     </>
   );

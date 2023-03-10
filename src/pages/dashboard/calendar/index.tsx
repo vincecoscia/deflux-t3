@@ -120,7 +120,7 @@ const Calendar: NextPage = () => {
               <CalendarWidget trades={filteredTrades} />
             </div>
             <div className="col-span-12 flex rounded-lg bg-gray-800 p-2 text-white lg:col-span-2">
-              <Statistics tradeAnalytics={tradeAnalytics as any} />
+              <Statistics tradeAnalytics={tradeAnalytics} />
             </div>
           </div>
         </div>
