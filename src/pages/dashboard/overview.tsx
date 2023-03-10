@@ -186,7 +186,7 @@ const Overview: NextPage = () => {
               </div>
 
               <div className="flex h-full lg:col-span-4">
-                <Statistics tradeAnalytics={tradeAnalytics} />
+                <Statistics tradeAnalytics={tradeAnalytics as any} />
               </div>
             </div>
             <div className="text-sm">
