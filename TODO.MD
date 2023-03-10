@@ -5,9 +5,10 @@
 - [ ] Add restore to default settings on widgets (AKA delete user preference)
 - [ ] Add Setups which combine certain tags and can be shareable with community eventually
 - [ ] Add date selector to filter trades by date range for trade table
-- [ ] Add TradeAccounts with the name of the trade account and the ability to rename it as well as other settings
-- [ ] Design analytics page for use with widgets
-- [ ] Calendar on desktop needs better design within each day
+- [x] Add TradeAccounts with the name of the trade account
+- [ ] Add settings page with the ability to rename accounts as well as other settings
+- [x] Design analytics page for use with widgets
+- [x] Calendar on desktop needs better design within each day
 - [ ] Provide date-specific statistics on calendar page
 - [ ] Make a ton of analytical widgets that can be reused based on the data passed to them (Need designs)
 - [ ] Make the Overview use react-grid-layout once media queries are figured out
