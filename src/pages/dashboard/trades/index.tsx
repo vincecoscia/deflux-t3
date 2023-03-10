@@ -135,7 +135,7 @@ const Trades: NextPage = () => {
                     <p className="w-full rounded-lg py-2 px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
                       Account Balance:{" "}
                       <span className="font-semibold text-primary">
-                        ${balance?.toLocaleString()}
+                        ${balance?.toFixed(2).toLocaleString()}
                       </span>
                     </p>
                     <p className="w-full rounded-lg py-2  px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
