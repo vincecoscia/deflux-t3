@@ -16,7 +16,7 @@ import Dropdown from "../../../components/shared/Dropdown";
 import { TradeAccountContext } from "../../../context/TradeAccountContext";
 
 const Trades: NextPage = () => {
-  const {trades} = useContext(TradeContext);
+  const { trades } = useContext(TradeContext);
   const { tradeAccounts, isLoadingGlobalTradeAccounts } =
     useContext(TradeAccountContext);
   // const [executions, setExecutions] = useState<Execution[]>([]);
@@ -70,7 +70,7 @@ const Trades: NextPage = () => {
   }, 0);
 
   const accountReturnsPercentage =
-  (accountReturns / (balance - accountReturns)) * 100 || 0;
+    (accountReturns / (balance - accountReturns)) * 100 || 0;
 
   useEffect(() => {
     filterTradesByAccount(trades, selectedAccount, tradeAccounts);
@@ -79,9 +79,11 @@ const Trades: NextPage = () => {
 
   if (!sessionData) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900">
-        <div className="container px-4 -mt-48 flex flex-col gap-y-4 items-center justify-center text-center">
-          <h1 className="text-2xl text-white font-semibold">Please sign in to view your Dashboard</h1>
+      <div className="flex h-screen flex-col items-center justify-center bg-gray-900">
+        <div className="container -mt-48 flex flex-col items-center justify-center gap-y-4 px-4 text-center">
+          <h1 className="text-2xl font-semibold text-white">
+            Please sign in to view your Dashboard
+          </h1>
         </div>
       </div>
     );
@@ -127,11 +129,10 @@ const Trades: NextPage = () => {
         <SideNav />
         <div className="my-3 ml-3 w-full overflow-y-scroll">
           <div className="mr-3 ">
-            <div className="mb-24 lg:mb-3 grid gap-3 lg:grid-cols-12">
-              <div className="flex flex-col lg:col-span-8 w-[95vw] lg:w-full">
-                <div className="mb-3 flex justify-between">
+            <div className="mb-24 grid gap-3 lg:mb-3 lg:grid-cols-12">
+              <div className="flex w-[95vw] flex-col lg:col-span-8 lg:w-full">
                 <div className="mb-3 flex flex-col-reverse justify-between gap-y-3 lg:flex-row lg:gap-y-0">
-                <div className="flex w-full gap-x-3">
+                  <div className="flex w-full gap-x-3">
                     <p className="w-full rounded-lg py-2 px-1 font-light dark:bg-gray-800 dark:text-white sm:w-auto sm:px-2 lg:text-base">
                       Account Balance:{" "}
                       <span className="font-semibold text-primary">
@@ -157,7 +158,6 @@ const Trades: NextPage = () => {
                     selected={selectedAccount}
                     setSelected={setSelectedAccount}
                   />
-                  </div>
                 </div>
                 <div className="text-xs">
                   <TradeTable data={trades} />
