@@ -210,6 +210,7 @@ const ImportTrades = ({ user }) => {
                           alt="CSV Icon"
                           width={50}
                           height={50}
+                          unoptimized={true}
                         />
                         <div className="flex flex-col ml-2">
                           <p className="text-white">{file?.name}</p>

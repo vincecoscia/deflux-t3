@@ -94,6 +94,7 @@ export default function Navbar() {
                     width={50}
                     height={50}
                     className="h-10 w-10 rounded-full border border-white"
+                    unoptimized={true}
                   />
                 </button>
                 <div className="ml-4 flex flex-col justify-center">
@@ -409,6 +410,7 @@ export default function Navbar() {
                             width={50}
                             height={50}
                             className="rounded-full"
+                            unoptimized
                           />
                           <div className="ml-4 flex flex-col justify-center">
                             <h3 className="text-sm font-bold">

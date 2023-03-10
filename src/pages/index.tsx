@@ -82,6 +82,7 @@ const Home: NextPage = () => {
             width={600}
             height={600}
             className="absolute right-[-4rem] top-1/3 object-contain rounded-lg shadow-2xl lg:block hidden"
+            unoptimized
           />
           <div className="container mx-auto h-full">
             <div className="flex flex-col lg:justify-center lg:h-full mx-4 pt-48 lg:pt-0">
