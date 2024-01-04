@@ -8,7 +8,7 @@ const s3 = new AWS.S3({
   },
 })
 
-import { router, publicProcedure, protectedProcedure } from '../trpc';
+import { router, protectedProcedure } from '../trpc';
 
 export const imageRouter = router({
   createPresignedUrl: protectedProcedure
