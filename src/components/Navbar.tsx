@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import OutsideClickHandler from "react-outside-click-handler";
+import SignInModal from "./SignInModal";
 
 export default function Navbar() {
   const [show, setShow] = React.useState(false);
   const [showMobile, setShowMobile] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
 
   const { data: sessionData } = useSession();
   const router = useRouter();
@@ -45,6 +47,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <nav
       className={`z-20 flex w-full px-4 py-2 ${
         router.pathname == "/" ||
@@ -89,7 +92,7 @@ export default function Navbar() {
               <div className="flex text-white">
                 <button className="" onClick={() => setShow(!show)}>
                   <Image
-                    src={sessionData.user?.image || "/default-avatar.png"}
+                    src={sessionData.user?.image || "https://deflux.s3.amazonaws.com/assets/deflux-default-pp.png"}
                     alt="user image"
                     width={50}
                     height={50}
@@ -439,12 +442,19 @@ export default function Navbar() {
             >
               Log In
             </button>
-            <button className="rounded-lg bg-slate-900 px-3 py-1 text-sm text-white">
+            <button className="rounded-lg bg-slate-900 px-3 py-1 text-sm text-white"
+            onClick={
+              // Open Sign Up Modal
+              () => setShowModal(true)
+            }
+            >
               Sign Up
             </button>
           </div>
         )}
       </div>
     </nav>
+    {showModal && <SignInModal setShowModal={setShowModal} />}
+    </>
   );
 }
