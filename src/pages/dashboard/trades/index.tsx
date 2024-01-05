@@ -11,21 +11,67 @@ import TradeTable from "../../../components/TradeTable";
 import useMemoizedState from "../../../components/hooks/useMemoizedState";
 import Statistics from "../../../components/widgets/Statistics";
 import { getBalance } from "../../../utils/globalFunctions";
-import { TradeContext } from "../../../context/TradeContext";
 import Dropdown from "../../../components/shared/Dropdown";
-import { TradeAccountContext } from "../../../context/TradeAccountContext";
+// import { TradeContext } from "../../../context/TradeContext";
+// import { TradeAccountContext } from "../../../context/TradeAccountContext";
 
 const Trades: NextPage = () => {
-  const { trades } = useContext(TradeContext);
-  const { tradeAccounts, isLoadingGlobalTradeAccounts } =
-    useContext(TradeAccountContext);
+  // const { trades } = useContext(TradeContext);
+  // const { tradeAccounts, isLoadingGlobalTradeAccounts } =
+  //   useContext(TradeAccountContext);
   // const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [platform, setPlatform] = useState<string>("All");
   const [tagsAndWinRate, setTagsAndWinRate] = useState<any>([]);
   const [selectedAccount, setSelectedAccount] = useState<TradeAccount>();
-  const [tradeAnalytics, setTradeAnalytics] = useState<any>([]);
   const [filteredTrades, setFilteredTrades] = useMemoizedState<Trade[]>([]);
+
+  // Queries
+  const {data: trades, isFetching } = trpc.tradeRouter.getTrades.useQuery(
+    undefined,
+    {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    }
+  )
+
+  const { data: userPreferences, refetch: refetchUserPreferences } =
+  trpc.userPreferenceRouter.getUserPreferences.useQuery(
+    undefined,
+    {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    }
+  );
+
+  const {
+    data: tradeAnalytics,
+    isLoading: tradeAnalyticsLoading,
+    refetch: refetchAnalytics,
+  } = trpc.tradeRouter.getTradeAnalytics.useQuery(
+    { accountId: selectedAccount?.id },
+    {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    }
+  );
+
+  const { data: tradeAccounts, refetch: refetchGlobalTradeAccounts, isLoading: isLoadingGlobalTradeAccounts  } =
+      trpc.tradeAccountRouter.getTradeAccounts.useQuery(
+        undefined,
+        {
+          cacheTime: 1000 * 60 * 60 * 24,
+          staleTime: 1000 * 60 * 60 * 24,
+        }
+      )
+  // End Queries
+
+if (!isFetching) {
+  console.log('Data is from cache');
+} else {
+  console.log('Data is being fetched from the database');
+}
+
 
   const filterTradesByAccount = (trades, selectedAccount, tradeAccounts) => {
     // if no selected account, filter trades by first account
@@ -49,31 +95,20 @@ const Trades: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const {
-    data: tradeAnalyticsData,
-    isLoading: tradeAnalyticsLoading,
-    refetch: refetchAnalytics,
-  } = trpc.tradeRouter.getTradeAnalytics.useQuery(
-    { accountId: selectedAccount?.id },
-    {
-      onSuccess(tradeAnalyticsData) {
-        setTradeAnalytics(tradeAnalyticsData);
-      },
-    }
-  );
-
   // TODO: Add a loading state
 
   // Get account returns by summing all trade.netProfit and subtracting all trade.commision
-  const accountReturns = trades.reduce((acc, trade) => {
+  const accountReturns = trades?.reduce((acc, trade) => {
     return acc + trade.netProfit;
   }, 0);
 
   const accountReturnsPercentage =
-    (accountReturns / (balance - accountReturns)) * 100 || 0;
+    (accountReturns ?? 0) / (balance - (accountReturns ?? 0)) * 100 || 0;
 
   useEffect(() => {
+    tradeAccounts &&
     filterTradesByAccount(trades, selectedAccount, tradeAccounts);
+    trades &&
     getBalance(trades, setBalance);
   }, [trades, selectedAccount, tradeAccounts]);
 
@@ -143,12 +178,12 @@ const Trades: NextPage = () => {
                       Total Returns:{" "}
                       <span
                         className={
-                          accountReturns >= 0
+                          accountReturns ?? 0 >= 0
                             ? "whitespace-pre font-semibold text-green-500 sm:whitespace-normal"
                             : "whitespace-pre font-semibold text-red-500 sm:whitespace-normal"
                         }
                       >
-                        ${accountReturns.toFixed(2)} (
+                        ${accountReturns?.toFixed(2) ?? 0} (
                         {accountReturnsPercentage.toFixed(2)}%)
                       </span>
                     </p>
@@ -165,7 +200,7 @@ const Trades: NextPage = () => {
               </div>
 
               <div className="flex h-full rounded-lg bg-gray-800 p-2 text-white lg:col-span-4">
-                <Statistics tradeAnalytics={tradeAnalytics} />
+              <Statistics tradeAnalytics={tradeAnalytics ?? []} userPreferences={userPreferences ?? []} refetchUserPreferences={refetchUserPreferences} />
               </div>
             </div>
           </div>

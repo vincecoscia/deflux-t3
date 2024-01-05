@@ -14,36 +14,68 @@ import { getBalance } from "../../utils/globalFunctions";
 import Statistics from "../../components/widgets/Statistics";
 import Dropdown from "../../components/shared/Dropdown";
 // Contexts
-import { TradeContext } from "../../context/TradeContext";
-import { TradeAccountContext } from "../../context/TradeAccountContext";
+// import { TradeContext } from "../../context/TradeContext";
+// import { TradeAccountContext } from "../../context/TradeAccountContext";
 
 const Overview: NextPage = () => {
-  const { trades, isLoadingGlobalTrades } = useContext(TradeContext);
-  const { tradeAccounts, isLoadingGlobalTradeAccounts } =
-    useContext(TradeAccountContext);
   const [filteredTrades, setFilteredTrades] = useMemoizedState<Trade[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [selectedAccount, setSelectedAccount] = useState<TradeAccount>();
-  const [tradeAnalytics, setTradeAnalytics] = useState<any>([]);
 
   const { data: sessionData } = useSession();
 
-  // console.log('selectedPlatform', selectedPlatform)
+  // Queries
+  const {
+    data: trades,
+    refetch: refetchGlobalTrades,
+    isLoading: isLoadingGlobalTrades,
+  } = trpc.tradeRouter.getTrades.useQuery(undefined, {
+    cacheTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  const {
+    data: tradeAccounts,
+    refetch: refetchGlobalTradeAccounts,
+    isLoading: isLoadingGlobalTradeAccounts,
+  } = trpc.tradeAccountRouter.getTradeAccounts.useQuery(undefined, {
+    cacheTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  const { data: userPreferences, refetch: refetchUserPreferences } =
+    trpc.userPreferenceRouter.getUserPreferences.useQuery(undefined, {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    });
+
+  const {
+    data: tradeAnalytics,
+    isLoading: tradeAnalyticsLoading,
+    refetch: refetchAnalytics,
+  } = trpc.tradeRouter.getTradeAnalytics.useQuery(
+    { accountId: selectedAccount?.id },
+    {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    }
+  );
+  // End Queries
 
   // Write a function for filtering trades by platform
   const filterTradesByAccount = (trades, selectedAccount, tradeAccounts) => {
     // if no selected account, filter trades by first account
-    if (tradeAccounts.length === 0) return;
+    if (tradeAccounts?.length === 0) return;
 
     console.log("TRADE ACOUNT OPTIONS", tradeAccounts);
 
     if (!selectedAccount) {
-      const filteredTrades = trades.filter(
+      const filteredTrades = trades?.filter(
         (trade) => trade.accountId === tradeAccounts[0].id
       );
       setFilteredTrades(filteredTrades);
-      setSelectedAccount(tradeAccounts[0]);
+      setSelectedAccount(tradeAccounts[0] || null);
     } else {
       const filteredTrades = trades.filter(
         (trade) => trade.accountId === selectedAccount.id
@@ -59,19 +91,6 @@ const Overview: NextPage = () => {
   //     },
   //   });
 
-  const {
-    data: tradeAnalyticsData,
-    isLoading: tradeAnalyticsLoading,
-    refetch: refetchAnalytics,
-  } = trpc.tradeRouter.getTradeAnalytics.useQuery(
-    { accountId: selectedAccount?.id },
-    {
-      onSuccess(tradeAnalyticsData) {
-        setTradeAnalytics(tradeAnalyticsData);
-      },
-    }
-  );
-
   // Get account returns by summing all trade.netProfit and subtracting all trade.commision
   const accountReturns = filteredTrades.reduce((acc, trade) => {
     return acc + trade.netProfit;
@@ -81,7 +100,8 @@ const Overview: NextPage = () => {
     (accountReturns / (balance - accountReturns)) * 100 || 0;
 
   useEffect(() => {
-    filterTradesByAccount(trades, selectedAccount, tradeAccounts);
+    tradeAccounts &&
+      filterTradesByAccount(trades, selectedAccount, tradeAccounts);
     getBalance(filteredTrades, setBalance);
   }, [trades, selectedAccount, tradeAccounts]);
 
@@ -97,7 +117,11 @@ const Overview: NextPage = () => {
     );
   }
 
-  if (isLoadingGlobalTrades || isLoadingGlobalTradeAccounts || tradeAnalyticsLoading) {
+  if (
+    isLoadingGlobalTrades ||
+    isLoadingGlobalTradeAccounts ||
+    tradeAnalyticsLoading
+  ) {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-gray-900">
         <div className="container -mt-48 flex flex-col items-center justify-center gap-y-4 px-4 text-center">
@@ -186,7 +210,11 @@ const Overview: NextPage = () => {
               </div>
 
               <div className="flex h-full lg:col-span-4">
-                <Statistics tradeAnalytics={tradeAnalytics} />
+                <Statistics
+                  tradeAnalytics={tradeAnalytics ?? []}
+                  userPreferences={userPreferences ?? []}
+                  refetchUserPreferences={refetchUserPreferences}
+                />
               </div>
             </div>
             <div className="text-sm">

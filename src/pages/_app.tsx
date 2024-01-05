@@ -7,11 +7,8 @@ import Navbar from "../components/Navbar";
 import "../styles/globals.css";
 import { ToastContainer } from "react-toastify";
 // Contexts
-import { TradeProvider } from "../context/TradeContext";
 import { SideNavProvider } from "../context/SideNavContext";
-import { AnalyticsProvider } from "../context/AnalyticsContext";
-import { UserPreferenceProvider } from "../context/UserPreferencesContext";
-import { TradeAccountProvider } from "../context/TradeAccountContext";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -19,11 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <UserPreferenceProvider>
       <SideNavProvider>
-      <TradeAccountProvider>
-      <TradeProvider >
-      <AnalyticsProvider>
         <Navbar/>
         <Component {...pageProps} />
         <ToastContainer
@@ -38,11 +31,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
         pauseOnHover
         theme="colored"
       />
-      </AnalyticsProvider>
-      </TradeProvider>
-      </TradeAccountProvider>
+      <ReactQueryDevtools initialIsOpen={true} />
       </SideNavProvider>
-      </UserPreferenceProvider>
     </SessionProvider>
   );
 };

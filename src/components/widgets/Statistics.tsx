@@ -15,17 +15,20 @@ import OutsideClickHandler from "react-outside-click-handler";
 import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserPreference } from "@prisma/client";
 
 interface StatisticsProps {
-  tradeAnalytics: any[];
+  tradeAnalytics: {
+    name: string;
+    value: number;
+  }[];
+  userPreferences: UserPreference[];
+  refetchUserPreferences: () => void;
 }
 
-const Statistics: FC<StatisticsProps> = ({ tradeAnalytics }) => {
+const Statistics: FC<StatisticsProps> = ({ tradeAnalytics, userPreferences, refetchUserPreferences }) => {
   const { tagAnalytics } = useContext(AnalyticsContext);
   const { isCollapsed } = useContext(SideNavContext);
-  const { userPreferences, refetchUserPreferences } = useContext(
-    UserPreferenceContext
-  );
   const [selectedAnalytics, setSelectedAnalytics] = useState<any[]>([]);
   const [layouts, setLayouts] = useState({});
   const [open, setOpen] = useState(false);
