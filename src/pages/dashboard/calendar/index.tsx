@@ -10,33 +10,51 @@ import useMemoizedState from "../../../components/hooks/useMemoizedState";
 import Statistics from "../../../components/widgets/Statistics";
 import CalendarWidget from "../../../components/widgets/CalendarWidget";
 import { useContext, useEffect, useState } from "react";
-import { TradeContext } from "../../../context/TradeContext";
-import { TradeAccountContext } from "../../../context/TradeAccountContext";
 import Dropdown from "../../../components/shared/Dropdown";
 
 const Calendar: NextPage = () => {
-  const { trades } = useContext(TradeContext);
-  const { tradeAccounts, isLoadingGlobalTradeAccounts } =
-    useContext(TradeAccountContext);
   const [tagsAndWinRate, setTagsAndWinRate] = useMemoizedState<any>([]);
   const [filteredTrades, setFilteredTrades] = useState<Trade[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<TradeAccount>();
-  const [tradeAnalytics, setTradeAnalytics] = useState<any>([]);
 
   const { data: sessionData } = useSession();
 
+  // Queries
   const {
-    data: tradeAnalyticsData,
+    data: trades,
+    refetch: refetchGlobalTrades,
+    isLoading: isLoadingGlobalTrades,
+  } = trpc.tradeRouter.getTrades.useQuery(undefined, {
+    cacheTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  const {
+    data: tradeAccounts,
+    refetch: refetchGlobalTradeAccounts,
+    isLoading: isLoadingGlobalTradeAccounts,
+  } = trpc.tradeAccountRouter.getTradeAccounts.useQuery(undefined, {
+    cacheTime: 1000 * 60 * 60 * 24,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+
+  const {
+    data: tradeAnalytics,
     isLoading: tradeAnalyticsLoading,
     refetch: refetchAnalytics,
   } = trpc.tradeRouter.getTradeAnalytics.useQuery(
     { accountId: selectedAccount?.id },
     {
-      onSuccess(tradeAnalyticsData) {
-        setTradeAnalytics(tradeAnalyticsData);
-      },
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
     }
   );
+
+  const { data: userPreferences, refetch: refetchUserPreferences } =
+    trpc.userPreferenceRouter.getUserPreferences.useQuery(undefined, {
+      cacheTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60 * 24,
+    });
 
   const filterTradesByAccount = (trades, selectedAccount, tradeAccounts) => {
     // if no selected account, filter trades by first account
@@ -59,8 +77,28 @@ const Calendar: NextPage = () => {
   };
 
   useEffect(() => {
-    filterTradesByAccount(trades, selectedAccount, tradeAccounts);
+    if (trades && tradeAccounts) {
+      filterTradesByAccount(trades, selectedAccount, tradeAccounts);
+    }
   }, [trades, selectedAccount, tradeAccounts]);
+
+  if (
+    isLoadingGlobalTrades ||
+    isLoadingGlobalTradeAccounts ||
+    tradeAnalyticsLoading
+  ) {
+    return (
+      <main className="flex h-[calc(100vh-59px)] bg-white dark:bg-gray-900">
+        <SideNav />
+        <div className="my-3 ml-3 flex w-full items-center justify-center">
+          <div className="lds-ripple">
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!sessionData) {
     return (
@@ -120,7 +158,7 @@ const Calendar: NextPage = () => {
               <CalendarWidget trades={filteredTrades} />
             </div>
             <div className="col-span-12 flex rounded-lg bg-gray-800 p-2 text-white lg:col-span-2">
-              <Statistics tradeAnalytics={tradeAnalytics} />
+              Insert time based statistics here
             </div>
           </div>
         </div>
